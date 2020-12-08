@@ -1,0 +1,37 @@
+env: dev
+host: http://localhost:8080
+
+server.port: 8001
+
+saro.rdb:
+  driverClassName: com.mysql.cj.jdbc.Driver
+  jdbcUrl: jdbc:mysql://db.dev.saro.me:3306/anissia?allowPublicKeyRetrieval=true&serverTimezone=UTC
+  username: anissia
+  password: anissia
+
+mail:
+  enable: false
+  path.conf: ./email.conf
+
+server-forward-headers: true
+
+spring.jpa:
+  properties.hibernate:
+#    format_sql: true
+#    use_sql_comments: false
+    jdbc.batch_size: 4
+    ddl-auto: none
+
+decorator.datasource.p6spy:
+  enable-logging: true
+  multiline: true
+  logging: slf4j
+  log-format: "%(category) | %(executionTime)ms | %(sql)"
+
+spring:
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+

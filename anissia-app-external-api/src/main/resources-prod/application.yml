@@ -1,0 +1,30 @@
+env: prod
+host: http://plecore.com
+
+server.port: 8001
+
+saro.rdb:
+  driverClassName: com.mysql.cj.jdbc.Driver
+  jdbcUrl: jdbc:mysql://db.dev.saro.me:3306/anissia?allowPublicKeyRetrieval=true&serverTimezone=UTC
+  username: anissia
+  password: anissia
+
+mail:
+  enable: true
+  path.conf: ./email.conf
+
+server.use-forward-headers: true
+
+spring.jpa:
+  show_sql: true
+  properties.hibernate:
+    format_sql: false
+    use_sql_comments: false
+    jdbc.batch_size: 4
+    ddl-auto: none
+
+spring:
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
