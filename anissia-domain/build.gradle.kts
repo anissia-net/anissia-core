@@ -13,7 +13,7 @@ plugins {
 dependencies {
 	// DB connector
 	implementation("com.zaxxer:HikariCP")
-	runtimeOnly("mysql:mysql-connector-java")
+	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	runtimeOnly("com.h2database:h2")
 
 	// JPA

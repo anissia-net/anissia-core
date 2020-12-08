@@ -1,4 +1,4 @@
-rootProject.name = "dhant-core"
+rootProject.name = "anissia-core"
 
 include ("anissia-app-external-api")
 //include ("anissia-domain-elasticsearch")

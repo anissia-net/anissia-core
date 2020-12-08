@@ -4,8 +4,8 @@ host: http://localhost:8080
 server.port: 8001
 
 saro.rdb:
-  driverClassName: com.mysql.cj.jdbc.Driver
-  jdbcUrl: jdbc:mysql://db.dev.saro.me:3306/anissia?allowPublicKeyRetrieval=true&serverTimezone=UTC
+  driverClassName: org.mariadb.jdbc.Driver
+  jdbcUrl: jdbc:mariadb://10.0.0.11:3306/anissia
   username: anissia
   password: anissia
 
