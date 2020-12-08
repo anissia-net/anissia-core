@@ -48,7 +48,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
                         "/api/timetable/**",
                         "/api/auth/**",
                         "/api/board/any/**",
-                        "/api/asl/any/**"
+                        "/api/asl/any/**",
+                        "/mig"
                 ).permitAll().and()
 
                 .authorizeRequests().antMatchers(
