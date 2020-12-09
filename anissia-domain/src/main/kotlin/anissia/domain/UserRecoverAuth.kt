@@ -31,5 +31,5 @@ data class UserRecoverAuth (
 
         @OneToOne
         @JoinColumn(name = "un", nullable = false, insertable = false, updatable = false)
-        var user: User? = null
+        var account: Account? = null
 )

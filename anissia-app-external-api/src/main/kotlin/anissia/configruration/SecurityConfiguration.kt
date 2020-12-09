@@ -1,6 +1,6 @@
 package anissia.configruration
 
-import anissia.domain.AnissiaRole
+import anissia.domain.AccountRole
 import me.saro.kit.bytes.Bytes
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,9 +16,8 @@ import java.security.MessageDigest
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
     companion object {
-        private val TRANSLATOR = AnissiaRole.TRANSLATOR.name
-        private val ADMIN = AnissiaRole.ADMIN.name
-        private val ROOT = AnissiaRole.ROOT.name
+        private val TRANSLATOR = AccountRole.TRANSLATOR.name
+        private val ROOT = AccountRole.ROOT.name
     }
 
     // old anissia hash -> sha512(text + "$0")
@@ -61,10 +60,10 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
                 .authorizeRequests().antMatchers(
                         "/api/manage/**",
                         "/api/asl/**"
-                ).hasAnyRole(TRANSLATOR, ADMIN, ROOT).and()
+                ).hasAnyRole(TRANSLATOR, ROOT).and()
 
                 .authorizeRequests().antMatchers(
                         "/**"
-                ).hasAnyRole(ADMIN, ROOT)
+                ).hasAnyRole(ROOT)
     }
 }

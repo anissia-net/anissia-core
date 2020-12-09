@@ -31,5 +31,5 @@ data class BoardPost (
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "un", nullable = false, insertable = false, updatable = false)
-        var user: User? = null
+        var account: Account? = null
 )
