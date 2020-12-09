@@ -49,7 +49,7 @@ data class Account (
         var oldAccount: String = "",
 
         @Column(nullable = false)
-        var oldAccountNumber: Long = 0
+        var oldAccountNo: Long = 0
 ) {
         val isBan: Boolean get() = banExpireTime?.isAfter(LocalDateTime.now()) ?: false
 }

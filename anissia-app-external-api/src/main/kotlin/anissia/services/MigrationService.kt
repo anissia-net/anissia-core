@@ -1,8 +1,6 @@
 package anissia.services
 
-import anissia.domain.Account
-import anissia.domain.AccountRole
-import anissia.domain.AnimeGenre
+import anissia.domain.*
 import anissia.repository.AccountRepository
 import anissia.repository.AnimeGenreRepository
 import org.springframework.stereotype.Service
@@ -21,17 +19,18 @@ class MigrationService(
     val animeGenreRepository: AnimeGenreRepository
 ) {
     val anMap = mutableMapOf<Long, Long>()
+    val animeMap = mutableMapOf<Long, Long>()
 
     fun migration() {
         // 부모가 없는 자막 목록 삭제
-        removeUnlinkedCaption()
+//        removeUnlinkedCaption()
 
         // 계정
         //account()
         //accountRepository.findAll().forEach { anMap[it.oldAccountNumber] = it.an }
 
 //        // 애니메이션
-        genre()
+//        genre()
         anitime()
 //
 //        // 자막
@@ -61,7 +60,7 @@ class MigrationService(
             createdTime = convertToLocalDateTime(e.getDate("joindate")),
             lastLoginTime = convertToLocalDateTime(e.getDate("lastdate")),
             oldAccount = e.getString("account"),
-            oldAccountNumber = e.getLong("an"),
+            oldAccountNo = e.getLong("an"),
             roles = if (e.getString("pms") == "#") mutableSetOf(AccountRole.ROOT) else mutableSetOf(AccountRole.TRANSLATOR)
         )
     }.also {
@@ -76,21 +75,20 @@ class MigrationService(
               select ai, subj, time, type, src, active, startdate, enddate, 'E' as gubun from oa.anitime_end
             ) a order by (case when a.startdate != '00000000' then startdate else enddate end)
             """) { e ->
-            val animeNo = e.getLong("ai")
-            val subject = e.getString("subj")
-            val time = e.getString("time")
-            val genre = e.getString("type")
-            val src = e.getString("src")
-            val active = e.getString("active")
-            val startdate = e.getString("startdate")
-            val enddate = e.getString("enddate")
-            val gubun = e.getString("gubun")
-
-            println("$animeNo $subject $time $genre $src $active $gubun $startdate $enddate")
-
-            genre
-        }.stream().flatMap { Stream.of(*it.split("/").toTypedArray()) }
-            .map { it.trim() }.distinct().sorted().forEach { println(it) }
+            Anime(
+                status = if (e.getString("gubun") == "E") AnimeStatus.END else if (e.getString("active") == "1") AnimeStatus.ON else AnimeStatus.OFF,
+                cycle = e.getString("week"),
+                time  = e.getString("time"),
+                subject = e.getString("subj"),
+                genres = norGenres(e.getString("type")),
+                startDate = norYmd(e.getString("startdate")),
+                endDate = norYmd(e.getString("enddate")),
+                website = e.getString("src"),
+                oldAnimeNo = e.getLong("ai")
+            )
+        }.also {
+            println(it)
+        }
 
 
     fun caption() {
@@ -151,7 +149,12 @@ class MigrationService(
         )
     }
 
-    fun toGenres(genres: String) =
+    fun norYmd(ymd: String): String =
+        if (ymd == "00000000" || ymd > "20990000") {
+            ""
+        } else ymd.run { "${substring(0, 4)}-${substring(4, 6)}-${substring(6, 8)}" }
+
+    fun norGenres(genres: String) =
         genres
             .split("/")
             .map { when (it.trim()) {
