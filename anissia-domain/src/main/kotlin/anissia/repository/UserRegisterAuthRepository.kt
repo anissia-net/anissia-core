@@ -6,8 +6,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import java.time.LocalDateTime
 
 interface UserRegisterAuthRepository : JpaRepository<UserRegisterAuth, Long>, QuerydslPredicateExecutor<UserRegisterAuth> {
-
-    fun existsByEmailAndExpDtAfter(email: String, expDt: LocalDateTime): Boolean
-
-    fun findByNoAndTokenAndExpDtAfterAndUsedDtNull(no: Long, token: String, expDt: LocalDateTime): UserRegisterAuth?
+//
+//    fun existsByEmailAndExpDtAfter(email: String, expDt: LocalDateTime): Boolean
+//
+//    fun findByNoAndTokenAndExpDtAfterAndUsedDtNull(no: Long, token: String, expDt: LocalDateTime): UserRegisterAuth?
 }

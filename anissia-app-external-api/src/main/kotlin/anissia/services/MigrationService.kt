@@ -1,43 +1,50 @@
 package anissia.services
 
 import anissia.domain.*
-import anissia.repository.AccountRepository
-import anissia.repository.AnimeGenreRepository
+import anissia.repository.*
 import org.springframework.stereotype.Service
 import java.sql.ResultSet
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Stream
 import javax.sql.DataSource
 import kotlin.streams.toList
 
+/**
+ * 임시 : 기존 DB 마이그레이션을 위한 소스
+ */
 @Service
 class MigrationService(
     val dataSource: DataSource,
     val accountRepository: AccountRepository,
-    val animeGenreRepository: AnimeGenreRepository
+    val animeGenreRepository: AnimeGenreRepository,
+    val animeRepository: AnimeRepository,
+    val boardRepository: BoardRepository,
+    val captionRepository: AnimeCaptionRepository
 ) {
     val anMap = mutableMapOf<Long, Long>()
     val animeMap = mutableMapOf<Long, Long>()
 
     fun migration() {
         // 부모가 없는 자막 목록 삭제
-//        removeUnlinkedCaption()
+        removeUnlinkedCaption()
 
         // 계정
-        //account()
-        //accountRepository.findAll().forEach { anMap[it.oldAccountNumber] = it.an }
+        account()
+        accountRepository.findAll().forEach { anMap[it.oldAccountNo] = it.an }
 
-//        // 애니메이션
-//        genre()
+        // 애니메이션
+        genre()
         anitime()
-//
-//        // 자막
-//        caption()
-//
-//        // 공지
-//        bbs()
+        animeRepository.findAll().forEach { animeMap[it.oldAnimeNo] = it.animeNo }
+
+        // 자막
+        caption()
+
+        // 공지
+        bbs()
     }
 
     fun removeUnlinkedCaption() = query("""
@@ -46,6 +53,7 @@ class MigrationService(
             select ai from oa.anitime_end
         ) or an not in (select an from oa.account)
         """.trimIndent())
+
 
     fun account() = query("""
             select * from oa.account
@@ -57,8 +65,8 @@ class MigrationService(
             email = e.getString("mail"),
             password = e.getString("password"),
             name = e.getString("name"),
-            createdTime = convertToLocalDateTime(e.getDate("joindate")),
-            lastLoginTime = convertToLocalDateTime(e.getDate("lastdate")),
+            regDt = convertToLocalDateTime(e.getDate("joindate")),
+            lastLoginDt = convertToLocalDateTime(e.getDate("lastdate")),
             oldAccount = e.getString("account"),
             oldAccountNo = e.getLong("an"),
             roles = if (e.getString("pms") == "#") mutableSetOf(AccountRole.ROOT) else mutableSetOf(AccountRole.TRANSLATOR)
@@ -68,52 +76,63 @@ class MigrationService(
         accountRepository.flush()
     }
 
-    fun anitime() =
-        query("""
-            select * from (
-              select ai, subj, time, type, src, active, startdate, enddate, 'A' as gubun from oa.anitime union all
-              select ai, subj, time, type, src, active, startdate, enddate, 'E' as gubun from oa.anitime_end
-            ) a order by (case when a.startdate != '00000000' then startdate else enddate end)
-            """) { e ->
-            Anime(
-                status = if (e.getString("gubun") == "E") AnimeStatus.END else if (e.getString("active") == "1") AnimeStatus.ON else AnimeStatus.OFF,
-                cycle = e.getString("week"),
-                time  = e.getString("time"),
-                subject = e.getString("subj"),
-                genres = norGenres(e.getString("type")),
-                startDate = norYmd(e.getString("startdate")),
-                endDate = norYmd(e.getString("enddate")),
-                website = e.getString("src"),
-                oldAnimeNo = e.getLong("ai")
-            )
-        }.also {
-            println(it)
-        }
-
-
-    fun caption() {
-        query("""select * from oa.anitime_cap order by ai, an""") { e ->
-            val animeNo = e.getLong("ai")
-            val an = e.getLong("an")
-            val sharp = e.getString("sharp")
-            val updt = e.getString("updt")
-            val addr1 = e.getString("addr1")
-            val addr2 = e.getString("addr2")
-
-            println("$animeNo $an $sharp $updt $addr1 $addr2")
-        }
+    fun anitime() = query("""
+        select * from (
+          select week, ai, subj, time, type, src, active, startdate, enddate, 'A' as gubun from oa.anitime union all
+          select week, ai, subj, time, type, src, active, startdate, enddate, 'E' as gubun from oa.anitime_end
+        ) a order by (case when a.startdate != '00000000' then startdate else enddate end)
+        """) { e ->
+        Anime(
+            status = if (e.getString("gubun") == "E") AnimeStatus.END else if (e.getString("active") == "1") AnimeStatus.ON else AnimeStatus.OFF,
+            cycle = e.getString("week"),
+            time  = e.getString("time"),
+            subject = e.getString("subj"),
+            genres = norGenres(e.getString("type")),
+            startDate = norYmd(e.getString("startdate")),
+            endDate = norYmd(e.getString("enddate")),
+            website = e.getString("src"),
+            oldAnimeNo = e.getLong("ai")
+        )
+    }.also {
+        animeRepository.saveAll(it)
+        animeRepository.flush()
     }
 
-    fun bbs() {
-        query("select * from oa.bbs where code = 1 and (bn in (4, 537, 659) or an = 942) order by bn") { e ->
-            val boardNo = e.getLong("bn")
-            val an = e.getLong("an")
-            val subject = e.getString("subj")
-            val text = e.getString("text")
-            val date = e.getDate("date").toLocalDate()
 
-            println("$boardNo $an $subject $text $date")
-        }
+    fun caption() = query("""select * from oa.anitime_cap order by ai, an""") { e ->
+        AnimeCaption(
+            animeNo = animeMap[e.getLong("ai")]!!,
+            an = anMap[e.getLong("an")]!!,
+            website = e.getString("addr1").trim() + e.getString("addr2").trim(),
+            updDt = e.getString("updt").run {
+                try {
+                    LocalDateTime.parse(e.getString("updt"), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+                } catch (e: Exception) {
+                    LocalDateTime.now()
+                }
+            },
+            episode = e.getString("sharp").run {
+                when {
+                    !matches("[0-9]+".toRegex()) -> "0"
+                    !matches("0$".toRegex()) -> substring(0, length - 1)
+                    else -> substring(0, length - 1) + '.' + substring(length - 1)
+                }
+            }
+        )
+    }.also {
+        captionRepository.saveAll(it)
+    }
+
+    fun bbs() = query("select * from oa.bbs where code = 1 and (bn in (4, 537, 659) or an = 942) order by bn") { e ->
+        Board(
+            code = BoardCode.FREE,
+            subject = e.getString("subj"),
+            content = e.getString("text"),
+            regDt = convertToLocalDateTime(e.getDate("date")),
+            an = anMap[e.getLong("an")]!!
+        )
+    }.also {
+        boardRepository.saveAll(it)
     }
 
     fun genre() {
@@ -130,6 +149,7 @@ class MigrationService(
                     it.executeQuery().use {
                         while (it.next()) {
                             add(callback(it))
+
                         }
                     }
                 }

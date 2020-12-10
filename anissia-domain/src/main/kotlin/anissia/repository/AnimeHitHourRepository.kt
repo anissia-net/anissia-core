@@ -8,10 +8,10 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.transaction.annotation.Transactional
 
 interface AnimeHitHourRepository : JpaRepository<AnimeHitHour, AnimeHitHour.Key>, QuerydslPredicateExecutor<AnimeHitHour> {
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM AnimeHitHour WHERE dateHour < :dateHour")
-    fun deleteByDateHourLessThan(dateHour: String)
+//    @Modifying
+//    @Transactional
+//    @Query("DELETE FROM AnimeHitHour WHERE dateHour < :dateHour")
+//    fun deleteByDateHourLessThan(dateHour: String)
 }
 
 //interface AnimeHitHourRepositoryCustom {

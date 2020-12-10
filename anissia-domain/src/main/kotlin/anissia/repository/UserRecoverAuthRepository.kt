@@ -6,8 +6,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import java.time.LocalDateTime
 
 interface UserRecoverAuthRepository : JpaRepository<UserRecoverAuth, Long>, QuerydslPredicateExecutor<UserRecoverAuth> {
-
-    fun existsByUnAndExpDtAfter(un: Long, expDt: LocalDateTime): Boolean
-
-    fun findByNoAndTokenAndExpDtAfterAndUsedDtNull(no: Long, token: String, expDt: LocalDateTime): UserRecoverAuth?
+//
+//    fun existsByUnAndExpDtAfter(un: Long, expDt: LocalDateTime): Boolean
+//
+//    fun findByNoAndTokenAndExpDtAfterAndUsedDtNull(no: Long, token: String, expDt: LocalDateTime): UserRecoverAuth?
 }

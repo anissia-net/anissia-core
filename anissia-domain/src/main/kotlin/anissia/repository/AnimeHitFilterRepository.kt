@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 interface AnimeHitFilterRepository : JpaRepository<AnimeHitFilter, AnimeHitFilter.Key>, QuerydslPredicateExecutor<AnimeHitFilter> {
-
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM AnimeHitFilter WHERE ableHitDt < ?1")
-    fun deleteByAbleHitDtLessThan(ableHitDt: LocalDateTime)
+//
+//    @Transactional
+//    @Modifying
+//    @Query("DELETE FROM AnimeHitFilter WHERE ableHitDt < ?1")
+//    fun deleteByAbleHitDtLessThan(ableHitDt: LocalDateTime)
 }

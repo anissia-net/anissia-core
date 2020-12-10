@@ -1,7 +1,6 @@
 package anissia.domain
 
 import org.hibernate.annotations.UpdateTimestamp
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -29,14 +28,14 @@ data class Account (
         var name: String = "",
 
         @Column(nullable = false)
-        var createdTime: LocalDateTime = LocalDateTime.now(),
+        var regDt: LocalDateTime = LocalDateTime.now(),
 
         @UpdateTimestamp
         @Column(nullable = false)
-        var lastLoginTime: LocalDateTime = LocalDateTime.now(),
+        var lastLoginDt: LocalDateTime = LocalDateTime.now(),
 
         @Column(nullable = true)
-        var banExpireTime: LocalDateTime? = null,
+        var banExpireDt: LocalDateTime? = null,
 
         @ElementCollection
         @CollectionTable(name = "AccountRole", joinColumns = [JoinColumn(name = "an")])
@@ -51,7 +50,7 @@ data class Account (
         @Column(nullable = false)
         var oldAccountNo: Long = 0
 ) {
-        val isBan: Boolean get() = banExpireTime?.isAfter(LocalDateTime.now()) ?: false
+        val isBan: Boolean get() = lastLoginDt?.isAfter(LocalDateTime.now()) ?: false
 }
 
 enum class AccountRole {

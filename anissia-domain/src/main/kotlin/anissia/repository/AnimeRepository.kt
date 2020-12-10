@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecutor<Anime> {
-    fun findByAn(an: Long): Anime?
+    //fun findByAn(an: Long): Anime?
 }
 //
 //interface AnimeRepositoryCustom {

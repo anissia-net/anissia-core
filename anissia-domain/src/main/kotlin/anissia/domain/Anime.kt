@@ -7,7 +7,7 @@ import javax.persistence.*
         uniqueConstraints = [UniqueConstraint(columnNames = ["animeNo"])],
         indexes = [
             Index(name = "anime__idx1", columnList = "status,cycle,time", unique = false),
-            Index(name = "anime__idx2", columnList = "status,an", unique = false)
+            Index(name = "anime__idx2", columnList = "status,animeNo", unique = false)
         ]
 )
 data class Anime (

@@ -15,14 +15,6 @@ mail:
 
 server-forward-headers: true
 
-spring.jpa:
-  properties.hibernate:
-#    format_sql: true
-#    use_sql_comments: false
-    jdbc.batch_size: 4
-    database-platform: org.hibernate.dialect.H2Dialect
-    ddl-auto: update
-
 decorator.datasource.p6spy:
   enable-logging: true
   multiline: true
@@ -31,7 +23,12 @@ decorator.datasource.p6spy:
 
 spring:
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties.hibernate:
+      jdbc.batch_size: 4
+      dialect: org.hibernate.dialect.H2Dialect
     hibernate:
+      ddl-auto: update
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
 #        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
