@@ -50,7 +50,8 @@ data class Account (
         @Column(nullable = false)
         var oldAccountNo: Long = 0
 ) {
-        val isBan: Boolean get() = lastLoginDt?.isAfter(LocalDateTime.now()) ?: false
+        val isBan: Boolean get() = lastLoginDt?.isAfter(LocalDateTime.now())
+        val isAdmin: Boolean get() = roles.any { it == AccountRole.TRANSLATOR || it == AccountRole.ROOT }
 }
 
 enum class AccountRole {
