@@ -24,27 +24,27 @@ class MigrationService(
     val boardRepository: BoardRepository,
     val captionRepository: AnimeCaptionRepository
 ) {
-    val anMap = mutableMapOf<Long, Long>()
-    val animeMap = mutableMapOf<Long, Long>()
+    val anMap: MutableMap<Long, Long> = mutableMapOf<Long, Long>()
+    val animeMap: MutableMap<Long, Long> = mutableMapOf<Long, Long>()
 
     fun migration() {
         // 부모가 없는 자막 목록 삭제
         removeUnlinkedCaption()
 
         // 계정
-        account()
+        //account()
         accountRepository.findAll().forEach { anMap[it.oldAccountNo] = it.an }
 
         // 애니메이션
-        genre()
-        anitime()
+        //genre()
+        //anitime()
         animeRepository.findAll().forEach { animeMap[it.oldAnimeNo] = it.animeNo }
 
         // 자막
         caption()
 
         // 공지
-        bbs()
+        //bbs()
     }
 
     fun removeUnlinkedCaption() = query("""
@@ -114,8 +114,10 @@ class MigrationService(
             episode = e.getString("sharp").run {
                 when {
                     !matches("[0-9]+".toRegex()) -> "0"
-                    !matches("0$".toRegex()) -> substring(0, length - 1)
-                    else -> substring(0, length - 1) + '.' + substring(length - 1)
+                    matches("[0]+".toRegex()) -> "0"
+                    this == "99990" -> "0"
+                    Regex("0$").containsMatchIn(this) -> substring(0, length - 1).replace("^[0]+".toRegex(), "")
+                    else -> substring(0, length - 1).replace("^[0]+".toRegex(), "") + '.' + substring(length - 1)
                 }
             }
         )
@@ -156,7 +158,7 @@ class MigrationService(
             }
         }
 
-    fun query(sql: String) =
+    fun query(sql: String): Boolean =
         dataSource.connection.use {
             it.prepareStatement(sql).use {
                 it.execute()
@@ -174,7 +176,7 @@ class MigrationService(
             ""
         } else ymd.run { "${substring(0, 4)}-${substring(4, 6)}-${substring(6, 8)}" }
 
-    fun norGenres(genres: String) =
+    fun norGenres(genres: String): String =
         genres
             .split("/")
             .map { when (it.trim()) {

@@ -10,5 +10,5 @@ class MigrationController(
 ) {
 
     @GetMapping("/mig")
-    fun mig() = migrationService.migration().run { "OK" }
+    fun mig(): String = migrationService.migration().run { "OK" }
 }
