@@ -1,10 +1,25 @@
 package anissia.controller
 
-import org.springframework.stereotype.Controller
+import anissia.services.AnimeService
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
-@Controller
+@RestController
 @RequestMapping("/api/anime")
-class AnimeController {
+class AnimeController(
+    private val animeService: AnimeService
+) {
 
+
+
+
+    @GetMapping("/caption/{week:\\d}")
+    fun caption() {
+
+    }
+
+    @GetMapping("/schedule/{week:[0-8]}")
+    fun schedule(@PathVariable week: String) = animeService.getSchedule(week)
 }

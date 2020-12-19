@@ -32,19 +32,19 @@ class MigrationService(
         removeUnlinkedCaption()
 
         // 계정
-        //account()
+        account()
         accountRepository.findAll().forEach { anMap[it.oldAccountNo] = it.an }
 
         // 애니메이션
-        //genre()
-        //anitime()
+        genre()
+        anitime()
         animeRepository.findAll().forEach { animeMap[it.oldAnimeNo] = it.animeNo }
 
         // 자막
         caption()
 
         // 공지
-        //bbs()
+        bbs()
     }
 
     fun removeUnlinkedCaption() = query("""
@@ -84,13 +84,13 @@ class MigrationService(
         """) { e ->
         Anime(
             status = if (e.getString("gubun") == "E") AnimeStatus.END else if (e.getString("active") == "1") AnimeStatus.ON else AnimeStatus.OFF,
-            cycle = e.getString("week"),
-            time  = e.getString("time"),
+            week = e.getString("week"),
+            time  = e.getString("time").run { substring(0, 2) + ":" + substring(2) },
             subject = e.getString("subj"),
             genres = norGenres(e.getString("type")),
             startDate = norYmd(e.getString("startdate")),
             endDate = norYmd(e.getString("enddate")),
-            website = e.getString("src"),
+            website = e.getString("src").trim(),
             oldAnimeNo = e.getLong("ai")
         )
     }.also {

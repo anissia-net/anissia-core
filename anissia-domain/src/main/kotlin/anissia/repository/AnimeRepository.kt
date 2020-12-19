@@ -1,10 +1,17 @@
 package anissia.repository
 
 import anissia.domain.Anime
+import anissia.domain.AnimeStatus
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecutor<Anime> {
+
+    @Query("SELECT A FROM Anime A WHERE A.status <> :expectStatus AND A.week = :week")
+    fun findAllSchedule(week: String, expectStatus: AnimeStatus = AnimeStatus.END): List<Anime>
+
+
     //fun findByAn(an: Long): Anime?
 }
 //

@@ -6,7 +6,7 @@ import javax.persistence.*
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["animeNo"])],
         indexes = [
-            Index(name = "anime__idx1", columnList = "status,cycle,time", unique = false),
+            Index(name = "anime__idx1", columnList = "status,week,time", unique = false),
             Index(name = "anime__idx2", columnList = "status,animeNo", unique = false)
         ]
 )
@@ -21,7 +21,7 @@ data class Anime (
     var status: AnimeStatus = AnimeStatus.ON,
 
     /**
-     * cycle
+     * +++ week +++
      * 0 | 日 | 일요일 | Sunday
      * 1 | 月 | 월요일 | Monday
      * 3 | 火 | 화요일 | Tuesday
@@ -29,13 +29,14 @@ data class Anime (
      * 5 | 木 | 목요일 | Thursday
      * 6 | 金 | 금요일 | Friday
      * 7 | 土 | 토요일 | Saturday
+     * +++ week exception +++
      * 8 | 外 | 기타 | Other
      * 9 | 新 | 신작 | New
      */
     @Column(nullable = false, length = 1)
-    var cycle: String = "",
+    var week: String = "",
 
-    @Column(nullable = false, length = 4)
+    @Column(nullable = false, length = 5)
     var time: String = "",
 
     @Column(nullable = false, length = 100, unique = true)
