@@ -1,5 +1,7 @@
 package anissia.controller
 
+import anissia.dto.AnimeCaptionDto
+import anissia.dto.AnimeScheduleDto
 import anissia.services.AnimeService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -15,11 +17,9 @@ class AnimeController(
 
 
 
-    @GetMapping("/caption/{week:\\d}")
-    fun caption() {
-
-    }
+    @GetMapping("/caption/animeNo/{animeNo:[\\d]+}")
+    fun getCaptionByAnimeNo(@PathVariable animeNo: Long): List<AnimeCaptionDto> = animeService.getCaptionByAnimeNo(animeNo)
 
     @GetMapping("/schedule/{week:[0-8]}")
-    fun schedule(@PathVariable week: String) = animeService.getSchedule(week)
+    fun getSchedule(@PathVariable week: String): List<AnimeScheduleDto> = animeService.getSchedule(week)
 }

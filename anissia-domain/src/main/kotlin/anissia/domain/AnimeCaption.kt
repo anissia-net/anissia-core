@@ -10,7 +10,7 @@ import javax.persistence.*
         indexes = [Index(name = "anime_caption__idx", columnList = "an,updDt")]
 )
 @IdClass(AnimeCaption.Key::class)
-data class AnimeCaption (
+class AnimeCaption (
         @Id
         @Column(nullable = false)
         var animeNo: Long = 0,

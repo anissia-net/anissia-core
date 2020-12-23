@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.saro.kit.dates.Dates
 import org.springframework.web.util.HtmlUtils
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -13,8 +14,11 @@ import java.util.*
 class As {
     companion object {
         private val OBJECT_MAPPER = ObjectMapper()
-
         const val IS_NAME = "[0-9A-Za-z가-힣㐀-䶵一-龻ぁ-ゖゝ-ヿ々_]{2,16}"
+        val DTF_YMDHMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+
+
 
         /**
          * anissia broadcast type<br>
@@ -35,5 +39,7 @@ class As {
         fun <T> String.toClassByJson(valueTypeRef: TypeReference<T>) = OBJECT_MAPPER.readValue(this, valueTypeRef)!!
 
         fun <T> String.toMapByJson() = this.toClassByJson(object: TypeReference<Map<String, Object>>(){})
+
+
     }
 }

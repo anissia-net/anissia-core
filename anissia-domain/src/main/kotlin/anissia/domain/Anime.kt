@@ -1,5 +1,7 @@
 package anissia.domain
 
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -54,6 +56,10 @@ data class Anime (
     @Column(nullable = false, length = 128)
     var website: String = "",
 
+    @UpdateTimestamp
+    @Column(nullable = false)
+    var updDt: LocalDateTime = LocalDateTime.now(),
+
     @OneToMany(mappedBy = "anime")
     val captions: List<AnimeCaption> = listOf(),
 
@@ -65,4 +71,5 @@ enum class AnimeStatus {
     ON, // on air : 방영중
     OFF, // adjournment : 휴방
     END, // ended : 완결
+    DEL // delete : 삭제대기
 }

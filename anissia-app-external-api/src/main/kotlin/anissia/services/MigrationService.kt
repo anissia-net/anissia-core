@@ -119,7 +119,7 @@ class MigrationService(
                     Regex("0$").containsMatchIn(this) -> substring(0, length - 1).replace("^[0]+".toRegex(), "")
                     else -> substring(0, length - 1).replace("^[0]+".toRegex(), "") + '.' + substring(length - 1)
                 }
-            }.run { if (this.startsWith(".")) "0$this" else this }
+            }.run { if (this.startsWith(".")) "0$this" else this }.run { if (this == "") "0" else this }
         )
     }.also {
         captionRepository.saveAll(it)

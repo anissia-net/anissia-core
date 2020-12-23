@@ -8,9 +8,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecutor<Anime> {
 
-    @Query("SELECT A FROM Anime A WHERE A.status <> :expectStatus AND A.week = :week")
-    fun findAllSchedule(week: String, expectStatus: AnimeStatus = AnimeStatus.END): List<Anime>
-
+    @Query("SELECT A FROM Anime A WHERE A.status IN (:expectStatus) AND A.week = :week")
+    fun findAllSchedule(week: String, expectStatus: Collection<AnimeStatus> = listOf(AnimeStatus.ON, AnimeStatus.OFF)): List<Anime>
 
     //fun findByAn(an: Long): Anime?
 }
