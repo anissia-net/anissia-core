@@ -61,17 +61,20 @@ class AnimeRankService(
     }
 
     private fun extractRank(startHour: String) =
-        animeHitHourRepository.extractAllAnimeRank(startHour).apply {
-            var rank = 0
-            var hit = -1L
-            forEachIndexed { index, node ->
-                if (node.hit != hit) {
-                    hit = node.hit
-                    rank = index + 1
+        animeHitHourRepository
+            .extractAllAnimeRank(startHour)
+            .filter { it.subject != "" } // remove not exist anime
+            .apply {
+                var rank = 0
+                var hit = -1L
+                forEachIndexed { index, node ->
+                    if (node.hit != hit) {
+                        hit = node.hit
+                        rank = index + 1
+                    }
+                    node.rank = rank
                 }
-                node.rank = rank
             }
-        }
 
     private fun bindDiff(nowList: List<AnimeRankDto>, prevList: List<AnimeRankDto>) =
         nowList.forEach { now -> prevList.find { prev -> prev.animeNo == now.animeNo }?.also { prev -> now.diff = -(now.rank - prev.rank) } }

@@ -7,5 +7,5 @@ data class AnimeRankDto (
         var rank: Int = 0,
         var diff: Int? = null
 ) {
-        constructor(animeNo: Long, subject: String, hit: Long): this(animeNo, subject, hit, 0, null);
+        constructor(animeNo: Long, subject: String?, hit: Long): this(animeNo, subject ?: "", hit, 0, null);
 }
