@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.saro.kit.dates.Dates
 import org.springframework.web.util.HtmlUtils
+import java.net.URL
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -18,22 +19,18 @@ class As {
         val DTF_YMDHMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val DTF_RANK_HOUR = DateTimeFormatter.ofPattern("yyyyMMddHH")
 
-
-
-
         /**
          * anissia broadcast type<br>
          * 1:mon - 7:sun to 0:sun - 6:sat
          */
         fun nowBcType(): String = (Dates.toZonedDateTime(Calendar.getInstance()).dayOfWeek.value % 7).toString()
 
-        fun getResource(path: String) = As::class.java.getResource(path)!!
+        fun getResource(path: String): URL = As::class.java.getResource(path)!!
 
-        fun toJson(value: Any) = OBJECT_MAPPER.writeValueAsString(value)!!
+        fun toJsonString(value: Any): String = OBJECT_MAPPER.writeValueAsString(value)!!
 
-        fun toJsonObject(value: Any, vararg pairs: Pair<String, Any>)
-                = OBJECT_MAPPER.convertValue(value, object: TypeReference<MutableMap<String, Any>>(){})
-                .run { this.putAll(pairs); toJson(this) }
+//        fun toJsonObject(value: Any, vararg pairs: Pair<String, Any>): String =
+//            OBJECT_MAPPER.convertValue(value, object: TypeReference<MutableMap<String, Any>>(){}).run { this.putAll(pairs); toJson(this) }
 
         fun String.escapeHtml() = HtmlUtils.htmlEscape(this)
 

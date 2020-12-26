@@ -1,14 +1,18 @@
 package anissia.controller
 
+import anissia.misc.As
 import anissia.services.AnimeRankService
 import anissia.services.MigrationService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 class MigrationController(
     val migrationService: MigrationService,
-    val animeRankService: AnimeRankService
+    val animeRankService: AnimeRankService,
+    private val request: HttpServletRequest
 ) {
 
     @GetMapping("/mig")
@@ -16,8 +20,18 @@ class MigrationController(
 
     @GetMapping("/rank")
     fun rank(): String {
-        animeRankService.mergeAnimeHit()
-        animeRankService.extractRank()
+
+        for (animeNo in 1..2000) {
+            for (hit in 0..(Math.random() * 10).toInt()) {
+                animeRankService.hitAsync(animeNo.toLong(), ip(), hour())
+            }
+        }
+
+        animeRankService.animeRankBatch()
         return "OK"
     }
+
+    fun hour() = LocalDateTime.now().minusHours((Math.random() * 480).toLong()).format(As.DTF_RANK_HOUR)
+
+    fun ip() = "${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}"
 }

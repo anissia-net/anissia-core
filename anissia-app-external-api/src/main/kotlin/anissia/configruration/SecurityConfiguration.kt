@@ -42,6 +42,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             // authorize requests after ignore resource setting
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/schedule/**").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/caption/animeNo/**").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/rank/**").permitAll().and()
 
             .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()

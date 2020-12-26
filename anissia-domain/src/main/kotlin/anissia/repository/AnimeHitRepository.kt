@@ -10,22 +10,14 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 interface AnimeHitRepository : JpaRepository<AnimeHit, Long>, QuerydslPredicateExecutor<AnimeHit> {
     @Modifying
     @Query("DELETE FROM AnimeHit WHERE hour < :hour")
-    fun deleteByHourLessThan(hour: String)
+    fun deleteByHourLessThan(hour: String): Int
 
-//    @Query("""
-//        SELECT
-//            new anissia.domain.AnimeHitHour(a.hour, a.animeNo, count(distinct a.ip))
-//        FROM AnimeHit a
-//        WHERE a.hour < :hour
-//        GROUP BY a.hour, a.animeNo
-//    """)
-    // 테스트를 위해 ip 비중복 제거
     @Query(
         """
         SELECT
-            new anissia.domain.AnimeHitHour(a.hour, a.animeNo, count(a))
+            new anissia.domain.AnimeHitHour(a.hour, a.animeNo, count(distinct a.ip))
         FROM AnimeHit a
-        WHERE a.hour <= :hour
+        WHERE a.hour < :hour
         GROUP BY a.hour, a.animeNo
     """
     )
