@@ -5,28 +5,22 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["dateHour", "an"])]
+        uniqueConstraints = [UniqueConstraint(columnNames = ["hour", "animeNo"])]
 )
 @IdClass(AnimeHitHour.Key::class)
 data class AnimeHitHour (
         @Id
         @Column(nullable = false, length = 10)
-        var dateHour: String = "",
+        var hour: String = "",
 
         @Id
         @Column(nullable = false)
-        var an: Long = 0,
+        var animeNo: Long = 0,
 
         @Column(nullable = false)
-        var hit: Long = 0,
-
-        @OneToOne
-        @JoinColumn(name = "an", nullable = false, insertable = false, updatable = false)
-        var anime: Anime? = null
+        var hit: Long = 0
 ) {
-    fun addHit() {
-        this.hit++
-    }
+        val key get() = Key(hour, animeNo)
 
-    data class Key(var dateHour: String = "", var an: Long = 0) : Serializable
+        data class Key(var hour: String = "", var animeNo: Long = 0) : Serializable
 }

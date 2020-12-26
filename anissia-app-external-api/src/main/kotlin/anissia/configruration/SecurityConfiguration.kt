@@ -4,6 +4,7 @@ import anissia.domain.AccountRole
 import me.saro.kit.bytes.Bytes
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -36,34 +37,41 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
      * SessionService is login / logout
      */
     override fun configure(http: HttpSecurity) {
-        http
-                // disable csrf
-                .csrf().disable()
+        // disable csrf
+        http.csrf().disable()
+            // authorize requests after ignore resource setting
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/schedule/**").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/caption/animeNo/**").permitAll().and()
 
-                // authorize requests after ignore resource setting
-                .authorizeRequests().antMatchers(
-                        "/api/lobby/**",
-                        "/api/anime/**",
-                        "/api/timetable/**",
-                        "/api/auth/**",
-                        "/api/board/any/**",
-                        "/api/asl/any/**",
-                        "/mig"
-                ).permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()
 
-                .authorizeRequests().antMatchers(
-                        "/api/user/**",
-                        "/api/asl/user/**",
-                        "/api/board/user/**"
-                ).authenticated().and()
+            .authorizeRequests().antMatchers("/**").hasAnyRole(ROOT);
 
-                .authorizeRequests().antMatchers(
-                        "/api/manage/**",
-                        "/api/asl/**"
-                ).hasAnyRole(TRANSLATOR, ROOT).and()
-
-                .authorizeRequests().antMatchers(
-                        "/**"
-                ).hasAnyRole(ROOT)
+//                // authorize requests after ignore resource setting
+//                .authorizeRequests().antMatchers(
+//                        "/api/lobby/**",
+//                        "/api/anime/**",
+//                        "/api/timetable/**",
+//                        "/api/auth/**",
+//                        "/api/board/any/**",
+//                        "/api/asl/any/**",
+//                        "/mig"
+//                ).permitAll().and()
+//
+//                .authorizeRequests().antMatchers(
+//                        "/api/user/**",
+//                        "/api/asl/user/**",
+//                        "/api/board/user/**"
+//                ).authenticated().and()
+//
+//                .authorizeRequests().antMatchers(
+//                        "/api/manage/**",
+//                        "/api/asl/**"
+//                ).hasAnyRole(TRANSLATOR, ROOT).and()
+//
+//                .authorizeRequests().antMatchers(
+//                        "/**"
+//                ).hasAnyRole(ROOT)
     }
 }
