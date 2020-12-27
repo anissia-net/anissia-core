@@ -1,9 +1,9 @@
 package anissia.services
 
 import anissia.dto.AnimeCaptionDto
-import anissia.dto.AnimeScheduleDto
 import anissia.repository.AnimeCaptionRepository
 import anissia.repository.AnimeRepository
+import me.saro.kit.CacheStore
 import org.springframework.stereotype.Service
 import javax.servlet.http.HttpServletRequest
 
@@ -15,22 +15,11 @@ class AnimeService(
     private val request: HttpServletRequest
 ) {
 
-    fun getCaptionByAnimeNo(animeNo: Long): List<AnimeCaptionDto> =
-        animeCaptionRepository
-            .findAllWithAccountByAnimeNoOrderByUpdDtDesc(animeNo)
-            .map { AnimeCaptionDto(it) }
-            .also { animeRankService.hitAsync(animeNo, request.remoteAddr) }
+    private val captionCacheStore = CacheStore<Long, List<AnimeCaptionDto>>((5 * 60000).toLong())
 
-    fun getSchedule(week: String): List<AnimeScheduleDto> =
-        animeRepository
-            .findAllSchedule(week)
-            .map { AnimeScheduleDto(it) }
-            .run {
-                when(week) {
-                    "7" -> sortedByDescending { if (it.time != "") it.time else "9999" }
-                    "8" -> sortedBy { if (it.time != "") it.time else "9999" }
-                    else -> sortedBy { it.time }
-                }
-            }
+    fun getCaptionByAnimeNo(animeNo: Long): List<AnimeCaptionDto> =
+        captionCacheStore
+            .get(animeNo) { animeCaptionRepository.findAllWithAccountByAnimeNoOrderByUpdDtDesc(animeNo).map { AnimeCaptionDto(it) } }
+            .also { animeRankService.hitAsync(animeNo, request.remoteAddr) }
 
 }

@@ -19,12 +19,6 @@ class As {
         val DTF_YMDHMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val DTF_RANK_HOUR = DateTimeFormatter.ofPattern("yyyyMMddHH")
 
-        /**
-         * anissia broadcast type<br>
-         * 1:mon - 7:sun to 0:sun - 6:sat
-         */
-        fun nowBcType(): String = (Dates.toZonedDateTime(Calendar.getInstance()).dayOfWeek.value % 7).toString()
-
         fun getResource(path: String): URL = As::class.java.getResource(path)!!
 
         fun toJsonString(value: Any): String = OBJECT_MAPPER.writeValueAsString(value)!!

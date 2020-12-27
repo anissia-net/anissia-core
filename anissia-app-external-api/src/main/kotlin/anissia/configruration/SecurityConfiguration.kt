@@ -47,6 +47,10 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()
 
+            // Legacy
+            .authorizeRequests().antMatchers("/anitime/list_img").permitAll().and()
+
+
             .authorizeRequests().antMatchers("/**").hasAnyRole(ROOT);
 
 //                // authorize requests after ignore resource setting

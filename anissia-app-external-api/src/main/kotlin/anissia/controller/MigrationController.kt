@@ -22,7 +22,10 @@ class MigrationController(
     fun rank(): String {
 
         for (animeNo in 1..2000) {
-            for (hit in 0..(Math.random() * 10).toInt()) {
+            if ((Math.random() * 10).toInt() != 0) {
+                continue
+            }
+            for (hit in 0..(Math.random() * 30).toInt()) {
                 animeRankService.hitAsync(animeNo.toLong(), ip(), hour())
             }
         }
