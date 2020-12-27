@@ -12,14 +12,12 @@ interface AnimeHitRepository : JpaRepository<AnimeHit, Long>, QuerydslPredicateE
     @Query("DELETE FROM AnimeHit WHERE hour < :hour")
     fun deleteByHourLessThan(hour: String): Int
 
-    @Query(
-        """
+    @Query("""
         SELECT
             new anissia.domain.AnimeHitHour(a.hour, a.animeNo, count(distinct a.ip))
         FROM AnimeHit a
         WHERE a.hour < :hour
         GROUP BY a.hour, a.animeNo
-    """
-    )
+    """)
     fun extractAllAnimeHitHour(hour: String): List<AnimeHitHour>
 }
