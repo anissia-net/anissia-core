@@ -7,6 +7,7 @@ import anissia.misc.As
 import anissia.repository.AnimeHitHourRepository
 import anissia.repository.AnimeHitRepository
 import anissia.repository.AnimeStoreRepository
+import me.saro.kit.CacheStore
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,11 +19,15 @@ class AnimeRankService(
     private val animeHitHourRepository: AnimeHitHourRepository,
     private val animeStoreRepository: AnimeStoreRepository
 ) {
-    
-    fun getRank(type: String): String = when (type) {
-        "day", "week", "month" -> animeStoreRepository.findById("rank.$type").map { it.data }.orElse("[]")
-        else -> "[]"
-    }
+    private val rankCacheStore = CacheStore<String, String>((5 * 60000).toLong())
+
+    fun getRank(type: String): String =
+        when (type) {
+            "day", "week", "month" ->
+                rankCacheStore.get(type) { animeStoreRepository.findById("rank.$type").map { it.data }.orElse("[]") }
+            else ->
+                "[]"
+        }
     
     /**
      * anime rank system batch
