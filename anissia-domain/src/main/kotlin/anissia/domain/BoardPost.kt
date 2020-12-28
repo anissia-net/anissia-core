@@ -6,21 +6,18 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["boardNo"])],
-        indexes = [Index(columnList = "code,boardNo")]
+        uniqueConstraints = [UniqueConstraint(columnNames = ["postNo"])],
+        indexes = [Index(columnList = "boardNo,postNo")]
 )
-data class Board (
+data class BoardPost (
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
+    var postNo: Long = 0,
+
+    @Column(nullable = false)
     var boardNo: Long = 0,
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    var ticker: String = "",
-
-    @Column(nullable = false, length = 64)
-    var topic: String = "",
 
     @Lob
     @Column(nullable = false)
@@ -39,8 +36,4 @@ data class Board (
     @OneToOne
     @JoinColumn(name = "an", nullable = false, insertable = false, updatable = false)
     var account: Account? = null,
-
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
-    @JoinColumn(name = "boardNo", nullable = false, insertable = false)
-    var posts: MutableList<BoardPost> = mutableListOf()
 )
