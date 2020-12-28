@@ -7,8 +7,8 @@ import javax.persistence.*
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["fn"])],
         indexes = [
-                Index(name = "user_login_fail__fail_dt", columnList = "failDt", unique = false),
-                Index(name = "user_login_fail__idx", columnList = "ip,account,failDt", unique = false)
+                Index(columnList = "failDt"),
+                Index(columnList = "ip,account,failDt")
         ]
 )
 data class UserLoginFail (

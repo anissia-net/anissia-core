@@ -40,7 +40,7 @@ data class Account (
         @ElementCollection
         @CollectionTable(name = "AccountRole", joinColumns = [JoinColumn(name = "an")])
         @Enumerated(EnumType.STRING)
-        @Column(name = "role", nullable = false, length = 100)
+        @Column(name = "role", nullable = false, length = 10)
         val roles: MutableSet<AccountRole> = mutableSetOf(),
 
         // deprecated

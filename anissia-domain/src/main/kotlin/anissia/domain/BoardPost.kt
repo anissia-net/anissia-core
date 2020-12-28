@@ -7,7 +7,7 @@ import javax.persistence.*
 @Entity
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["postNo"])],
-        indexes = [Index(columnList = "boardNo,postNo")]
+        indexes = [Index(columnList = "topicNo,postNo")]
 )
 data class BoardPost (
 
@@ -17,7 +17,7 @@ data class BoardPost (
     var postNo: Long = 0,
 
     @Column(nullable = false)
-    var boardNo: Long = 0,
+    var topicNo: Long = 0,
 
     @Lob
     @Column(nullable = false)

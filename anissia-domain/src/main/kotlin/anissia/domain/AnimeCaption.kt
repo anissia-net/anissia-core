@@ -7,7 +7,7 @@ import javax.persistence.*
 @Entity
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["animeNo", "an"])],
-        indexes = [Index(name = "anime_caption__idx", columnList = "an,updDt")]
+        indexes = [Index(columnList = "an,updDt")]
 )
 @IdClass(AnimeCaption.Key::class)
 class AnimeCaption (

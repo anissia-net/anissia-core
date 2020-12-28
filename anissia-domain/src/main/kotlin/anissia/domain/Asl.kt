@@ -13,8 +13,8 @@ import javax.persistence.*
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["aslNo"])],
         indexes = [
-            Index(name = "asl__idx1", columnList = "pub,active,actDt", unique = false),
-            Index(name = "asl__idx2", columnList = "active,actDt", unique = false)
+            Index(columnList = "pub,active,actDt"),
+            Index(columnList = "active,actDt")
         ]
 )
 data class Asl (

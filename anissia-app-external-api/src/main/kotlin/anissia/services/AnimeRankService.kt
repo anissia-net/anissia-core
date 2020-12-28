@@ -39,7 +39,7 @@ class AnimeRankService(
         // step 2. merge anime hits
         mergeAnimeHit()
         // step 3. extract and bind rank
-        extractRank()
+        extractAllRank()
     }
 
     @Async
@@ -54,7 +54,7 @@ class AnimeRankService(
             .also { animeHitRepository.deleteByHourLessThan(hour) }
     }
 
-    private fun extractRank() {
+    private fun extractAllRank() {
         val dt = LocalDateTime.now()
         val day48List = extractRank(dt.minusDays(48).format(As.DTF_RANK_HOUR))
         val day28List = extractRank(dt.minusDays(28).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day48List) }

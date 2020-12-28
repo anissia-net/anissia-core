@@ -1,10 +1,10 @@
 package anissia.repository
 
-import anissia.domain.Board
+import anissia.domain.BoardTicker
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
-interface BoardRepository : JpaRepository<Board, Long>, QuerydslPredicateExecutor<Board> {
+interface BoardTickerRepository : JpaRepository<BoardTicker, String>, QuerydslPredicateExecutor<BoardTicker> {
 
 //    @EntityGraph(attributePaths = ["user"])
 //    fun findAllWithUserByCodeOrderByBnDesc(code: String, pageable: Pageable): Page<BoardTopic>

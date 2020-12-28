@@ -14,14 +14,11 @@ data class BoardTicker (
     @Column(nullable = false, length = 20)
     var name: String = "",
 
-    @Column(nullable = false)
-    var usePost: Boolean = false,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 10)
+    val writeTopic: AccountRole? = AccountRole.ROOT,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    val writeTopic: AccountRole = AccountRole.ROOT,
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    val writePost: AccountRole = AccountRole.ROOT
+    @Column(nullable = true, length = 10)
+    val writePost: AccountRole? = AccountRole.ROOT
 )

@@ -7,8 +7,8 @@ import javax.persistence.*
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["pn"])],
         indexes = [
-                Index(name = "user_login_pass__pass_dt", columnList = "passDt", unique = false),
-                Index(name = "user_login_pass__un", columnList = "un", unique = false)
+                Index(columnList = "passDt"),
+                Index(columnList = "un")
         ]
 )
 data class UserLoginPass (

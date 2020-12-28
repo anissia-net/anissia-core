@@ -6,7 +6,7 @@ import javax.persistence.*
 @Entity
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["tn"])],
-        indexes = [Index(name = "user_login_remember_token__exp_dt", columnList = "expDt", unique = false)]
+        indexes = [Index(columnList = "expDt")]
 )
 data class UserLoginRememberToken (
         @Id

@@ -8,8 +8,8 @@ import javax.persistence.*
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["animeNo"])],
         indexes = [
-            Index(name = "anime__idx1", columnList = "status,week,time", unique = false),
-            Index(name = "anime__idx2", columnList = "status,animeNo", unique = false)
+            Index(columnList = "status,week,time"),
+            Index(columnList = "status,animeNo")
         ]
 )
 data class Anime (

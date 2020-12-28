@@ -21,7 +21,8 @@ class MigrationService(
     val accountRepository: AccountRepository,
     val animeGenreRepository: AnimeGenreRepository,
     val animeRepository: AnimeRepository,
-    val boardRepository: BoardRepository,
+    val boardTopicRepository: BoardTopicRepository,
+    val boardTickerRepository: BoardTickerRepository,
     val captionRepository: AnimeCaptionRepository
 ) {
     val anMap: MutableMap<Long, Long> = mutableMapOf<Long, Long>()
@@ -126,15 +127,20 @@ class MigrationService(
     }
 
     fun bbs() = query("select * from oa.bbs where code = 1 and (bn in (4, 537, 659) or an = 942) order by bn") { e ->
-        Board(
-            code = BoardCode.FREE,
-            subject = e.getString("subj"),
+        BoardTopic(
+            ticker = "notice",
+            topic = e.getString("subj"),
             content = e.getString("text"),
             regDt = convertToLocalDateTime(e.getDate("date")),
             an = anMap[e.getLong("an")]!!
         )
     }.also {
-        boardRepository.saveAll(it)
+        boardTopicRepository.saveAll(it)
+        boardTickerRepository.saveAll(listOf(
+            BoardTicker(ticker = "notice", name = "공지사항", writeTopic = AccountRole.ROOT, writePost = null),
+            BoardTicker(ticker = "inquiry", name = "문의 게시판", writeTopic = AccountRole.ROOT, writePost = null)
+        ))
+
     }
 
     fun genre() {
