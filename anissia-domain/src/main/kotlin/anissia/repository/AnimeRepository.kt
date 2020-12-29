@@ -2,6 +2,9 @@ package anissia.repository
 
 import anissia.domain.Anime
 import anissia.domain.AnimeStatus
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
@@ -10,6 +13,11 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
 
     @Query("SELECT A FROM Anime A WHERE A.status IN (:expectStatus) AND A.week = :week")
     fun findAllSchedule(week: String, expectStatus: Collection<AnimeStatus> = listOf(AnimeStatus.ON, AnimeStatus.OFF)): List<Anime>
+
+    fun findAllByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>
+
+    @EntityGraph(attributePaths = ["captions"])
+    fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?
 
     //fun findByAn(an: Long): Anime?
 }

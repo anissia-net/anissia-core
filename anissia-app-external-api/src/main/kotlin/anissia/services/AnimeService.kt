@@ -1,9 +1,12 @@
 package anissia.services
 
 import anissia.dto.AnimeCaptionDto
+import anissia.dto.AnimeDto
 import anissia.repository.AnimeCaptionRepository
 import anissia.repository.AnimeRepository
 import me.saro.kit.CacheStore
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import javax.servlet.http.HttpServletRequest
 
@@ -16,6 +19,15 @@ class AnimeService(
 ) {
 
     private val captionCacheStore = CacheStore<Long, List<AnimeCaptionDto>>((5 * 60000).toLong())
+
+    fun getList(q: String, page: Int): Page<AnimeDto> =
+        animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
+
+    fun getAnime(animeNo: Long): AnimeDto =
+        animeRepository.findWithCaptionsByAnimeNo(animeNo)
+            ?.let { AnimeDto(it, true) }
+            ?.also { animeRankService.hitAsync(it.animeNo, request.remoteAddr) }
+            ?: AnimeDto()
 
     fun getCaptionByAnimeNo(animeNo: Long): List<AnimeCaptionDto> =
         captionCacheStore

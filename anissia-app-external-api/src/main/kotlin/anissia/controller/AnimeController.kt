@@ -1,15 +1,14 @@
 package anissia.controller
 
 import anissia.dto.AnimeCaptionDto
+import anissia.dto.AnimeDto
 import anissia.dto.AnimeScheduleDto
 import anissia.services.AnimeRankService
 import anissia.services.AnimeScheduleService
 import anissia.services.AnimeService
+import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/anime")
@@ -18,6 +17,14 @@ class AnimeController(
     private val animeScheduleService: AnimeScheduleService,
     private val animeRankService: AnimeRankService
 ) {
+
+    // - anime
+
+    @GetMapping("/list/{page:[\\d]+}")
+    fun getList(@RequestParam q: String?, @PathVariable page: Int): Page<AnimeDto> = animeService.getList(q ?: "", page)
+
+    @GetMapping("/animeNo/{animeNo:[\\d]+}")
+    fun getAnime(@PathVariable animeNo: Long): AnimeDto = animeService.getAnime(animeNo)
 
     // - caption
 

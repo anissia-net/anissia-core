@@ -18,7 +18,7 @@ class BoardService(
 ) {
     private val tickerCacheStore = CacheStore<String, String>((24 * 60 * 60000).toLong())
 
-    fun getTicker(ticker: String): String = tickerCacheStore.get(ticker) { As.toJsonString(boardTickerRepository.findById(ticker)) }
+    fun getTicker(ticker: String): String = tickerCacheStore.get(ticker) { boardTickerRepository.findById(ticker).map { As.toJsonString(it) }.orElse("{}") }
 
     fun getList(ticker: String, page: Int): Page<BoardTopicDto> =
         boardTopicRepository
