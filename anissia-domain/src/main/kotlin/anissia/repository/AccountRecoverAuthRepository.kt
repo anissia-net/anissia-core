@@ -1,11 +1,10 @@
 package anissia.repository
 
-import anissia.domain.UserRecoverAuth
+import anissia.domain.AccountRecoverAuth
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
-import java.time.LocalDateTime
 
-interface UserRecoverAuthRepository : JpaRepository<UserRecoverAuth, Long>, QuerydslPredicateExecutor<UserRecoverAuth> {
+interface AccountRecoverAuthRepository : JpaRepository<AccountRecoverAuth, Long>, QuerydslPredicateExecutor<AccountRecoverAuth> {
 //
 //    fun existsByUnAndExpDtAfter(un: Long, expDt: LocalDateTime): Boolean
 //

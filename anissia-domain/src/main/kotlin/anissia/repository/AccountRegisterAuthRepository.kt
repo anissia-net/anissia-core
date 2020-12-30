@@ -1,11 +1,10 @@
 package anissia.repository
 
-import anissia.domain.UserRegisterAuth
+import anissia.domain.AccountRegisterAuth
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
-import java.time.LocalDateTime
 
-interface UserRegisterAuthRepository : JpaRepository<UserRegisterAuth, Long>, QuerydslPredicateExecutor<UserRegisterAuth> {
+interface AccountRegisterAuthRepository : JpaRepository<AccountRegisterAuth, Long>, QuerydslPredicateExecutor<AccountRegisterAuth> {
 //
 //    fun existsByEmailAndExpDtAfter(email: String, expDt: LocalDateTime): Boolean
 //
