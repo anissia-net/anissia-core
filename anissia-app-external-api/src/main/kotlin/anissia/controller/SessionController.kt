@@ -1,9 +1,11 @@
 package anissia.controller
 
-import net.dhant.dto.request.LoginRequest
-import net.dhant.dto.request.LoginTokenRequest
-import net.dhant.dto.UserSession
-import net.dhant.service.SessionService
+import anissia.dto.ResultData
+import anissia.dto.ResultStatus
+import anissia.dto.Session
+import anissia.services.SessionService
+import anissia.dto.request.LoginRequest
+import anissia.dto.request.LoginTokenRequest
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -13,16 +15,14 @@ class SessionController(
         private val sessionService: SessionService
 ) {
     @PostMapping
-    fun login(@Valid @RequestBody loginRequest: LoginRequest) =
-            sessionService.doLogin(loginRequest)
+    fun login(@Valid @RequestBody loginRequest: LoginRequest): ResultData<Session> = sessionService.doLogin(loginRequest)
 
     @PostMapping("/token")
-    fun tokenLogin(@Valid @RequestBody loginTokenRequest: LoginTokenRequest) =
-            sessionService.doTokenLogin(loginTokenRequest)
+    fun tokenLogin(@Valid @RequestBody loginTokenRequest: LoginTokenRequest): ResultData<Session> = sessionService.doTokenLogin(loginTokenRequest)
 
     @DeleteMapping
-    fun logout() = sessionService.doLogout()
+    fun logout(): ResultStatus = sessionService.doLogout()
 
     @GetMapping
-    fun session() = sessionService.session?: UserSession()
+    fun session(): Session = sessionService.session?: Session()
 }

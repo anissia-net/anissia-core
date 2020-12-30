@@ -48,6 +48,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/board/**").permitAll().and()
 
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/session").permitAll().and()
+
             .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()
 

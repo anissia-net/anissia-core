@@ -1,16 +1,27 @@
 package anissia.services
 
+import anissia.configruration.AnissiaAuthentication
+import anissia.domain.Account
+import anissia.domain.LoginFail
+import anissia.domain.LoginPass
+import anissia.domain.LoginToken
 import anissia.dto.ResultData
+import anissia.dto.ResultStatus
 import anissia.dto.Session
+import anissia.dto.request.LoginRequest
+import anissia.dto.request.LoginTokenRequest
 import anissia.misc.As
 import anissia.repository.AccountRepository
+import anissia.repository.LoginFailRepository
+import anissia.repository.LoginPassRepository
+import anissia.repository.LoginTokenRepository
 import me.saro.kit.Texts
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.servlet.http.HttpServletRequest
 
 /**
@@ -29,81 +40,76 @@ class SessionService (
     val session: Session? get() = context.authentication?.principal?.takeIf { it is Session }?.let { it as Session }
     val context: SecurityContext get() = SecurityContextHolder.getContext()
 
-
-
-
-
-
-
+    @Transactional
     fun doLogin(loginRequest: LoginRequest): ResultData<Session> {
         val ip = request.remoteAddr
 
         if (!checkLoginFailCount(ip, loginRequest.email)) {
-            return ResultData("FAIL", "잦은 접속시도로 일정시간동안 차단되었습니다.", null)
+            return ResultData("FAIL", "잦은 접속시도로 일정시간동안 차단되었습니다.\n30분뒤에 다시 시도해주세요.", null)
         }
 
         // try login
-        accountRepository.findWithRolesByEmail(loginRequest.email)?.apply {
-            if (isBan) {
-                return ResultData("FAIL", "${banExpDt!!.format(As.DTF_YMDHMS)} 까지 차단된 계정입니다.", null)
+        accountRepository.findWithRolesByEmail(loginRequest.email)
+            ?.apply {
+                if (isBan) {
+                    return ResultData("FAIL", "${banExpireDt!!.format(As.DTF_YMDHMS)} 까지 차단된 계정입니다.", null)
+                }
+
+                if (passwordEncoder.matches(loginRequest.password, password)) {
+                    accountRepository.save(this.apply { password = passwordEncoder.encode(loginRequest.password) })
+
+                    val session = Session.cast(this)
+                            .apply { context.authentication = AnissiaAuthentication(this) }
+
+                    val token = loginRequest.takeIf { it.tokenLogin == 1 }
+                            ?.let { updateLoginToken(LoginToken(an = an)).absoluteToken }?:""
+
+                    // clean up and return
+                    loginFailRepository.deleteByIpAndEmail(ip, loginRequest.email)
+                    loginPassRepository.save(LoginPass(an = an, connType = "login", ip = ip))
+                    return ResultData("OK", token, session)
+                }
             }
-
-            if (passwordEncoder.matches(loginRequest.password, password)) {
-                accountRepository.save(this.apply {
-                    password = passwordEncoder.encode(loginRequest.password)
-                    lastDt = LocalDateTime.now()
-                })
-
-                val userSessionData = Session.cast(this)
-                        .apply { context.authentication = DhantAuthentication(this) }
-
-                val token = loginRequest.takeIf { it.tokenLogin == 1 }
-                        ?.let { updateLoginToken(LoginToken(an = an)).absoluteToken }?:""
-
-                // clean up and return
-                loginFailRepository.deleteByIpAndAccount(ip, loginRequest.email)
-                loginPassRepository.save(LoginPass(an = an, connType = "login", ip = ip))
-                return ResultData("OK", token, userSessionData)
-            }
-        }
+            ?: accountRepository.findByOldAccount(loginRequest.email)
+                ?.let { return ResultData("FAIL", "이메일 (${it.email})로 로그인해주세요.", null) }
 
         // login fail
-        loginFailRepository.save(LoginFail(ip = ip, account = loginRequest.email))
+        loginFailRepository.save(LoginFail(ip = ip, email = loginRequest.email))
         return ResultData("FAIL", "계정(email)과 암호가 일치하지 않습니다.", null)
     }
 
+    @Transactional
     fun doTokenLogin(loginTokenRequest: LoginTokenRequest): ResultData<Session> {
         val ip = request.remoteAddr
 
-        if (!checkLoginFailCount(ip, loginTokenRequest.tn.toString())) {
+        if (!checkLoginFailCount(ip, loginTokenRequest.tokenNo.toString())) {
             return ResultData("FAIL", "", null)
         }
 
-        // try find token
-        loginTokenRepository.findByTnAndTokenAndExpDtAfter(loginTokenRequest.tn, loginTokenRequest.token, LocalDateTime.now())?.apply {
-            val token = this
-            accountRepository.findWithRolesByAn(an)?.apply {
-                accountRepository.save(this.apply { lastDt = LocalDateTime.now() })
+        loginTokenRepository.findByTokenNoAndTokenAndExpDtAfter(loginTokenRequest.tokenNo, loginTokenRequest.token, LocalDateTime.now())
+            ?.let { token ->
+                accountRepository.findWithRolesByAn(token.an)
+                    ?.also { account ->
+                        accountRepository.save(account)
+                        val session = Session.cast(account).apply { context.authentication = AnissiaAuthentication(this) }
 
-                val userSessionData = Session.cast(this)
-                        .apply { context.authentication = DhantAuthentication(this) }
+                        // clean up and return
+                        loginFailRepository.deleteByIpAndEmail(ip, loginTokenRequest.tokenNo.toString())
+                        loginPassRepository.save(LoginPass(an = token.an, connType = "token", ip = ip))
+                        return ResultData("OK", updateLoginToken(token).absoluteToken, session)
+                    }
 
-                // clean up and return
-                loginFailRepository.deleteByIpAndAccount(ip, loginTokenRequest.tn.toString())
-                loginPassRepository.save(LoginPass(an = token.an, connType = "token", ip = ip))
-                return ResultData("OK", updateLoginToken(token).absoluteToken, userSessionData)
             }
-        }
 
         // token login fail
-        loginFailRepository.save(LoginFail(ip = ip, account = loginTokenRequest.tn.toString()))
+        loginFailRepository.save(LoginFail(ip = ip, email = loginTokenRequest.tokenNo.toString()))
         return ResultData("FAIL", "", null)
     }
 
     fun doLogout() = context.run { authentication = null; ResultStatus("OK") }
 
     fun checkLoginFailCount(ip: String, account: String)
-            = loginFailRepository.countByIpAndAccountAndFailDtAfter(ip, account, LocalDateTime.now().plusMinutes(-30)) < 5
+            = loginFailRepository.countByIpAndEmailAndFailDtAfter(ip, account, LocalDateTime.now().plusMinutes(-30)) < 10
 
     fun updateLoginToken(loginToken: LoginToken) = loginToken.run {
         token = Texts.createRandomBase62String(128, 512)
@@ -113,11 +119,8 @@ class SessionService (
 
     fun updateSession(account: Account?) {
         account?.takeIf { it.an > 0 }
-                ?.let{ DhantAuthentication(Session.cast(it)) }
+                ?.let{ AnissiaAuthentication(Session.cast(it)) }
                 ?.apply { context.authentication = this }
                 ?:doLogout()
     }
-
-
-
 }

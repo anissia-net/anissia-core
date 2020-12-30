@@ -5,19 +5,19 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["pn"])],
+        uniqueConstraints = [UniqueConstraint(columnNames = ["loginPassNo"])],
         indexes = [
                 Index(columnList = "passDt"),
-                Index(columnList = "un")
+                Index(columnList = "an")
         ]
 )
-data class UserLoginPass (
+data class LoginPass (
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(nullable = false)
-        var pn: Long = 0,
+        var loginPassNo: Long = 0,
 
         @Column(nullable = false)
-        var un: Long = 0,
+        var an: Long = 0,
 
         @Column(nullable = false, length = 10)
         var connType: String = "",

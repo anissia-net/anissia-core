@@ -5,23 +5,23 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["tn"])],
+        uniqueConstraints = [UniqueConstraint(columnNames = ["tokenNo"])],
         indexes = [Index(columnList = "expDt")]
 )
-data class UserLoginRememberToken (
+data class LoginToken (
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(nullable = false)
-        var tn: Long = 0,
+        var tokenNo: Long = 0,
 
         @Column(nullable = false, length = 512, unique = true)
         var token: String = "",
 
         @Column(nullable = false)
-        var un: Long = 0,
+        var an: Long = 0,
 
         @Column(nullable = false)
         var expDt: LocalDateTime = LocalDateTime.now()
 ) {
-        val absoluteToken: String get() = "${tn}-${token}"
+        val absoluteToken: String get() = "${tokenNo}-${token}"
 }

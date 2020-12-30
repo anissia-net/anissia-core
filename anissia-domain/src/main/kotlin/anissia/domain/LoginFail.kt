@@ -8,10 +8,10 @@ import javax.persistence.*
         uniqueConstraints = [UniqueConstraint(columnNames = ["fn"])],
         indexes = [
                 Index(columnList = "failDt"),
-                Index(columnList = "ip,account,failDt")
+                Index(columnList = "ip,email,failDt")
         ]
 )
-data class UserLoginFail (
+data class LoginFail (
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(nullable = false)
@@ -21,7 +21,7 @@ data class UserLoginFail (
         var ip: String = "",
 
         @Column(nullable = false, length = 64)
-        var account: String = "",
+        var email: String = "",
 
         @Column(nullable = false)
         var failDt: LocalDateTime = LocalDateTime.now()
