@@ -60,9 +60,9 @@ class AnimeRankService(
         val day28List = extractRank(dt.minusDays(28).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day48List) }
         val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day28List) }
         val day1List = extractRank(dt.minusHours(24).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day7List) }
-        animeStoreRepository.save(AnimeStore("rank.day", "", toString(day1List.subList(0, 30))))
-        animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List.subList(0, 30))))
-        animeStoreRepository.save(AnimeStore("rank.month", "", toString(day28List.subList(0, 30))))
+        animeStoreRepository.save(AnimeStore("rank.day", "", toString(day1List)))
+        animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
+        animeStoreRepository.save(AnimeStore("rank.month", "", toString(day28List)))
     }
 
     private fun toString(list: List<AnimeRankDto>): String = list.run { As.toJsonString(if (size > 30) list.subList(0, 30) else list) }
