@@ -39,23 +39,25 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         // disable csrf
         http.csrf().disable()
-            // authorize requests after ignore resource setting
+            // anime
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/schedule/**").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/caption/animeNo/**").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/rank/**").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/list/**").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/animeNo/**").permitAll().and()
 
+            // board
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/board/**").permitAll().and()
 
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/session").permitAll().and()
-
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()
+            // login
+            .authorizeRequests().antMatchers("/api/session").permitAll().and()
 
             // Legacy
             .authorizeRequests().antMatchers("/anitime/list_img").permitAll().and()
 
+            // other
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()
 
             .authorizeRequests().antMatchers("/**").hasAnyRole(ROOT);
 
