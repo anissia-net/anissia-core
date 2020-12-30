@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.security.MessageDigest
 
-
 @Configuration
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
@@ -21,15 +20,25 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
         private val ROOT = AccountRole.ROOT.name
     }
 
-    // old anissia hash -> sha512(text + "$0")
     private val oaPasswordEncoder = object: PasswordEncoder {
-        override fun matches(rawPassword: CharSequence, encodedPassword: String) = encodedPassword == encode(rawPassword)
-        override fun encode(rawPassword: CharSequence)
-                = Bytes.toHex(MessageDigest.getInstance("SHA-512").digest("${rawPassword}$0".toByteArray()))!!
+        override fun matches(rawPassword: CharSequence, encodedPassword: String): Boolean = encodedPassword == encode(rawPassword)
+        override fun encode(rawPassword: CharSequence) = Bytes.toHex(MessageDigest.getInstance("SHA-512").digest("${rawPassword}$0".toByteArray()))!!
     }
 
+    /**
+     * !important
+     * old anissia password type is sha512(password + "$0") alias {oa}
+     * new anissia password type is {bcrypt}
+     *
+     * if the login is successful with the account password hash type is {oa}
+     * the password hash type is changed to {bcrypt}
+     *
+     * @see
+     * SecurityConfiguration.oaPasswordEncoder
+     * SessionService.doLogin()
+     */
     @Bean
-    fun passwordEncoder()
+    fun passwordEncoder(): PasswordEncoder
             = "bcrypt".let { DelegatingPasswordEncoder(it, mapOf(it to BCryptPasswordEncoder(), "oa" to oaPasswordEncoder)) }
 
     /**
@@ -51,6 +60,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
             // login
             .authorizeRequests().antMatchers("/api/session").permitAll().and()
+            .authorizeRequests().antMatchers("/api/session/**").permitAll().and()
 
             // Legacy
             .authorizeRequests().antMatchers("/anitime/list_img").permitAll().and()

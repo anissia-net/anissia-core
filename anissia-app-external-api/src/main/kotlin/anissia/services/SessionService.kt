@@ -50,27 +50,28 @@ class SessionService (
 
         // try login
         accountRepository.findWithRolesByEmail(loginRequest.email)
-            ?.apply {
-                if (isBan) {
-                    return ResultData("FAIL", "${banExpireDt!!.format(As.DTF_YMDHMS)} 까지 차단된 계정입니다.", null)
+            ?.also { account ->
+                if (account.isBan) {
+                    return ResultData("FAIL", "${account.banExpireDt!!.format(As.DTF_YMDHMS)} 까지 차단된 계정입니다.", null)
                 }
 
-                if (passwordEncoder.matches(loginRequest.password, password)) {
-                    accountRepository.save(this.apply { password = passwordEncoder.encode(loginRequest.password) })
+                if (passwordEncoder.matches(loginRequest.password, account.password)) {
+                    accountRepository.save(account.apply { password = passwordEncoder.encode(loginRequest.password) })
 
-                    val session = Session.cast(this)
+                    val session = Session.cast(account)
                             .apply { context.authentication = AnissiaAuthentication(this) }
 
                     val token = loginRequest.takeIf { it.tokenLogin == 1 }
-                            ?.let { updateLoginToken(LoginToken(an = an)).absoluteToken }?:""
+                            ?.let { updateLoginToken(LoginToken(an = account.an)).absoluteToken }?:""
 
                     // clean up and return
                     loginFailRepository.deleteByIpAndEmail(ip, loginRequest.email)
-                    loginPassRepository.save(LoginPass(an = an, connType = "login", ip = ip))
+                    loginPassRepository.save(LoginPass(an = account.an, connType = "login", ip = ip))
                     return ResultData("OK", token, session)
                 }
             }
             ?: accountRepository.findByOldAccount(loginRequest.email)
+                ?.takeIf { account -> passwordEncoder.matches(loginRequest.password, account.password) }
                 ?.let { return ResultData("FAIL", "이메일 (${it.email})로 로그인해주세요.", null) }
 
         // login fail

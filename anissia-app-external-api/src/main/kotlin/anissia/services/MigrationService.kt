@@ -64,7 +64,7 @@ class MigrationService(
         """.trimIndent()) { e ->
         Account(
             email = e.getString("mail"),
-            password = e.getString("password"),
+            password = "{oa}"+e.getString("password"),
             name = e.getString("name"),
             regDt = convertToLocalDateTime(e.getDate("joindate")),
             lastLoginDt = convertToLocalDateTime(e.getDate("lastdate")),
