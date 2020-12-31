@@ -27,8 +27,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
     /**
      * !important
-     * old anissia password type is sha512(password + "$0") alias {oa}
-     * new anissia password type is {bcrypt}
+     * old anissia password hash type is sha512(password + "$0") alias {oa}
+     * new anissia password hash type is {bcrypt}
      *
      * if the login is successful with the account password hash type is {oa}
      * the password hash type is changed to {bcrypt}

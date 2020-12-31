@@ -14,9 +14,13 @@ class BoardController(
     private val boardService: BoardService
 ) {
 
+
     @GetMapping("/ticker/{ticker}")
     fun getTicker(@PathVariable ticker: String): String = boardService.getTicker(ticker)
 
     @GetMapping("/list/{ticker}/{page}")
     fun getList(@PathVariable ticker: String, @PathVariable page: Int) = boardService.getList(ticker, page)
+
+    @GetMapping("/recent/home")
+    fun getHomeRecent() = boardService.getRecent()
 }
