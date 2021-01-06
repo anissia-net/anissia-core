@@ -20,9 +20,15 @@ class BoardService(
     private val tickerCacheStore = CacheStore<String, String>((24 * 60 * 60000).toLong())
     private val recentCacheStore = CacheStore<Int, String>((5 * 60000).toLong())
 
-    fun getTicker(ticker: String): String = tickerCacheStore.get(ticker) { boardTickerRepository.findById(ticker).map { As.toJsonString(it) }.orElse("{}") }
+    fun getTicker(ticker: String): String =
+        tickerCacheStore
+            .get(ticker) { boardTickerRepository.findById(ticker).map { As.toJsonString(it) }.orElse("{}") }
 
-    fun getTopic(ticker: String, topicNo: Long) = boardTopicRepository.findWithAccountByTickerAndTopicNo(ticker, topicNo)
+    fun getTopic(ticker: String, topicNo: Long): BoardTopicDto =
+        boardTopicRepository
+            .findWithAccountByTickerAndTopicNo(ticker, topicNo)
+            ?.let { BoardTopicDto(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(topicNo)) }
+            ?: BoardTopicDto()
 
     fun getList(ticker: String, page: Int): Page<BoardTopicDto> =
         boardTopicRepository
@@ -30,9 +36,10 @@ class BoardService(
             .map { BoardTopicDto(it) }
 
     fun getRecent(): String =
-        recentCacheStore.get(1) { As.toJsonString(mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))) }
+        recentCacheStore
+            .get(1) { As.toJsonString(mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))) }
 
-    private fun getRecent(ticker: String) =
+    private fun getRecent(ticker: String): List<Map<String, Any>> =
         boardTopicRepository
             .findTop5ByTickerAndFixedOrderByTopicNoDesc(ticker)
             .map { mapOf(
