@@ -22,6 +22,8 @@ class BoardService(
 
     fun getTicker(ticker: String): String = tickerCacheStore.get(ticker) { boardTickerRepository.findById(ticker).map { As.toJsonString(it) }.orElse("{}") }
 
+    fun getTopic(ticker: String, topicNo: Long) = boardTopicRepository.findWithAccountByTickerAndTopicNo(ticker, topicNo)
+
     fun getList(ticker: String, page: Int): Page<BoardTopicDto> =
         boardTopicRepository
             .findAllWithAccountByTickerOrderByTickerAscFixedDescTopicNoDesc(ticker, PageRequest.of(page, 20))

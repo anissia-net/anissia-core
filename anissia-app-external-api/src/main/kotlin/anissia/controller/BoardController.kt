@@ -18,6 +18,9 @@ class BoardController(
     @GetMapping("/ticker/{ticker}")
     fun getTicker(@PathVariable ticker: String): String = boardService.getTicker(ticker)
 
+    @GetMapping("/topic/{ticker}/{topic}")
+    fun getTopic(@PathVariable ticker: String, @PathVariable page: Int) = boardService.getList(ticker, page)
+
     @GetMapping("/list/{ticker}/{page}")
     fun getList(@PathVariable ticker: String, @PathVariable page: Int) = boardService.getList(ticker, page)
 
