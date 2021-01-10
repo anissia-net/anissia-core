@@ -19,6 +19,9 @@ data class BoardPost (
     @Column(nullable = false)
     var topicNo: Long = 0,
 
+    @Column(nullable = false)
+    var root: Boolean = false,
+
     @Lob
     @Column(nullable = false)
     var content: String = "",

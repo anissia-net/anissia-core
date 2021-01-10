@@ -27,7 +27,7 @@ class BoardService(
     fun getTopic(ticker: String, topicNo: Long): BoardTopicDto =
         boardTopicRepository
             .findWithAccountByTickerAndTopicNo(ticker, topicNo)
-            ?.let { BoardTopicDto(it, true, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(topicNo)) }
+            ?.let { BoardTopicDto(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(topicNo)) }
             ?: BoardTopicDto()
 
     fun getList(ticker: String, page: Int): Page<BoardTopicDto> =

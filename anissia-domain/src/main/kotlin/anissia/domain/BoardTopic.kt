@@ -24,10 +24,6 @@ data class BoardTopic (
     @Column(nullable = false, length = 64)
     var topic: String = "",
 
-    @Lob
-    @Column(nullable = false)
-    var content: String = "",
-
     @Column(nullable = false)
     var an: Long = 0,
 
@@ -36,10 +32,6 @@ data class BoardTopic (
 
     @Column(nullable = false)
     var regDt: LocalDateTime = LocalDateTime.now(),
-
-    @Column(nullable = false)
-    @UpdateTimestamp
-    var updDt: LocalDateTime = LocalDateTime.now(),
 
     @OneToOne
     @JoinColumn(name = "an", nullable = false, insertable = false, updatable = false)

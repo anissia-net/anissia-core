@@ -2,6 +2,7 @@ package anissia.services
 
 import anissia.domain.*
 import anissia.repository.*
+import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.stereotype.Service
 import java.sql.ResultSet
 import java.time.LocalDateTime
@@ -9,6 +10,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Stream
+import javax.persistence.*
 import javax.sql.DataSource
 import kotlin.streams.toList
 
@@ -22,6 +24,7 @@ class MigrationService(
     val animeGenreRepository: AnimeGenreRepository,
     val animeRepository: AnimeRepository,
     val boardTopicRepository: BoardTopicRepository,
+    val boardPostRepository: BoardPostRepository,
     val boardTickerRepository: BoardTickerRepository,
     val captionRepository: AnimeCaptionRepository
 ) {
@@ -130,12 +133,26 @@ class MigrationService(
         BoardTopic(
             ticker = "notice",
             topic = e.getString("subj"),
-            content = e.getString("text"),
-            regDt = convertToLocalDateTime(e.getDate("date")),
+            regDt = convertToLocalDateTime(e.getTimestamp("date")),
             an = anMap[e.getLong("an")]!!
-        )
+        ).also { topic ->
+            boardTopicRepository.saveAndFlush(topic)
+
+            val content = e.getString("text")
+                .replace("\r", "")
+                .replace("\n", "\n\n")
+                .replace("[\\n]{3,}".toRegex(), "\n\n")
+                .replace("[강조]", "**")
+                .replace("[/강조]", "**")
+
+            boardPostRepository.save(BoardPost(
+                topicNo = topic.topicNo,
+                content = content,
+                root = true,
+                an = topic.an,
+            ))
+        }
     }.also {
-        boardTopicRepository.saveAll(it)
         boardTickerRepository.saveAll(listOf(
             BoardTicker(ticker = "notice", name = "공지사항", writeTopic = AccountRole.ROOT, writePost = null),
             BoardTicker(ticker = "inquiry", name = "문의 게시판", writeTopic = AccountRole.ROOT, writePost = null)

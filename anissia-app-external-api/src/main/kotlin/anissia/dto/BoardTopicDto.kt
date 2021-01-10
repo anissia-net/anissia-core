@@ -9,21 +9,19 @@ data class BoardTopicDto (
     var topicNo: Long = 0,
     var fixed: Boolean = false,
     var topic: String = "",
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    var content: String = "",
     var postCount: Int = 0,
     var regDt: LocalDateTime = LocalDateTime.now(),
     var name: String = "",
-    var posts: List<BoardPost> = listOf()
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    var posts: List<BoardPostDto>? = null
 ) {
-    constructor(boardTopic: BoardTopic, includeContent: Boolean = false, posts: List<BoardPost> = listOf()): this(
+    constructor(boardTopic: BoardTopic, posts: List<BoardPost>? = null): this(
         topicNo = boardTopic.topicNo,
         fixed = boardTopic.fixed,
         topic = boardTopic.topic,
-        content = if (includeContent) boardTopic.content else "",
         postCount = boardTopic.postCount,
         regDt = boardTopic.regDt,
         name = boardTopic.account?.name ?: "탈퇴회원",
-        posts = posts
+        posts = posts ?.map { BoardPostDto(it) }
     )
 }
