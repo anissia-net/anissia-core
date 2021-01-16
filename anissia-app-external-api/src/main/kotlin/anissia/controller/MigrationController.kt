@@ -34,7 +34,7 @@ class MigrationController(
         return "OK"
     }
 
-    fun hour() = LocalDateTime.now().minusHours((Math.random() * 480).toLong()).format(As.DTF_RANK_HOUR)
+    fun hour(): Long = LocalDateTime.now().minusHours((Math.random() * 480).toLong()).format(As.DTF_RANK_HOUR).toLong()
 
-    fun ip() = "${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}"
+    fun ip(): String = "${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}.${(Math.random() * 256).toInt()}"
 }

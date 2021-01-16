@@ -10,7 +10,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 interface AnimeHitRepository : JpaRepository<AnimeHit, Long>, QuerydslPredicateExecutor<AnimeHit> {
     @Modifying
     @Query("DELETE FROM AnimeHit WHERE hour < :hour")
-    fun deleteByHourLessThan(hour: String): Int
+    fun deleteByHourLessThan(hour: Long): Int
 
     @Query("""
         SELECT
@@ -19,5 +19,5 @@ interface AnimeHitRepository : JpaRepository<AnimeHit, Long>, QuerydslPredicateE
         WHERE a.hour < :hour
         GROUP BY a.hour, a.animeNo
     """)
-    fun extractAllAnimeHitHour(hour: String): List<AnimeHitHour>
+    fun extractAllAnimeHitHour(hour: Long): List<AnimeHitHour>
 }

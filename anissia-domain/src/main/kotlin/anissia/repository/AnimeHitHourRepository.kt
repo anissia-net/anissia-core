@@ -13,7 +13,7 @@ interface AnimeHitHourRepository : JpaRepository<AnimeHitHour, AnimeHitHour.Key>
 
     @Modifying
     @Query("DELETE FROM AnimeHitHour WHERE hour < :hour")
-    fun deleteByHourLessThan(hour: String): Int
+    fun deleteByHourLessThan(hour: Long): Int
 
     @Query("""
         SELECT
@@ -22,5 +22,5 @@ interface AnimeHitHourRepository : JpaRepository<AnimeHitHour, AnimeHitHour.Key>
         WHERE a.hour >= :startHour
         GROUP BY a.animeNo ORDER BY sum(a.hit) DESC
     """)
-    fun extractAllAnimeRank(startHour: String, pageable: Pageable = PageRequest.of(0,100)): List<AnimeRankDto>
+    fun extractAllAnimeRank(startHour: Long, pageable: Pageable = PageRequest.of(0,100)): List<AnimeRankDto>
 }

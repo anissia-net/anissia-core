@@ -20,5 +20,5 @@ data class AnimeHit (
         var animeNo: Long = 0,
 
         @Column(nullable = false)
-        var hour: String = ""
+        var hour: Long = 0
 )

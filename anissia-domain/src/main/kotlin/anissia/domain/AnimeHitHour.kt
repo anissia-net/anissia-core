@@ -12,7 +12,7 @@ import javax.persistence.*
 data class AnimeHitHour (
         @Id
         @Column(nullable = false, length = 10)
-        var hour: String = "",
+        var hour: Long = 0,
 
         @Id
         @Column(nullable = false)
@@ -23,5 +23,5 @@ data class AnimeHitHour (
 ) {
         val key get() = Key(hour, animeNo)
 
-        data class Key(var hour: String = "", var animeNo: Long = 0) : Serializable
+        data class Key(var hour: Long = 0, var animeNo: Long = 0) : Serializable
 }

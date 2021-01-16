@@ -35,7 +35,7 @@ class AnimeRankService(
     @Transactional
     fun animeRankBatch() {
         // step 1. remove hit history older then 96 days
-        animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(96).format(As.DTF_RANK_HOUR))
+        animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(96).format(As.DTF_RANK_HOUR).toLong())
         // step 2. merge anime hits
         mergeAnimeHit()
         // step 3. extract and bind rank
@@ -43,15 +43,15 @@ class AnimeRankService(
     }
 
     @Async
-    fun hitAsync(animeNo: Long, ip: String, hour: String = LocalDateTime.now().format(As.DTF_RANK_HOUR)) =
+    fun hitAsync(animeNo: Long, ip: String, hour: Long = LocalDateTime.now().format(As.DTF_RANK_HOUR).toLong()) =
         animeHitRepository.save(AnimeHit(animeNo = animeNo, ip = ip, hour = hour))
 
     private fun mergeAnimeHit() {
         val hour = LocalDateTime.now().format(As.DTF_RANK_HOUR)
-        animeHitRepository.extractAllAnimeHitHour(hour)
+        animeHitRepository.extractAllAnimeHitHour(hour.toLong())
             .map { r -> animeHitHourRepository.findById(r.key).map { it.hit += r.hit; it }.orElse(r) }
             .also { animeHitHourRepository.saveAll(it) }
-            .also { animeHitRepository.deleteByHourLessThan(hour) }
+            .also { animeHitRepository.deleteByHourLessThan(hour.toLong()) }
     }
 
     private fun extractAllRank() {
@@ -69,7 +69,7 @@ class AnimeRankService(
 
     private fun extractRank(startHour: String): List<AnimeRankDto> =
         animeHitHourRepository
-            .extractAllAnimeRank(startHour)
+            .extractAllAnimeRank(startHour.toLong())
             .filter { it.subject != "" } // remove not exist anime
             .apply {
                 var rank = 0
