@@ -1,8 +1,8 @@
 package anissia.services
 
 import anissia.domain.*
+import anissia.misc.KoUtil
 import anissia.repository.*
-import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.stereotype.Service
 import java.sql.ResultSet
 import java.time.LocalDateTime
@@ -10,7 +10,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Stream
-import javax.persistence.*
 import javax.sql.DataSource
 import kotlin.streams.toList
 
@@ -61,8 +60,8 @@ class MigrationService(
 
     fun account() = query("""
             select * from oa.account
-            where an in (select an from oa.anitime_cap group by an) or
-                  (pms = '#' and an in (2, 20, 817, 942))
+            where (an in (select an from oa.anitime_cap group by an) or
+                  (pms = '#' and an in (2, 20, 817, 942))) and != '1'
             order by an
         """.trimIndent()) { e ->
         Account(
@@ -91,6 +90,7 @@ class MigrationService(
             week = e.getString("week"),
             time  = e.getString("time").run { substring(0, 2) + ":" + substring(2) },
             subject = e.getString("subj"),
+            autocorrect = KoUtil.toKoJasoAtom(e.getString("subj")),
             genres = norGenres(e.getString("type")),
             startDate = norYmd(e.getString("startdate")),
             endDate = norYmd(e.getString("enddate")),

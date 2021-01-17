@@ -69,6 +69,9 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()
 
+            // admin
+            .authorizeRequests().antMatchers("/api/admin/**").hasAnyRole(ROOT, TRANSLATOR).and()
+
             .authorizeRequests().antMatchers("/**").hasAnyRole(ROOT);
 
 //                // authorize requests after ignore resource setting

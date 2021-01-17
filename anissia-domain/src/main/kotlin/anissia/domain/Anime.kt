@@ -9,7 +9,8 @@ import javax.persistence.*
         uniqueConstraints = [UniqueConstraint(columnNames = ["animeNo"])],
         indexes = [
             Index(columnList = "status,week,time"),
-            Index(columnList = "status,animeNo")
+            Index(columnList = "status,animeNo"),
+            Index(columnList = "autocorrect"),
         ]
 )
 data class Anime (
@@ -43,6 +44,9 @@ data class Anime (
 
     @Column(nullable = false, length = 100, unique = true)
     var subject: String = "",
+
+    @Column(nullable = false, length = 512)
+    var autocorrect: String = "",
 
     @Column(nullable = false, length = 64)
     var genres: String = "",
