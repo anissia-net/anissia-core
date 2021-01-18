@@ -11,10 +11,14 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecutor<Anime> {
 
-    @Query("SELECT A FROM Anime A WHERE A.status IN (:expectStatus) AND A.week = :week")
-    fun findAllSchedule(week: String, expectStatus: Collection<AnimeStatus> = listOf(AnimeStatus.ON, AnimeStatus.OFF)): List<Anime>
+    @Query("SELECT A FROM Anime A WHERE A.status IN (anissia.domain.AnimeStatus.ON, anissia.domain.AnimeStatus.OFF) AND A.week = :week")
+    fun findAllSchedule(week: String): List<Anime>
 
+    @Query("SELECT A FROM Anime A WHERE A.status <> anissia.domain.AnimeStatus.DEL ORDER BY A.animeNo DESC")
     fun findAllByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>
+
+    @Query("SELECT A FROM Anime A WHERE A.status = anissia.domain.AnimeStatus.DEL ORDER BY A.animeNo DESC")
+    fun findAllDelByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>
 
     @EntityGraph(attributePaths = ["captions"])
     fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?

@@ -23,6 +23,9 @@ class AnimeService(
     fun getList(q: String, page: Int): Page<AnimeDto> =
         animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
 
+    fun getDelist(page: Int): Page<AnimeDto> =
+        animeRepository.findAllDelByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
+
     fun getAnime(animeNo: Long): AnimeDto =
         animeRepository.findWithCaptionsByAnimeNo(animeNo)
             ?.let { AnimeDto(it, true) }
