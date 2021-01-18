@@ -17,6 +17,7 @@ class As {
         private val OBJECT_MAPPER = ObjectMapper()
         const val IS_NAME = "[0-9A-Za-z가-힣㐀-䶵一-龻ぁ-ゖゝ-ヿ々_]{2,16}"
         val DTF_YMDHMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val DTF_CAPTION = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
         val DTF_RANK_HOUR = DateTimeFormatter.ofPattern("yyyyMMddHH")
 
         fun getResource(path: String): URL = As::class.java.getResource(path)!!

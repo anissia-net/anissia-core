@@ -14,7 +14,7 @@ data class AdminAnimeCaptionDto (
                 subject = animeCaption.anime?.subject?:"제목없음",
                 animeNo = animeCaption.animeNo,
                 episode = animeCaption.episode,
-                updDt = animeCaption.updDt.format(As.DTF_YMDHMS),
+                updDt = animeCaption.updDt.format(As.DTF_CAPTION),
                 website = animeCaption.website
         )
 }
