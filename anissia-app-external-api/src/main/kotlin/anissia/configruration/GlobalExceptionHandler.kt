@@ -1,6 +1,6 @@
 package anissia.configruration
 
-import anissia.dto.ResultData
+import anissia.rdb.dto.ResultData
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -16,7 +16,7 @@ class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun methodArgumentNotValidException(exception: MethodArgumentNotValidException, request: WebRequest)
-            = exception.bindingResult.allErrors?.firstOrNull()?.defaultMessage?.takeIf { it.isNotBlank() }
+            = exception.bindingResult.allErrors.firstOrNull()?.defaultMessage?.takeIf { it.isNotBlank() }
             .run {
                 ResponseEntity.status(HttpStatus.OK).body(ResultData<String>("ERROR", this ?: "비정상적인 파라미터 호출입니다."))
             }

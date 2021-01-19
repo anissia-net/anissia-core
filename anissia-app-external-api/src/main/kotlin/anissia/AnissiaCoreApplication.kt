@@ -8,7 +8,7 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
-@ComponentScan("anissia", "anissia.*", "anissia.repository")
+@ComponentScan("anissia", "anissia.*")
 class AnissiaCoreApplication(
 		@Value("\${env}") private val env: String
 ): CommandLineRunner {

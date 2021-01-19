@@ -1,6 +1,6 @@
 package anissia.controller
 
-import anissia.dto.AnimeDto
+import anissia.rdb.dto.AnimeDto
 import anissia.services.AdminService
 import anissia.services.AnimeService
 import org.springframework.data.domain.Page

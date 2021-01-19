@@ -1,8 +1,8 @@
 package anissia.services
 
-import anissia.domain.*
+import anissia.rdb.domain.*
 import anissia.misc.KoUtil
-import anissia.repository.*
+import anissia.rdb.repository.*
 import org.springframework.stereotype.Service
 import java.sql.ResultSet
 import java.time.LocalDateTime

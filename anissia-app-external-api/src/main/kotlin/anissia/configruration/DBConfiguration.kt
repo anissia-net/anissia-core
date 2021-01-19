@@ -14,7 +14,7 @@ import javax.sql.DataSource
 @EnableAutoConfiguration
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories("anissia.repository")
+@EnableJpaRepositories("anissia.rdb.repository")
 class DBConfiguration (
 
         @Value("\${saro.rdb.driverClassName}")

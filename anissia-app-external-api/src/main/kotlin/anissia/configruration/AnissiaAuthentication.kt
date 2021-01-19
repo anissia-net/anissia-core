@@ -1,6 +1,6 @@
 package anissia.configruration
 
-import anissia.dto.Session
+import anissia.rdb.dto.Session
 import anissia.misc.PrefixRoleGrantedAuthority
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority

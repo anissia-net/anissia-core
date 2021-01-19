@@ -13,17 +13,17 @@ plugins {
 dependencies {
 	// project
 	implementation(project(":anissia-misc"))
-	implementation(project(":anissia-domain"))
+	implementation(project(":anissia-domain-rdb"))
+	implementation(project(":anissia-domain-elasticsearch"))
 
 	// JPA
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 
 	// lib
 	implementation("me.saro:kit-ee:+")
 	implementation("org.jsoup:jsoup:+")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("joda-time:joda-time")
+	implementation("joda-time:joda-time:+")
 	implementation("org.apache.lucene:lucene-analyzers-nori:+")
 
 	// logger

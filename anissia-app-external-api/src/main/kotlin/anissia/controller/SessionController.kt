@@ -1,11 +1,11 @@
 package anissia.controller
 
-import anissia.dto.ResultData
-import anissia.dto.ResultStatus
-import anissia.dto.Session
+import anissia.rdb.dto.ResultData
+import anissia.rdb.dto.ResultStatus
+import anissia.rdb.dto.Session
 import anissia.services.SessionService
-import anissia.dto.request.LoginRequest
-import anissia.dto.request.LoginTokenRequest
+import anissia.rdb.dto.request.LoginRequest
+import anissia.rdb.dto.request.LoginTokenRequest
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 

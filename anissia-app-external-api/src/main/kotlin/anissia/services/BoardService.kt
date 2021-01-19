@@ -1,10 +1,10 @@
 package anissia.services
 
-import anissia.dto.BoardTopicDto
+import anissia.rdb.dto.BoardTopicDto
 import anissia.misc.As
-import anissia.repository.BoardPostRepository
-import anissia.repository.BoardTopicRepository
-import anissia.repository.BoardTickerRepository
+import anissia.rdb.repository.BoardPostRepository
+import anissia.rdb.repository.BoardTopicRepository
+import anissia.rdb.repository.BoardTickerRepository
 import me.saro.kit.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest

@@ -1,8 +1,8 @@
 package anissia.controller
 
-import anissia.dto.AnimeCaptionDto
-import anissia.dto.AnimeDto
-import anissia.dto.AnimeScheduleDto
+import anissia.rdb.dto.AnimeCaptionDto
+import anissia.rdb.dto.AnimeDto
+import anissia.rdb.dto.AnimeScheduleDto
 import anissia.services.AnimeRankService
 import anissia.services.AnimeScheduleService
 import anissia.services.AnimeService

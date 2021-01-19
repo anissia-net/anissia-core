@@ -1,8 +1,8 @@
 package anissia.services
 
-import anissia.dto.AnimeScheduleDto
+import anissia.rdb.dto.AnimeScheduleDto
 import anissia.misc.As.Companion.escapeHtml
-import anissia.repository.AnimeRepository
+import anissia.rdb.repository.AnimeRepository
 import me.saro.kit.CacheStore
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime

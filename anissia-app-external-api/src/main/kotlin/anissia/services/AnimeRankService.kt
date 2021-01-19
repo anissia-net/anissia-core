@@ -1,12 +1,12 @@
 package anissia.services
 
-import anissia.domain.AnimeHit
-import anissia.domain.AnimeStore
-import anissia.dto.AnimeRankDto
+import anissia.rdb.domain.AnimeHit
+import anissia.rdb.domain.AnimeStore
+import anissia.rdb.dto.AnimeRankDto
 import anissia.misc.As
-import anissia.repository.AnimeHitHourRepository
-import anissia.repository.AnimeHitRepository
-import anissia.repository.AnimeStoreRepository
+import anissia.rdb.repository.AnimeHitHourRepository
+import anissia.rdb.repository.AnimeHitRepository
+import anissia.rdb.repository.AnimeStoreRepository
 import me.saro.kit.CacheStore
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service

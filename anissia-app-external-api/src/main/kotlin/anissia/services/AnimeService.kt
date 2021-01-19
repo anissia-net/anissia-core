@@ -1,9 +1,9 @@
 package anissia.services
 
-import anissia.dto.AnimeCaptionDto
-import anissia.dto.AnimeDto
-import anissia.repository.AnimeCaptionRepository
-import anissia.repository.AnimeRepository
+import anissia.rdb.dto.AnimeCaptionDto
+import anissia.rdb.dto.AnimeDto
+import anissia.rdb.repository.AnimeCaptionRepository
+import anissia.rdb.repository.AnimeRepository
 import me.saro.kit.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest

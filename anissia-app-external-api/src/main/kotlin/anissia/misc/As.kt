@@ -31,7 +31,7 @@ class As {
 
         fun <T> String.toClassByJson(valueTypeRef: TypeReference<T>) = OBJECT_MAPPER.readValue(this, valueTypeRef)!!
 
-        fun <T> String.toMapByJson() = this.toClassByJson(object: TypeReference<Map<String, Object>>(){})
+        fun <T> String.toMapByJson() = this.toClassByJson(object: TypeReference<Map<String, Any>>(){})
 
 
     }
