@@ -18,6 +18,7 @@ dependencies {
 
 	// JPA
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 
 	// lib
 	implementation("me.saro:kit-ee:+")

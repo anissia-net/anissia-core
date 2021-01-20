@@ -3,11 +3,15 @@ host: http://localhost:8080
 
 server.port: 8001
 
-saro.rdb:
-  driverClassName: org.h2.Driver
-  jdbcUrl: "jdbc:h2:file:./anissia-local;AUTO_SERVER=TRUE"
-  username: sa
-  password: anissia
+anissia:
+  rdb:
+    driverClassName: org.h2.Driver
+    jdbcUrl: "jdbc:h2:file:./anissia-local;AUTO_SERVER=TRUE"
+    username: sa
+    password: anissia
+  ndb:
+    host: localhost
+    port: 9200
 
 mail:
   enable: false

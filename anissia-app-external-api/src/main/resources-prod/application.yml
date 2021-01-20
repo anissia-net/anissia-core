@@ -3,11 +3,15 @@ host: http://plecore.com
 
 server.port: 8001
 
-saro.rdb:
-  driverClassName: com.mysql.cj.jdbc.Driver
-  jdbcUrl: jdbc:mysql://db.dev.saro.me:3306/anissia?allowPublicKeyRetrieval=true&serverTimezone=UTC
-  username: anissia
-  password: anissia
+anissia:
+  rdb:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://db.dev.saro.me:3306/anissia?allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: anissia
+    password: anissia
+  ndb:
+    host: localhost
+    port: 9200
 
 mail:
   enable: true

@@ -17,16 +17,16 @@ import javax.sql.DataSource
 @EnableJpaRepositories("anissia.rdb.repository")
 class DBConfiguration (
 
-        @Value("\${saro.rdb.driverClassName}")
+        @Value("\${anissia.rdb.driverClassName}")
         private val driverClassName: String,
 
-        @Value("\${saro.rdb.jdbcUrl}")
+        @Value("\${anissia.rdb.jdbcUrl}")
         private val jdbcUrl: String,
 
-        @Value("\${saro.rdb.username}")
+        @Value("\${anissia.rdb.username}")
         private val username: String,
 
-        @Value("\${saro.rdb.password}")
+        @Value("\${anissia.rdb.password}")
         private val password: String
 
 ) {
