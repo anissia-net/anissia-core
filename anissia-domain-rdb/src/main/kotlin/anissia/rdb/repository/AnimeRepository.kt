@@ -16,6 +16,9 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
     @Query("SELECT A FROM Anime A WHERE A.status <> anissia.rdb.domain.AnimeStatus.DEL ORDER BY A.animeNo DESC")
     fun findAllByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>
 
+    @Query("SELECT A FROM Anime A WHERE A.animeNo in :ids AND A.status <> anissia.rdb.domain.AnimeStatus.DEL ORDER BY A.animeNo DESC")
+    fun findAllByIdInOrderByAnimeNoDesc(ids: List<Long>): List<Anime>
+
     @Query("SELECT A FROM Anime A WHERE A.status = anissia.rdb.domain.AnimeStatus.DEL ORDER BY A.animeNo DESC")
     fun findAllDelByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>
 

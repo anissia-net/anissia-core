@@ -22,6 +22,7 @@ class MigrationService(
     val accountRepository: AccountRepository,
     val animeGenreRepository: AnimeGenreRepository,
     val animeRepository: AnimeRepository,
+    val animeService: AnimeService,
     val boardTopicRepository: BoardTopicRepository,
     val boardPostRepository: BoardPostRepository,
     val boardTickerRepository: BoardTickerRepository,
@@ -61,7 +62,7 @@ class MigrationService(
     fun account() = query("""
             select * from oa.account
             where (an in (select an from oa.anitime_cap group by an) or
-                  (pms = '#' and an in (2, 20, 817, 942))) and != '1'
+                  (pms = '#' and an in (2, 20, 817, 942))) and an != 1
             order by an
         """.trimIndent()) { e ->
         Account(
@@ -100,13 +101,19 @@ class MigrationService(
     }.also {
         animeRepository.saveAll(it)
         animeRepository.flush()
+        it.forEach { node -> animeService.updateDocument(node) }
     }
 
 
     fun caption() = query("""select * from oa.anitime_cap order by ai, an""") { e ->
+        val animeNo = animeMap[e.getLong("ai")]
+        val an = anMap[e.getLong("an")]
+        if (animeNo == null || an == null) {
+            return@query null
+        }
         AnimeCaption(
-            animeNo = animeMap[e.getLong("ai")]!!,
-            an = anMap[e.getLong("an")]!!,
+            animeNo = animeNo!!,
+            an = an!!,
             website = e.getString("addr1").trim() + e.getString("addr2").trim(),
             updDt = e.getString("updt").run {
                 try {
@@ -126,7 +133,7 @@ class MigrationService(
             }.run { if (this.startsWith(".")) "0$this" else this }.run { if (this == "") "0" else this }
         )
     }.also {
-        captionRepository.saveAll(it)
+        captionRepository.saveAll(it.filterNotNull())
     }
 
     fun bbs() = query("select * from oa.bbs where code = 1 and (bn in (4, 537, 659) or an = 942) order by bn") { e ->
