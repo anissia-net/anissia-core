@@ -11,7 +11,6 @@ import me.saro.kit.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.lang.StringBuilder
@@ -31,16 +30,22 @@ class AnimeService(
 
     fun getList(q: String, page: Int): Page<AnimeDto> =
         if (q.isNotBlank()) {
-            val subject = StringBuilder(100)
-            val tags = StringBuilder(100)
-            q.split("\\s+").parallelStream().map { it.trim() }.filter { it.isNotEmpty() }.sequential().forEach {
-                if (it[0] == '#') {
-                    tags.append(it.substring(1)).append(' ')
-                } else {
-                    subject.append(it).append(' ')
-                }
-            }
-            val page = animeDocumentRepository.findAllBySubjectLikeAndGenresLike(subject.toString(), tags.toString(), PageRequest.of(page, 20))
+            val genres = ArrayList<String>()
+            val subject = q.split("[\\s]+".toRegex())
+                .stream()
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .filter {
+                    if (it[0] == '#' && it.length > 1) {
+                        genres.add(it.substring(1))
+                        return@filter false
+                    }
+                    return@filter true
+                }.toList().joinToString("*")
+            val page =
+                if (genres.isEmpty()) animeDocumentRepository.findAllBySubjectLike(subject, PageRequest.of(page, 20))
+                else animeDocumentRepository.findAllBySubjectLikeAndGenresIn(subject, genres, PageRequest.of(page, 20))
+
             PageImpl(animeRepository.findAllByIdInOrderByAnimeNoDesc(page.get().map { it.animeNo }.toList()).map { AnimeDto(it) }, page.pageable, page.totalElements)
         } else {
             animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
