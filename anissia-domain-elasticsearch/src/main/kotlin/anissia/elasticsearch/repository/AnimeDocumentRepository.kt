@@ -5,58 +5,32 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
+import org.springframework.data.elasticsearch.core.SearchHitSupport
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
-import java.util.*
-import java.util.stream.StreamSupport
 
-interface AnimeDocumentRepository : ElasticsearchRepository<AnimeDocument, Long>/*, AnimeDocumentRepositoryCustom*/ {
+interface AnimeDocumentRepository : ElasticsearchRepository<AnimeDocument, Long>, AnimeDocumentRepositoryCustom
 
-    fun findAllBySubjectLikeAndGenresIn(subject: String, genres: List<String>, pageable: Pageable): Page<AnimeDocument>
-    fun findAllBySubjectLike(subject: String, pageable: Pageable): Page<AnimeDocument>
-
+interface AnimeDocumentRepositoryCustom {
+    fun findAllAnimeNoForAnimeSearch(keywords: List<String>, genres: List<String>, pageable: Pageable): Page<Long>
 }
 
-//interface AnimeDocumentRepositoryCustom {
-//    fun findAllForAnimeSearch(subject: String, genres: List<String>, pageable: Pageable);
-//}
-//
-//class AnimeDocumentRepositoryCustomImpl(
-//    private val operations: ElasticsearchOperations
-//): AnimeDocumentRepositoryCustom {
-//    override fun findAllForAnimeSearch(keywords: List<String>, genres: List<String>, pageable: Pageable) {
-//
-//        val qb = NativeSearchQueryBuilder()
-//        if (keywords.isNotEmpty()) {
-//            qb.withQuery(QueryBuilders.matchQuery("subject", keywords.joinToString("*", "*", "*")))
-//        }
-//        if (genres.isNotEmpty()) {
-//            qb.withQuery(QueryBuilders.matchQuery("genres", genres.joinToString("*", "*", "*")))
-//        }
-//
-//        operations.searchForStream(
-//            qb.build(),
-//            AnimeDocument::class.java
-//        )
-//    }
-//}
+class AnimeDocumentRepositoryCustomImpl(
+    private val operations: ElasticsearchOperations
+): AnimeDocumentRepositoryCustom {
+    override fun findAllAnimeNoForAnimeSearch(keywords: List<String>, genres: List<String>, pageable: Pageable): Page<Long> {
 
-//interface TagDocumentRepositoryCustom {
-//    fun getIdsByKeywords(keywords: String): Stream<SearchHit<TagDocument>>
-//}
-//
-//class TagDocumentRepositoryCustomImpl(
-//    private val operations: ElasticsearchOperations
-//) : TagDocumentRepositoryCustom {
-//    override fun getIdsByKeywords(keywords: String): Stream<SearchHit<TagDocument>> =
-//        StreamSupport.stream(
-//            Spliterators.spliteratorUnknownSize(
-//            operations.searchForStream(
-//                NativeSearchQueryBuilder()
-//                    .withQuery(QueryBuilders.matchQuery("keyword", keywords))
-//                    .withFields("content.id")
-//                    .build(),
-//                TagDocument::class.java
-//            ),
-//            Spliterator.ORDERED), false)
-//}
+        val query = NativeSearchQueryBuilder()
+
+        if (keywords.isNotEmpty()) {
+            query.withQuery(QueryBuilders.wildcardQuery("subject", keywords.joinToString("*", "*", "*")))
+        }
+        if (genres.isNotEmpty()) {
+            query.withFilter(QueryBuilders.termsQuery("genres", *genres.toTypedArray()))
+        }
+
+        operations.searchForStream(query.build(), AnimeDocument::class.java)
+
+        return SearchHitSupport.searchPageFor(operations.search(query.build(), AnimeDocument::class.java), pageable).map { it.content.animeNo }
+    }
+}

@@ -1,5 +1,6 @@
 package anissia.services
 
+import anissia.configruration.logger
 import anissia.elasticsearch.domain.AnimeDocument
 import anissia.elasticsearch.repository.AnimeDocumentRepository
 import anissia.rdb.domain.Anime
@@ -26,27 +27,24 @@ class AnimeService(
     private val request: HttpServletRequest
 ) {
 
+    private val log = logger<AnimeService>()
     private val captionCacheStore = CacheStore<Long, List<AnimeCaptionDto>>((5 * 60000).toLong())
 
     fun getList(q: String, page: Int): Page<AnimeDto> =
         if (q.isNotBlank()) {
+            val keywords = ArrayList<String>()
             val genres = ArrayList<String>()
-            val subject = q.split("[\\s]+".toRegex())
-                .stream()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-                .filter {
-                    if (it[0] == '#' && it.length > 1) {
-                        genres.add(it.substring(1))
-                        return@filter false
-                    }
-                    return@filter true
-                }.toList().joinToString("*")
-            val page =
-                if (genres.isEmpty()) animeDocumentRepository.findAllBySubjectLike(subject, PageRequest.of(page, 20))
-                else animeDocumentRepository.findAllBySubjectLikeAndGenresIn(subject, genres, PageRequest.of(page, 20))
 
-            PageImpl(animeRepository.findAllByIdInOrderByAnimeNoDesc(page.get().map { it.animeNo }.toList()).map { AnimeDto(it) }, page.pageable, page.totalElements)
+            q.split("[\\s]+".toRegex()).stream().map { it.trim() }.filter { it.isNotEmpty() }.forEach { word ->
+                if (word[0] == '#' && word.length > 1) genres.add(word.substring(1))
+                else keywords.add(word)
+            }
+
+            val page = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, PageRequest.of(page, 20))
+
+            log.info("anime search $keywords $genres ${page.totalElements}")
+
+            PageImpl(animeRepository.findAllByIdInOrderByAnimeNoDesc(page.get().toList()).map { AnimeDto(it) }, page.pageable, page.totalElements)
         } else {
             animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
         }
@@ -75,7 +73,7 @@ class AnimeService(
             .also {
                 it.animeNo = anime.animeNo
                 it.subject = anime.subject
-                it.genres = anime.genres.replace(",", " ")
+                it.genres = anime.genres.split(",".toRegex())
                 animeDocumentRepository.save(it)
             }
 }

@@ -20,6 +20,11 @@
 		<appender-ref ref="console" />
 	</logger>
 
+	<logger name="logger.org.elasticsearch" level="DEBUG">
+		<appender-ref ref="console" />
+	</logger>
+
+
 <!--	<logger name="org.hibernate.SQL" level="DEBUG" additivity="false" >-->
 <!--		<appender-ref ref="console" />-->
 <!--	</logger>-->

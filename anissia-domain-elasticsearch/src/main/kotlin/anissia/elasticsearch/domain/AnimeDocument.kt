@@ -14,6 +14,6 @@ data class AnimeDocument (
         @Field(index = true, analyzer = "standard", searchAnalyzer = "standard")
         var subject: String = "",
 
-        @Field(index = true, analyzer = "whitespace", searchAnalyzer = "whitespace")
-        var genres: String = ""
+        @Field(index = true)
+        var genres: List<String> = listOf()
 )
