@@ -26,6 +26,9 @@ class AnimeController(
     @GetMapping("/animeNo/{animeNo:[\\d]+}")
     fun getAnime(@PathVariable animeNo: Long): AnimeDto = animeService.getAnime(animeNo)
 
+    @GetMapping("/autocorrect")
+    fun getAnimeAutocorrect(@RequestParam q: String)= animeService.getAnimeAutocorrect(q)
+
     // - caption
 
     @GetMapping("/caption/animeNo/{animeNo:[\\d]+}")

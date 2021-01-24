@@ -49,11 +49,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
         // disable csrf
         http.csrf().disable()
             // anime
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/schedule/**").permitAll().and()
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/caption/animeNo/**").permitAll().and()
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/rank/**").permitAll().and()
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/list/**").permitAll().and()
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/animeNo/**").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/**").permitAll().and()
 
             // board
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/board/**").permitAll().and()

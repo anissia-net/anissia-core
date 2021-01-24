@@ -3,9 +3,11 @@ package anissia.services
 import anissia.configruration.logger
 import anissia.elasticsearch.domain.AnimeDocument
 import anissia.elasticsearch.repository.AnimeDocumentRepository
+import anissia.misc.KoUtil
 import anissia.rdb.domain.Anime
 import anissia.rdb.dto.AnimeCaptionDto
 import anissia.rdb.dto.AnimeDto
+import anissia.rdb.dto.Autocorrect
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeRepository
 import me.saro.kit.CacheStore
@@ -49,6 +51,11 @@ class AnimeService(
             animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
         }
 
+    fun getAnimeAutocorrect(q: String): List<Autocorrect> =
+        q.takeIf { it.isNotBlank() }
+            ?.let { animeRepository.findTop5ByAutocorrectStartsWithOrderByAutocorrect(KoUtil.toKoJasoAtom(it.trim())) }
+            ?.map { Autocorrect(it.animeNo, it.subject) }
+            ?: listOf()
 
     fun getDelist(page: Int): Page<AnimeDto> =
         animeRepository.findAllDelByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }

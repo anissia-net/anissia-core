@@ -22,37 +22,8 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
     @Query("SELECT A FROM Anime A WHERE A.status = anissia.rdb.domain.AnimeStatus.DEL ORDER BY A.animeNo DESC")
     fun findAllDelByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>
 
+    fun findTop5ByAutocorrectStartsWithOrderByAutocorrect(autocorrect: String): List<Anime>
+
     @EntityGraph(attributePaths = ["captions"])
     fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?
-
-    //fun findByAn(an: Long): Anime?
 }
-//
-//interface AnimeRepositoryCustom {
-//    fun findAllTimetableAnime(bcType: String): List<AnimeTimetableModel>
-//}
-//
-//class AnimeRepositoryCustomImpl(private val entityManager: EntityManager) : AnimeRepositoryCustom {
-//    override fun findAllTimetableAnime(bcType: String): List<AnimeTimetableModel> {
-//        val anime = QAnime.anime
-//        val bcTimeOrDate = Expressions.stringPath("bcTimeOrDate")
-//        return JPAQuery<Anime>(entityManager)
-//                .select(Projections.constructor(
-//                        AnimeTimetableModel::class.java,
-//                        anime.bcType,
-//                        anime.an,
-//                        anime.ongoing,
-//                        Expressions.cases().`when`(anime.bcType.notIn("7", "8"))
-//                                .then(anime.bcTime)
-//                                .otherwise(anime.startDate).`as`(bcTimeOrDate.toString()),
-//                        anime.subject,
-//                        anime.genres,
-//                        anime.startDate,
-//                        anime.endDate,
-//                        anime.website
-//                )).from(anime)
-//                .where(anime.status.eq(0).and(anime.bcType.eq(bcType)))
-//                .orderBy(if (bcType == "7") bcTimeOrDate.desc() else bcTimeOrDate.asc())
-//                .fetch()
-//    }
-//}
