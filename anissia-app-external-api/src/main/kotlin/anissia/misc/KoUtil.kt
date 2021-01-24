@@ -65,8 +65,10 @@ class KoUtil {
                             this.append(KO_ATOM_S[ce / 588]); ce %= 588 // 21 * 28 - S
                             this.append(KO_ATOM_M[ce / 28]); ce %= 28 // 21 * 28 - M
                             if (ce != 0) { this.append(KO_ATOM_E[ce]) } // E
+                        } else if (ch in 'ㄱ'..'ㅣ') {
+                            this.append(KO_ATOM_P[ch - 'ㄱ'])
                         } else {
-                            this.append(if (ch in 'ㄱ'..'ㅣ') KO_ATOM_P[ch - 'ㄱ'] else ch)
+                            this.append(ch)
                         }
                     }
                 }.toString()
