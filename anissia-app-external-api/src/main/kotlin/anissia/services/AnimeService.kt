@@ -50,9 +50,9 @@ class AnimeService(
         }
 
     fun getAnimeAutocorrect(q: String): List<String> =
-        q.takeIf { it.isNotBlank() }
-            ?.let { animeRepository.findTop5ByAutocorrectStartsWithOrderByAutocorrect(KoUtil.toJasoAtom(it.trim())) }
-            ?.map { "${it.animeNo} ${it.subject}" }
+        q?.let { it.replace("%", "").trim() }
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { animeRepository.findTop10ByAutocorrectStartsWith(KoUtil.toJasoAtom(it)) }
             ?: listOf()
 
     fun getDelist(page: Int): Page<AnimeDto> =

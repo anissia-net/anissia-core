@@ -22,8 +22,14 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
     @Query("SELECT A FROM Anime A WHERE A.status = anissia.rdb.domain.AnimeStatus.DEL ORDER BY A.animeNo DESC")
     fun findAllDelByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>
 
-    fun findTop5ByAutocorrectStartsWithOrderByAutocorrect(autocorrect: String): List<Anime>
-
     @EntityGraph(attributePaths = ["captions"])
     fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?
+
+
+    /**
+     * use nativeQuery for the performance and system resource
+     * fun findTop10ByAutocorrectStartsWithOrderBySubject(autocorrect: String): List<Anime>
+     */
+    @Query("SELECT concat(anime_no, ' ', subject) FROM anime WHERE autocorrect LIKE concat(:autocorrect, '%') LIMIT 10", nativeQuery = true)
+    fun findTop10ByAutocorrectStartsWith(autocorrect: String): List<String>
 }
