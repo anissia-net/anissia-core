@@ -7,7 +7,6 @@ import anissia.misc.KoUtil
 import anissia.rdb.domain.Anime
 import anissia.rdb.dto.AnimeCaptionDto
 import anissia.rdb.dto.AnimeDto
-import anissia.rdb.dto.Autocorrect
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeRepository
 import me.saro.kit.CacheStore
@@ -16,7 +15,6 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.lang.StringBuilder
 import javax.servlet.http.HttpServletRequest
 import kotlin.streams.toList
 
@@ -51,10 +49,10 @@ class AnimeService(
             animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
         }
 
-    fun getAnimeAutocorrect(q: String): List<Autocorrect> =
+    fun getAnimeAutocorrect(q: String): List<String> =
         q.takeIf { it.isNotBlank() }
-            ?.let { animeRepository.findTop5ByAutocorrectStartsWithOrderByAutocorrect(KoUtil.toKoJasoAtom(it.trim())) }
-            ?.map { Autocorrect(it.animeNo, it.subject) }
+            ?.let { animeRepository.findTop5ByAutocorrectStartsWithOrderByAutocorrect(KoUtil.toJasoAtom(it.trim())) }
+            ?.map { "${it.animeNo} ${it.subject}" }
             ?: listOf()
 
     fun getDelist(page: Int): Page<AnimeDto> =

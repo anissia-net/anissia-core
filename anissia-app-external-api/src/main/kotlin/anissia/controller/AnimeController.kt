@@ -27,7 +27,7 @@ class AnimeController(
     fun getAnime(@PathVariable animeNo: Long): AnimeDto = animeService.getAnime(animeNo)
 
     @GetMapping("/autocorrect")
-    fun getAnimeAutocorrect(@RequestParam q: String)= animeService.getAnimeAutocorrect(q)
+    fun getAnimeAutocorrect(@RequestParam q: String) = animeService.getAnimeAutocorrect(q)
 
     // - caption
 
