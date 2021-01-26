@@ -53,7 +53,3 @@ data class Account (
         val isBan: Boolean get() = lastLoginDt.isAfter(LocalDateTime.now())
         val isAdmin: Boolean get() = roles.any { it == AccountRole.TRANSLATOR || it == AccountRole.ROOT }
 }
-
-enum class AccountRole {
-        TRANSLATOR, ROOT
-}

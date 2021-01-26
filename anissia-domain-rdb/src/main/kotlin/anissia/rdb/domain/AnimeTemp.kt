@@ -6,14 +6,14 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["animeNo"])],
-        indexes = [
-            Index(columnList = "status,week,time"),
-            Index(columnList = "status,animeNo"),
-            Index(columnList = "autocorrect"),
-        ]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["animeNo"])],
+    indexes = [
+        Index(columnList = "status,week,time"),
+        Index(columnList = "status,animeNo"),
+        Index(columnList = "autocorrect"),
+    ]
 )
-data class Anime (
+data class AnimeTemp (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -23,19 +23,6 @@ data class Anime (
     @Column(nullable = false)
     var status: AnimeStatus = AnimeStatus.ON,
 
-    /**
-     * +++ week +++
-     * 0 | 日 | 일요일 | Sunday
-     * 1 | 月 | 월요일 | Monday
-     * 3 | 火 | 화요일 | Tuesday
-     * 4 | 水 | 수요일 | Wednesday
-     * 5 | 木 | 목요일 | Thursday
-     * 6 | 金 | 금요일 | Friday
-     * 7 | 土 | 토요일 | Saturday
-     * +++ week exception +++
-     * 8 | 外 | 기타 | Other
-     * 9 | 新 | 신작 | New
-     */
     @Column(nullable = false, length = 1)
     var week: String = "",
 

@@ -9,6 +9,7 @@ import anissia.rdb.dto.AnimeCaptionDto
 import anissia.rdb.dto.AnimeDto
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeRepository
+import anissia.rdb.repository.AnimeTempRepository
 import me.saro.kit.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -21,6 +22,7 @@ import kotlin.streams.toList
 @Service
 class AnimeService(
     private val animeRepository: AnimeRepository,
+    private val animeTempRepository: AnimeTempRepository,
     private val animeDocumentRepository: AnimeDocumentRepository,
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeRankService: AnimeRankService,
@@ -56,12 +58,17 @@ class AnimeService(
             ?: listOf()
 
     fun getDelist(page: Int): Page<AnimeDto> =
-        animeRepository.findAllDelByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
+        animeTempRepository.findAllDelByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
 
     fun getAnime(animeNo: Long): AnimeDto =
         animeRepository.findWithCaptionsByAnimeNo(animeNo)
             ?.let { AnimeDto(it, true) }
             ?.also { animeRankService.hitAsync(it.animeNo, request.remoteAddr) }
+            ?: AnimeDto()
+
+    fun getAnimeTemp(animeNo: Long): AnimeDto =
+        animeTempRepository.findWithCaptionsByAnimeNo(animeNo)
+            ?.let { AnimeDto(it, true) }
             ?: AnimeDto()
 
     fun getCaptionByAnimeNo(animeNo: Long): List<AnimeCaptionDto> =
