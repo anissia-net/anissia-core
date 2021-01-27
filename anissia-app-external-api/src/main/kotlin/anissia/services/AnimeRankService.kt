@@ -24,7 +24,7 @@ class AnimeRankService(
     fun getRank(type: String): String =
         when (type) {
             "day", "week", "month" ->
-                rankCacheStore.get(type) { animeStoreRepository.findById("rank.$type").map { it.data }.orElse("[]") }
+                rankCacheStore.find(type) { animeStoreRepository.findById("rank.$type").map { it.data }.orElse("[]") }
             else ->
                 "[]"
         }

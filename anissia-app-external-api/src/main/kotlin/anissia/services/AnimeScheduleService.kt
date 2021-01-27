@@ -17,7 +17,7 @@ class AnimeScheduleService(
     private val svgDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
 
     fun getSchedule(week: String): List<AnimeScheduleDto> =
-        scheduleCacheStore.get(week) {
+        scheduleCacheStore.find(week) {
             animeRepository
                 .findAllSchedule(week)
                 .map { AnimeScheduleDto(it) }

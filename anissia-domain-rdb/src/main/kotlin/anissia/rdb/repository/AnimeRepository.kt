@@ -15,7 +15,7 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
 
     fun findAllByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>
 
-    fun findAllByIdInOrderByAnimeNoDesc(id: List<Long>): List<Anime>
+    fun findAllByAnimeNoInOrderByAnimeNoDesc(animeNo: Collection<Long>): List<Anime>
 
     @EntityGraph(attributePaths = ["captions"])
     fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?

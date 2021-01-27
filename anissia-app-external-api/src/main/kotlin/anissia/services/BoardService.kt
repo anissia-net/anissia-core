@@ -22,7 +22,7 @@ class BoardService(
 
     fun getTicker(ticker: String): String =
         tickerCacheStore
-            .get(ticker) { boardTickerRepository.findById(ticker).map { As.toJsonString(it) }.orElse("{}") }
+            .find(ticker) { boardTickerRepository.findById(ticker).map { As.toJsonString(it) }.orElse("{}") }
 
     fun getTopic(ticker: String, topicNo: Long): BoardTopicDto =
         boardTopicRepository
@@ -37,7 +37,7 @@ class BoardService(
 
     fun getRecent(): String =
         recentCacheStore
-            .get(1) { As.toJsonString(mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))) }
+            .find(1) { As.toJsonString(mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))) }
 
     private fun getRecent(ticker: String): List<Map<String, Any>> =
         boardTopicRepository

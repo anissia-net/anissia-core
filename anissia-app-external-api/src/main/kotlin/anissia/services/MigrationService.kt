@@ -1,8 +1,8 @@
 package anissia.services
 
 import anissia.rdb.domain.*
-import anissia.misc.KoUtil
 import anissia.rdb.repository.*
+import me.saro.kit.lang.Koreans
 import org.springframework.stereotype.Service
 import java.sql.ResultSet
 import java.time.LocalDateTime
@@ -91,7 +91,7 @@ class MigrationService(
             week = e.getString("week"),
             time  = e.getString("time").run { substring(0, 2) + ":" + substring(2) },
             subject = e.getString("subj"),
-            autocorrect = KoUtil.toJasoAtom(e.getString("subj")),
+            autocorrect = Koreans.toJasoAtom(e.getString("subj")),
             genres = norGenres(e.getString("type")),
             startDate = norYmd(e.getString("startdate")),
             endDate = norYmd(e.getString("enddate")),
