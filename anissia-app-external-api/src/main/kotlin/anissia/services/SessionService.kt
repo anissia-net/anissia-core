@@ -39,6 +39,7 @@ class SessionService (
 
     val session: Session? get() = context.authentication?.principal?.takeIf { it is Session }?.let { it as Session }
     val context: SecurityContext get() = SecurityContextHolder.getContext()
+    val isManager: Boolean get() = session?.isManager() ?: false
 
     @Transactional
     fun doLogin(loginRequest: LoginRequest): ResultData<Session> {
