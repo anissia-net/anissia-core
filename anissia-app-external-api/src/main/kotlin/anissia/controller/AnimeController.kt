@@ -29,6 +29,9 @@ class AnimeController(
     @GetMapping("/autocorrect")
     fun getAnimeAutocorrect(@RequestParam q: String) = animeService.getAnimeAutocorrect(q)
 
+    @GetMapping("/autocorrect-list")
+    fun getAnimeAutocorrect() = animeService.listAnimeAutocorrect()
+
     // - caption
 
     @GetMapping("/caption/animeNo/{animeNo:[\\d]+}")

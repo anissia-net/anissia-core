@@ -19,8 +19,7 @@ class AnimeDocumentRepositoryCustomImpl(
     private val operations: ElasticsearchOperations
 ): AnimeDocumentRepositoryCustom {
     override fun findAllAnimeNoForAnimeSearch(keywords: List<String>, genres: List<String>, pageable: Pageable): Page<Long> {
-
-        val query = NativeSearchQueryBuilder()
+        val query = NativeSearchQueryBuilder().withPageable(pageable)
 
         if (keywords.isNotEmpty()) {
             query.withQuery(QueryBuilders.wildcardQuery("subject", keywords.joinToString("*", "*", "*")))
@@ -28,8 +27,6 @@ class AnimeDocumentRepositoryCustomImpl(
         if (genres.isNotEmpty()) {
             query.withFilter(QueryBuilders.termsQuery("genres", *genres.toTypedArray()))
         }
-
-        operations.searchForStream(query.build(), AnimeDocument::class.java)
 
         return SearchHitSupport.searchPageFor(operations.search(query.build(), AnimeDocument::class.java), pageable).map { it.content.animeNo }
     }

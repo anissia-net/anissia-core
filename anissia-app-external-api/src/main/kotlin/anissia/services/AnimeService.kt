@@ -17,8 +17,8 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
 import javax.servlet.http.HttpServletRequest
-import kotlin.streams.toList
 
 @Service
 class AnimeService(
@@ -44,11 +44,11 @@ class AnimeService(
                 else keywords.add(word)
             }
 
-            val page = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, PageRequest.of(page, 20))
+            val result = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, PageRequest.of(page, 20))
 
-            log.info("anime search $keywords $genres ${page.totalElements}")
+            log.info("anime search $keywords $genres ${result.totalElements}")
 
-            PageImpl(animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(page.get().toList()).map { AnimeDto(it) }, page.pageable, page.totalElements)
+            PageImpl(animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(result.content).map { AnimeDto(it) }, result.pageable, result.totalElements)
         } else {
             animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
         }
@@ -62,6 +62,12 @@ class AnimeService(
             ?.takeIf { it.isNotEmpty() }
             ?.let { As.toJsonString(animeRepository.findTop10ByAutocorrectStartsWith(Koreans.toJasoAtom(it))) }
             ?: "[]"
+
+    fun listAnimeAutocorrect(): String =
+        autocorrectStore.javaClass.getField("store").run {
+            isAccessible = true
+            (get(autocorrectStore) as ConcurrentHashMap<String, Any>).keys.toList().sorted().joinToString("\n")
+        }
 
     fun clearAnimeAutocorrect() = autocorrectStore.clear()
 
