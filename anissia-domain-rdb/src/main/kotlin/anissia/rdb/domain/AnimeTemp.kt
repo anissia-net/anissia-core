@@ -55,5 +55,5 @@ data class AnimeTemp (
     val captions: List<AnimeCaption> = listOf(),
 
     @Column(nullable = false)
-    var oldAnimeNo: Long = 0
+    var editTargetAnimeNo: Long = 0
 )
