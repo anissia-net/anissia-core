@@ -1,12 +1,16 @@
 package anissia.misc
 
+import anissia.rdb.dto.AnimeDto
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.saro.kit.dates.Dates
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.web.util.HtmlUtils
 import java.net.URL
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.function.Predicate
 
 /**
  * As: anissia
@@ -33,6 +37,8 @@ class As {
 
         fun <T> String.toMapByJson() = this.toClassByJson(object: TypeReference<Map<String, Any>>(){})
 
+        fun <T, U> replacePage(page: Page<U>, list: List<T>): Page<T> = PageImpl(list, page.pageable, page.totalElements)
 
+        fun <T> filterPage(page: Page<T>, filter: (T) -> Boolean): Page<T> = PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements)
     }
 }

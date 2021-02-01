@@ -51,6 +51,10 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             // anime
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/anime/**").permitAll().and()
 
+            // active-panel
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/active-panel/**").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.POST, "/api/active-panel/**").hasAnyRole(ROOT).and()
+
             // board
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/board/**").permitAll().and()
 

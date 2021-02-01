@@ -48,7 +48,7 @@ class AnimeService(
 
             log.info("anime search $keywords $genres ${result.totalElements}")
 
-            PageImpl(animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(result.content).map { AnimeDto(it) }, result.pageable, result.totalElements)
+            As.replacePage(result, animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(result.content).map { AnimeDto(it) })
         } else {
             animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
         }
