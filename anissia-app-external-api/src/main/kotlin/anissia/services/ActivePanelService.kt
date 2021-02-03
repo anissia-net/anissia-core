@@ -26,6 +26,6 @@ class ActivePanelService(
         activePanelRepository.save(ActivePanel(published = published, an = an ?: user?.an ?: 0, code = "TEXT", data1 = text))
 
     fun saveNotice(text: String, published: Boolean = false): ResultStatus =
-        activePanelRepository.save(ActivePanel(published = published, an = user?.an ?: 0, code = "TEXT", data1 = "《공지》 ${user?.name?:""} : $text"))
+        activePanelRepository.save(ActivePanel(published = published, an = user?.an ?: 0, code = "TEXT", data1 = "《공지》 ${user?.name} : $text"))
             .run { ResultStatus("OK") }
 }

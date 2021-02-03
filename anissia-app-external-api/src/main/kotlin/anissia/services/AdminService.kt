@@ -4,6 +4,7 @@ import anissia.misc.As
 import anissia.rdb.domain.AnimeCaption
 import anissia.rdb.dto.AdminAnimeCaptionDto
 import anissia.rdb.dto.ResultStatus
+import anissia.rdb.dto.request.AdminAnimeCaptionRequest
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeRepository
 import org.springframework.data.domain.Page
@@ -31,23 +32,46 @@ class AdminService(
             else animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(userAn, PageRequest.of(page, 20))
             ).map { AdminAnimeCaptionDto(it) }
 
-    fun addCaption(caption: AdminAnimeCaptionDto): ResultStatus {
-        if (animeCaptionRepository.findById(AnimeCaption.Key(caption.animeNo, userAn)).isPresent) {
-            return ResultStatus("FAIL", "이미 작업중인 작품입니다.")
+
+    fun addCaption(animeNo: Long) = editCaption(animeNo, AdminAnimeCaptionRequest(), true)
+
+    fun editCaption(animeNo: Long, caption: AdminAnimeCaptionRequest, isNew: Boolean = false): ResultStatus {
+        caption.validate()
+
+        if (isNew) {
+            if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, userAn)).isPresent) {
+                return ResultStatus("FAIL", "이미 작업중인 작품입니다.")
+            }
+        } else {
+            if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, userAn)).isEmpty) {
+                return ResultStatus("FAIL", "존재하지 않는 자막입니다.")
+            }
         }
-        val anime = animeRepository.findByIdOrNull(caption.animeNo)
+
+        val anime = animeRepository.findByIdOrNull(animeNo)
             ?: return ResultStatus("FAIL", "존재하지 않는 애니메이션입니다.")
 
         animeCaptionRepository.save(AnimeCaption(
-            animeNo = caption.animeNo,
+            animeNo = animeNo,
             an = userAn,
             episode = caption.episode,
-            updDt = LocalDateTime.parse(caption.updDt, As.DTF_CAPTION),
+            updDt = caption.updDt,
             website = caption.website,
         ))
 
-        activePanelService.saveText("$userName 님이 ${anime.subject} 자막을 시작하였습니다.")
+        if (isNew) {
+            activePanelService.saveText("$userName 님이 ${anime.subject} 자막을 시작하였습니다.")
+        }
 
         return ResultStatus("OK")
     }
+
+    fun delCaption(animeNo: Long) =
+        animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, userAn))
+            ?.run {
+                animeCaptionRepository.delete(this)
+                activePanelService.saveText("$userName 님이 ${anime?.subject} 자막을 종료하였습니다.")
+                ResultStatus("OK")
+            }
+            ?: ResultStatus("FAIL", "이미 삭제되었습니다.")
 }
