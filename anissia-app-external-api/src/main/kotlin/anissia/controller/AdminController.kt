@@ -1,8 +1,7 @@
 package anissia.controller
 
-import anissia.rdb.dto.AdminAnimeCaptionDto
 import anissia.rdb.dto.AnimeDto
-import anissia.rdb.dto.request.AdminAnimeCaptionRequest
+import anissia.rdb.dto.request.AdminCaptionRequest
 import anissia.services.AdminService
 import anissia.services.AnimeService
 import org.springframework.data.domain.Page
@@ -32,7 +31,7 @@ class AdminController(
     fun addCaption(@PathVariable animeNo: Long) = adminService.addCaption(animeNo)
 
     @PutMapping("/caption/{animeNo}")
-    fun editCaption(@PathVariable animeNo: Long, @Valid adminAnimeCaptionRequest: AdminAnimeCaptionRequest) = adminService.editCaption(animeNo, adminAnimeCaptionRequest)
+    fun editCaption(@PathVariable animeNo: Long, @Valid adminCaptionRequest: AdminCaptionRequest) = adminService.editCaption(animeNo, adminCaptionRequest)
 
     @DeleteMapping("/caption/{animeNo}")
     fun delCaption(@PathVariable animeNo: Long) = adminService.delCaption(animeNo)

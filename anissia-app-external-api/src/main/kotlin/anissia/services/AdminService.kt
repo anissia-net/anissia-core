@@ -1,17 +1,15 @@
 package anissia.services
 
-import anissia.misc.As
 import anissia.rdb.domain.AnimeCaption
-import anissia.rdb.dto.AdminAnimeCaptionDto
+import anissia.rdb.dto.AdminCaptionDto
 import anissia.rdb.dto.ResultStatus
-import anissia.rdb.dto.request.AdminAnimeCaptionRequest
+import anissia.rdb.dto.request.AdminCaptionRequest
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
 @Service
@@ -27,15 +25,15 @@ class AdminService(
     val userAn get() = user?.an ?: 0
     val userName get() = user?.name ?: 0
 
-    fun getCaptionList(active: Int, page: Int): Page<AdminAnimeCaptionDto> = (
+    fun getCaptionList(active: Int, page: Int): Page<AdminCaptionDto> = (
             if (active == 1) animeCaptionRepository.findAllWithAnimeForAdminCaptionActiveList(userAn, PageRequest.of(page, 20))
             else animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(userAn, PageRequest.of(page, 20))
-            ).map { AdminAnimeCaptionDto(it) }
+            ).map { AdminCaptionDto(it) }
 
 
-    fun addCaption(animeNo: Long) = editCaption(animeNo, AdminAnimeCaptionRequest(), true)
+    fun addCaption(animeNo: Long) = editCaption(animeNo, AdminCaptionRequest(), true)
 
-    fun editCaption(animeNo: Long, caption: AdminAnimeCaptionRequest, isNew: Boolean = false): ResultStatus {
+    fun editCaption(animeNo: Long, caption: AdminCaptionRequest, isNew: Boolean = false): ResultStatus {
         caption.validate()
 
         if (isNew) {

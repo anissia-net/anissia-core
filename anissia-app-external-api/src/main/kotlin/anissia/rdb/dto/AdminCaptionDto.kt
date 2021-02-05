@@ -4,7 +4,7 @@ import anissia.rdb.domain.AnimeCaption
 import anissia.misc.As
 import java.time.LocalDateTime
 
-data class AdminAnimeCaptionDto (
+data class AdminCaptionDto (
         var animeNo: Long = 0,
         var subject: String = "",
         var episode: String = "0",

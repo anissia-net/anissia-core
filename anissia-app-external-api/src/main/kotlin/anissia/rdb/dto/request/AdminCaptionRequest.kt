@@ -7,14 +7,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import java.time.LocalDateTime
 import javax.validation.constraints.Pattern
 
-data class AdminAnimeCaptionRequest (
+data class AdminCaptionRequest (
         @field:Pattern(regexp = "\\d{1,5}|\\d{1,5}\\.\\d{1,2}", message = "화수는 숫자여야합니다.\n최대 (5자리.소수점2자리)")
         var episode: String = "0",
         @field:DateTimeFormat(pattern = As.DTF_CAPTION_S)
         var updDt: LocalDateTime = LocalDateTime.now(),
         var website: String = ""
-
-
 ) {
         fun validate() {
                 if (!(website == "" || website.startsWith("https://") || website.startsWith("http://"))) {
