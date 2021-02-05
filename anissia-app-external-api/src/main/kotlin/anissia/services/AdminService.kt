@@ -1,5 +1,6 @@
 package anissia.services
 
+import anissia.configruration.logger
 import anissia.rdb.domain.AnimeCaption
 import anissia.rdb.dto.AdminCaptionDto
 import anissia.rdb.dto.ResultStatus
@@ -21,6 +22,7 @@ class AdminService(
     private val activePanelService: ActivePanelService
 ) {
 
+    val log = logger<AnimeService>()
     val user get() = sessionService.session
     val userAn get() = user?.an ?: 0
     val userName get() = user?.name ?: 0
@@ -34,34 +36,42 @@ class AdminService(
     fun addCaption(animeNo: Long) = updateCaption(animeNo, AdminCaptionRequest(), true)
 
     fun updateCaption(animeNo: Long, caption: AdminCaptionRequest, isNew: Boolean = false): ResultStatus {
+        log.info("update caption: $animeNo $caption")
         caption.validate()
+
+        var animeCaption: AnimeCaption
 
         if (isNew) {
             if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, userAn)).isPresent) {
                 return ResultStatus("FAIL", "이미 작업중인 작품입니다.")
             }
+            animeCaption = AnimeCaption(
+                animeNo = animeNo,
+                an = userAn,
+                episode = caption.episode,
+                updDt = caption.updLdt,
+                website = caption.website,
+            )
         } else {
-            if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, userAn)).isEmpty) {
-                return ResultStatus("FAIL", "존재하지 않는 자막입니다.")
-            }
+            animeCaption = animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, userAn))
+                ?.apply {
+                    episode = caption.episode
+                    updDt = caption.updLdt
+                    website = caption.website
+                }
+                ?: return ResultStatus("FAIL", "존재하지 않는 자막입니다.")
         }
 
         val anime = animeRepository.findByIdOrNull(animeNo)
             ?: return ResultStatus("FAIL", "존재하지 않는 애니메이션입니다.")
 
-        animeCaptionRepository.save(AnimeCaption(
-            animeNo = animeNo,
-            an = userAn,
-            episode = caption.episode,
-            updDt = caption.updDt,
-            website = caption.website,
-        ))
+        animeCaptionRepository.save(animeCaption)
 
         if (isNew) {
             activePanelService.saveText("$userName 님이 ${anime.subject} 자막을 시작하였습니다.")
         }
 
-        return ResultStatus("OK")
+        return ResultStatus("OK", "수정되었습니다.")
     }
 
     fun deleteCaption(animeNo: Long) =

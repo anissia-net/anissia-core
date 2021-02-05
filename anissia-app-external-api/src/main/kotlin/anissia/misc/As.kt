@@ -27,8 +27,7 @@ class As {
         private val OBJECT_MAPPER = ObjectMapper()
         const val IS_NAME = "[0-9A-Za-z가-힣㐀-䶵一-龻ぁ-ゖゝ-ヿ々_]{2,16}"
         val DTF_YMDHMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        const val DTF_CAPTION_S = "yyyy-MM-dd'T'HH:mm"
-        val DTF_CAPTION = DateTimeFormatter.ofPattern(DTF_CAPTION_S)
+        val DTF_CAPTION = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
         val DTF_RANK_HOUR = DateTimeFormatter.ofPattern("yyyyMMddHH")
 
         fun getResource(path: String): URL = As::class.java.getResource(path)!!
@@ -48,10 +47,14 @@ class As {
 
         fun <T> filterPage(page: Page<T>, filter: (T) -> Boolean): Page<T> = PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements)
 
-        fun throwHttp400(obj: Any, field: String, msg: String) {
-            val errors = BeanPropertyBindingResult(obj, obj::class.simpleName?:"")
-            errors.rejectValue(field, msg)
-            throw MethodArgumentNotValidException(MethodParameter(obj.javaClass.constructors[0], 0, 0), errors)
+        fun throwHttp400(msg: String) {
+            val errors = BeanPropertyBindingResult(null, "").apply { reject("400", msg) }
+            throw MethodArgumentNotValidException(MethodParameter(As.javaClass.constructors[0], 0, 0), errors)
         }
+
+        fun throwHttp400If(msg: String, exec: () -> Boolean) {
+            if (exec()) { throwHttp400(msg) }
+        }
+        fun throwHttp400IfError(msg: String, exec: () -> Unit) = try { exec() } catch (e: Exception) { throwHttp400(msg) }
     }
 }
