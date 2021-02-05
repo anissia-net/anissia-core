@@ -31,9 +31,9 @@ class AdminService(
             ).map { AdminCaptionDto(it) }
 
 
-    fun addCaption(animeNo: Long) = editCaption(animeNo, AdminCaptionRequest(), true)
+    fun addCaption(animeNo: Long) = updateCaption(animeNo, AdminCaptionRequest(), true)
 
-    fun editCaption(animeNo: Long, caption: AdminCaptionRequest, isNew: Boolean = false): ResultStatus {
+    fun updateCaption(animeNo: Long, caption: AdminCaptionRequest, isNew: Boolean = false): ResultStatus {
         caption.validate()
 
         if (isNew) {
@@ -64,7 +64,7 @@ class AdminService(
         return ResultStatus("OK")
     }
 
-    fun delCaption(animeNo: Long) =
+    fun deleteCaption(animeNo: Long) =
         animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, userAn))
             ?.run {
                 animeCaptionRepository.delete(this)

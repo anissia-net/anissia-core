@@ -31,8 +31,8 @@ class AdminController(
     fun addCaption(@PathVariable animeNo: Long) = adminService.addCaption(animeNo)
 
     @PutMapping("/caption/{animeNo}")
-    fun editCaption(@PathVariable animeNo: Long, @Valid adminCaptionRequest: AdminCaptionRequest) = adminService.editCaption(animeNo, adminCaptionRequest)
+    fun updateCaption(@PathVariable animeNo: Long, @Valid adminCaptionRequest: AdminCaptionRequest) = adminService.updateCaption(animeNo, adminCaptionRequest)
 
     @DeleteMapping("/caption/{animeNo}")
-    fun delCaption(@PathVariable animeNo: Long) = adminService.delCaption(animeNo)
+    fun deleteCaption(@PathVariable animeNo: Long) = adminService.deleteCaption(animeNo)
 }
