@@ -68,6 +68,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             // other
             .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
             .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/cc").permitAll().and()
 
             // admin
             .authorizeRequests().antMatchers("/api/admin/**").hasAnyRole(ROOT, TRANSLATOR).and()

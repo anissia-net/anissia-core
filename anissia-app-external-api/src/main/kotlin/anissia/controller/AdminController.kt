@@ -14,7 +14,6 @@ class AdminController(
     private val adminService: AdminService,
     private val animeService: AnimeService
 ) {
-
     @GetMapping("/anime/list/{page:[\\d]+}")
     fun getAnimeList(@RequestParam q: String?, @PathVariable page: Int): Page<AnimeDto> = animeService.getList(q ?: "", page)
     

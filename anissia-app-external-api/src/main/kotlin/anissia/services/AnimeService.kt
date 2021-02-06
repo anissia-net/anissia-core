@@ -8,6 +8,7 @@ import anissia.rdb.domain.Anime
 import anissia.rdb.dto.AnimeCaptionDto
 import anissia.rdb.dto.AnimeDto
 import anissia.rdb.repository.AnimeCaptionRepository
+import anissia.rdb.repository.AnimeGenreRepository
 import anissia.rdb.repository.AnimeRepository
 import me.saro.kit.CacheStore
 import me.saro.kit.lang.Koreans
@@ -23,6 +24,7 @@ class AnimeService(
     private val animeRepository: AnimeRepository,
     private val animeDocumentRepository: AnimeDocumentRepository,
     private val animeCaptionRepository: AnimeCaptionRepository,
+    private val animeGenreRepository: AnimeGenreRepository,
     private val animeRankService: AnimeRankService,
     private val request: HttpServletRequest
 ) {
@@ -30,6 +32,7 @@ class AnimeService(
     private val log = logger<AnimeService>()
     private val captionCacheStore = CacheStore<Long, List<AnimeCaptionDto>>((5 * 60000).toLong())
     private val autocorrectStore = CacheStore<String, String>(60 * 60000)
+    private val genresCacheStore = CacheStore<String, String>(60 * 60000)
 
     fun getList(q: String, page: Int): Page<AnimeDto> =
         if (q.isNotBlank()) {
@@ -83,6 +86,9 @@ class AnimeService(
         animeRepository.findWithCaptionsByAnimeNo(animeNo)
             ?.let { AnimeDto(it, true) }
             ?: AnimeDto()
+
+    fun getGenres() =
+        genresCacheStore.find("genre") { animeGenreRepository.findAll().map { it.genre }.apply { sorted() }.let { As.toJsonString(it) } }
 
     fun getCaptionByAnimeNo(animeNo: Long): List<AnimeCaptionDto> =
         captionCacheStore

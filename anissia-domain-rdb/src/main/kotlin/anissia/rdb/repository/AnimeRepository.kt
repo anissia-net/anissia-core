@@ -23,11 +23,11 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
 
     @Modifying
     @Query("UPDATE Anime A SET A.captionCount = A.captions.size WHERE A.animeNo = :animeNo")
-    fun updateCaptionCount(animeNo: Long): Long
+    fun updateCaptionCount(animeNo: Long): Int
 
     @Modifying
     @Query("UPDATE Anime A SET A.captionCount = A.captions.size")
-    fun updateAllCaptionCount(): Long
+    fun updateAllCaptionCount(): Int
 
     /**
      * use nativeQuery for the performance and system resource

@@ -1,6 +1,7 @@
 package anissia.controller
 
 import anissia.misc.As
+import anissia.rdb.repository.AnimeRepository
 import anissia.services.AnimeRankService
 import anissia.services.MigrationService
 import org.springframework.web.bind.annotation.GetMapping
@@ -12,11 +13,15 @@ import javax.servlet.http.HttpServletRequest
 class MigrationController(
     val migrationService: MigrationService,
     val animeRankService: AnimeRankService,
+    val animeRepository: AnimeRepository,
     private val request: HttpServletRequest
 ) {
 
     @GetMapping("/mig")
     fun mig(): String = migrationService.migration().run { "OK" }
+
+//    @GetMapping("/cc")
+//    fun cc() = animeRepository.updateAllCaptionCount()
 
     @GetMapping("/rank")
     fun rank(): String {

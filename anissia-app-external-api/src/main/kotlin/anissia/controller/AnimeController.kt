@@ -32,6 +32,9 @@ class AnimeController(
     @GetMapping("/autocorrect-list")
     fun getAnimeAutocorrect() = animeService.listAnimeAutocorrect()
 
+    @GetMapping("/genres", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getGenres() = animeService.getGenres()
+
     // - caption
 
     @GetMapping("/caption/animeNo/{animeNo:[\\d]+}")

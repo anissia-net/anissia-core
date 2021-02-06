@@ -4,6 +4,7 @@ import anissia.rdb.domain.*
 import anissia.rdb.repository.*
 import me.saro.kit.lang.Koreans
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -31,6 +32,7 @@ class MigrationService(
     val anMap: MutableMap<Long, Long> = mutableMapOf<Long, Long>()
     val animeMap: MutableMap<Long, Long> = mutableMapOf<Long, Long>()
 
+    @Transactional
     fun migration() {
         // 부모가 없는 자막 목록 삭제
         removeUnlinkedCaption()
