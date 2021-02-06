@@ -17,6 +17,8 @@ class ActivePanelService(
     val user get() = sessionService.session
     val isManager get() = sessionService.isManager
 
+    fun save(activePanel: ActivePanel) = activePanelRepository.save(activePanel)
+
     fun getList(page: Int): Page<ActivePanelDto> =
         activePanelRepository.findAllByOrderByApNoDesc(PageRequest.of(page, 20))
             .run { if (isManager) this else As.filterPage(this) { it.published } }

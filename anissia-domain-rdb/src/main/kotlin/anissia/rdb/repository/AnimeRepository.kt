@@ -18,6 +18,8 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
 
     fun findAllByAnimeNoInOrderByAnimeNoDesc(animeNo: Collection<Long>): List<Anime>
 
+    fun existsBySubject(subject: String): Boolean
+
     @EntityGraph(attributePaths = ["captions"])
     fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?
 

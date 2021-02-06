@@ -1,18 +1,28 @@
 package anissia.services
 
 import anissia.configruration.logger
+import anissia.misc.As
+import anissia.rdb.domain.ActivePanel
+import anissia.rdb.domain.Anime
 import anissia.rdb.domain.AnimeCaption
+import anissia.rdb.domain.AnimeStatus
 import anissia.rdb.dto.AdminCaptionDto
+import anissia.rdb.dto.AnimeDto
 import anissia.rdb.dto.ResultStatus
-import anissia.rdb.dto.request.AdminCaptionRequest
+import anissia.rdb.dto.request.AnimeCaptionRequest
+import anissia.rdb.dto.request.AnimeRequest
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeGenreRepository
 import anissia.rdb.repository.AnimeRepository
+import me.saro.kit.lang.Koreans
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import javax.persistence.Column
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.servlet.http.HttpServletRequest
 
 @Service
@@ -22,7 +32,8 @@ class AdminService(
     private val animeGenreRepository: AnimeGenreRepository,
     private val request: HttpServletRequest,
     private val sessionService: SessionService,
-    private val activePanelService: ActivePanelService
+    private val activePanelService: ActivePanelService,
+    private val animeService: AnimeService
 ) {
 
     val log = logger<AnimeService>()
@@ -35,15 +46,70 @@ class AdminService(
             else animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(userAn, PageRequest.of(page, 20))
             ).map { AdminCaptionDto(it) }
 
-    fun updateAnime() {
+    fun addAnime(animeRequest: AnimeRequest) = updateAnime(0, animeRequest)
 
+    fun updateAnime(animeNo: Long, animeRequest: AnimeRequest): ResultStatus {
+        val isNew = animeNo == 0L
+        animeRequest.validate()
+        if (animeGenreRepository.countByGenreIn(animeRequest.genresList).toInt() != animeRequest.genresList.size) {
+            return ResultStatus("FAIL", "장르 입력이 잘못되었습니다.")
+        }
+
+        var anime: Anime
+        var activePanel = ActivePanel(published = true, code = "ANIME", status = if (isNew) "C" else "U", an = userAn, data1 = "")
+
+        if (isNew) {
+            if (animeRepository.existsBySubject(animeRequest.subject)) {
+                return ResultStatus("FAIL", "이미 동일한 이름의 작품이 존재합니다.")
+            }
+            anime = Anime(
+                status = animeRequest.statusEnum,
+                week = animeRequest.week,
+                time = animeRequest.time,
+                subject = animeRequest.subject,
+                autocorrect = Koreans.toJasoAtom(animeRequest.subject),
+                genres = animeRequest.genres,
+                startDate = animeRequest.startDate,
+                endDate = animeRequest.endDate,
+                website = animeRequest.website,
+            )
+        } else {
+            anime = animeRepository.findByIdOrNull(animeNo)
+                ?.also { activePanel.data2 = As.toJsonString(AnimeDto(it, false)) }
+                ?.apply {
+                    status = animeRequest.statusEnum
+                    week = animeRequest.week
+                    time = animeRequest.time
+                    subject = animeRequest.subject
+                    autocorrect = Koreans.toJasoAtom(animeRequest.subject)
+                    genres = animeRequest.genres
+                    startDate = animeRequest.startDate
+                    endDate = animeRequest.endDate
+                    website = animeRequest.website
+                }
+                ?.also { activePanel.data3 = As.toJsonString(AnimeDto(it, false)) }
+                ?: return ResultStatus("FAIL", "존재하지 않는 자막입니다.")
+        }
+
+        animeRepository.save(anime)
+
+        if (isNew) {
+            activePanel.data1 = "[$userName]님이 애니메이션 [${anime.subject}] 을(를) 추가하였습니다."
+        } else {
+            activePanel.data1 = "[$userName]님이 애니메이션 [${anime.subject}] 을(를) 수정하였습니다."
+        }
+
+        activePanelService.save(activePanel)
+        animeService.updateDocument(anime)
+
+        return ResultStatus("OK")
     }
 
     @Transactional
-    fun addCaption(animeNo: Long) = updateCaption(animeNo, AdminCaptionRequest(), true)
+    fun addCaption(animeNo: Long) = updateCaption(animeNo, AnimeCaptionRequest(), true)
 
     @Transactional
-    fun updateCaption(animeNo: Long, caption: AdminCaptionRequest, isNew: Boolean = false): ResultStatus {
+    fun updateCaption(animeNo: Long, caption: AnimeCaptionRequest, isNew: Boolean = false): ResultStatus {
         log.info("update caption: $animeNo $caption")
         caption.validate()
 

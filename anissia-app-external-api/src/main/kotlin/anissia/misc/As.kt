@@ -53,9 +53,12 @@ class As {
             throw MethodArgumentNotValidException(MethodParameter(As.javaClass.constructors[0], 0, 0), errors)
         }
 
-        fun throwHttp400If(msg: String, exec: () -> Boolean) {
-            if (exec()) { throwHttp400(msg) }
+        fun throwHttp400If(msg: String, isError: Boolean) {
+            if (isError) { throwHttp400(msg) }
         }
-        fun throwHttp400IfError(msg: String, exec: () -> Unit) = try { exec() } catch (e: Exception) { throwHttp400(msg) }
+        fun throwHttp400Exception(msg: String, exec: () -> Unit) = try { exec() } catch (e: Exception) { throwHttp400(msg) }
+
+        fun isWebSite(website: String, allowEmpty: Boolean = false) =
+            (allowEmpty && website == "") || website.startsWith("https://") || website.startsWith("http://")
     }
 }
