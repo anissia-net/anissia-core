@@ -35,6 +35,10 @@ class AdminService(
             else animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(userAn, PageRequest.of(page, 20))
             ).map { AdminCaptionDto(it) }
 
+    fun updateAnime() {
+
+    }
+
     @Transactional
     fun addCaption(animeNo: Long) = updateCaption(animeNo, AdminCaptionRequest(), true)
 

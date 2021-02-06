@@ -26,9 +26,10 @@ class As {
     companion object {
         private val OBJECT_MAPPER = ObjectMapper()
         const val IS_NAME = "[0-9A-Za-z가-힣㐀-䶵一-龻ぁ-ゖゝ-ヿ々_]{2,16}"
-        val DTF_YMDHMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val DTF_CAPTION = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+        val DTF_ISO_YMD = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val DTF_ISO_CAPTION = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
         val DTF_RANK_HOUR = DateTimeFormatter.ofPattern("yyyyMMddHH")
+        val DTF_USER_YMDHMS = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss일")
 
         fun getResource(path: String): URL = As::class.java.getResource(path)!!
 

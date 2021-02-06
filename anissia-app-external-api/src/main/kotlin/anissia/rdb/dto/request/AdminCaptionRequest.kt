@@ -7,10 +7,10 @@ import javax.validation.constraints.Pattern
 data class AdminCaptionRequest (
         @field:Pattern(regexp = "\\d{1,5}|\\d{1,5}\\.\\d{1,2}", message = "화수는 숫자여야합니다.\n최대 (5자리.소수점2자리)")
         var episode: String = "0",
-        var updDt: String = LocalDateTime.now().format(As.DTF_CAPTION),
+        var updDt: String = LocalDateTime.now().format(As.DTF_ISO_CAPTION),
         var website: String = ""
 ) {
-        val updLdt get() = LocalDateTime.parse(updDt, As.DTF_CAPTION)
+        val updLdt get() = LocalDateTime.parse(updDt, As.DTF_ISO_CAPTION)
 
         fun validate() {
                 As.throwHttp400If("사이트주소는 공백이거나 http:// https:// 로시작해야합니다.") {

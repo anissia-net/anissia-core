@@ -11,7 +11,7 @@ data class AnimeCaptionDto (
 ) {
         constructor(animeCaption: AnimeCaption): this(
                 episode = animeCaption.episode,
-                updDt = animeCaption.updDt.format(As.DTF_YMDHMS),
+                updDt = animeCaption.updDt.format(As.DTF_ISO_CAPTION) + ":00",
                 website = animeCaption.website,
                 name = animeCaption.account?.name?:"탈퇴회원"
         )

@@ -53,7 +53,7 @@ class SessionService (
         accountRepository.findWithRolesByEmail(loginRequest.email)
             ?.also { account ->
                 if (account.isBan) {
-                    return ResultData("FAIL", "${account.banExpireDt!!.format(As.DTF_YMDHMS)} 까지 차단된 계정입니다.", null)
+                    return ResultData("FAIL", "${account.banExpireDt!!.format(As.DTF_USER_YMDHMS)} 까지 차단된 계정입니다.", null)
                 }
 
                 if (passwordEncoder.matches(loginRequest.password, account.password)) {
