@@ -1,16 +1,13 @@
 package anissia.services
 
 import anissia.configruration.logger
-import anissia.misc.As
 import anissia.rdb.domain.AnimeCaption
-import anissia.rdb.domain.AnimeGenre
 import anissia.rdb.dto.AdminCaptionDto
 import anissia.rdb.dto.ResultStatus
 import anissia.rdb.dto.request.AdminCaptionRequest
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeGenreRepository
 import anissia.rdb.repository.AnimeRepository
-import me.saro.kit.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -38,6 +35,7 @@ class AdminService(
             else animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(userAn, PageRequest.of(page, 20))
             ).map { AdminCaptionDto(it) }
 
+    @Transactional
     fun addCaption(animeNo: Long) = updateCaption(animeNo, AdminCaptionRequest(), true)
 
     @Transactional
