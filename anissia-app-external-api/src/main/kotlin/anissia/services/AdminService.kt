@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import javax.servlet.http.HttpServletRequest
 
 @Service
@@ -35,6 +36,7 @@ class AdminService(
 
     fun addCaption(animeNo: Long) = updateCaption(animeNo, AdminCaptionRequest(), true)
 
+    @Transactional
     fun updateCaption(animeNo: Long, caption: AdminCaptionRequest, isNew: Boolean = false): ResultStatus {
         log.info("update caption: $animeNo $caption")
         caption.validate()
@@ -68,17 +70,20 @@ class AdminService(
         animeCaptionRepository.save(animeCaption)
 
         if (isNew) {
-            activePanelService.saveText("$userName 님이 ${anime.subject} 자막을 시작하였습니다.")
+            animeRepository.updateCaptionCount(animeNo)
+            activePanelService.saveText("[$userName]님이 [${anime.subject}] 자막을 시작하였습니다.")
         }
 
         return ResultStatus("OK", "수정되었습니다.")
     }
 
+    @Transactional
     fun deleteCaption(animeNo: Long) =
         animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, userAn))
             ?.run {
                 animeCaptionRepository.delete(this)
-                activePanelService.saveText("$userName 님이 ${anime?.subject} 자막을 종료하였습니다.")
+                animeRepository.updateCaptionCount(animeNo)
+                activePanelService.saveText("[$userName]님이 [${anime?.subject}] 자막을 종료하였습니다.")
                 ResultStatus("OK")
             }
             ?: ResultStatus("FAIL", "이미 삭제되었습니다.")

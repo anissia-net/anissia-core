@@ -9,11 +9,9 @@ import anissia.rdb.dto.AnimeCaptionDto
 import anissia.rdb.dto.AnimeDto
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeRepository
-import anissia.rdb.repository.AnimeTempRepository
 import me.saro.kit.CacheStore
 import me.saro.kit.lang.Koreans
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -23,7 +21,6 @@ import javax.servlet.http.HttpServletRequest
 @Service
 class AnimeService(
     private val animeRepository: AnimeRepository,
-    private val animeTempRepository: AnimeTempRepository,
     private val animeDocumentRepository: AnimeDocumentRepository,
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeRankService: AnimeRankService,
@@ -71,17 +68,19 @@ class AnimeService(
 
     fun clearAnimeAutocorrect() = autocorrectStore.clear()
 
-    fun getDelist(page: Int): Page<AnimeDto> =
-        animeTempRepository.findAllDelByOrderByAnimeNoDesc(PageRequest.of(page, 20)).map { AnimeDto(it) }
-
     fun getAnime(animeNo: Long): AnimeDto =
         animeRepository.findWithCaptionsByAnimeNo(animeNo)
             ?.let { AnimeDto(it, true) }
             ?.also { animeRankService.hitAsync(it.animeNo, request.remoteAddr) }
             ?: AnimeDto()
 
+    // 임시
+    fun getDelist(page: Int): Page<AnimeDto> =
+        getList("", page)
+
+    // 임시
     fun getAnimeTemp(animeNo: Long): AnimeDto =
-        animeTempRepository.findWithCaptionsByAnimeNo(animeNo)
+        animeRepository.findWithCaptionsByAnimeNo(animeNo)
             ?.let { AnimeDto(it, true) }
             ?: AnimeDto()
 

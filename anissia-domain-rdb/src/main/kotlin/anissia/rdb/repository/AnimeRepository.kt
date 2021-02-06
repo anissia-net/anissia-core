@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
@@ -19,6 +20,14 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
 
     @EntityGraph(attributePaths = ["captions"])
     fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?
+
+    @Modifying
+    @Query("UPDATE Anime A SET A.captionCount = A.captions.size WHERE A.animeNo = :animeNo")
+    fun updateCaptionCount(animeNo: Long): Long
+
+    @Modifying
+    @Query("UPDATE Anime A SET A.captionCount = A.captions.size")
+    fun updateAllCaptionCount(): Long
 
     /**
      * use nativeQuery for the performance and system resource

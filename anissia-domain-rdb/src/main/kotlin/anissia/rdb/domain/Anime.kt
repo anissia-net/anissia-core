@@ -60,6 +60,9 @@ data class Anime (
     @Column(nullable = false, length = 128)
     var website: String = "",
 
+    @Column(nullable = false)
+    var captionCount: Int = 0,
+
     @UpdateTimestamp
     @Column(nullable = false)
     var updDt: LocalDateTime = LocalDateTime.now(),

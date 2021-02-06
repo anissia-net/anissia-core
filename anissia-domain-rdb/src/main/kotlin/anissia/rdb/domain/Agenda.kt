@@ -7,15 +7,18 @@ import javax.persistence.*
  * asl is Anissia Log
  */
 @Entity
-@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["apNo"])])
-data class ActivePanel (
+@Table(
+        uniqueConstraints = [UniqueConstraint(columnNames = ["agendaNo"])],
+        indexes = [
+                Index(columnList = "code,status,agendaNo"),
+                Index(columnList = "code,status,an,agendaNo")
+        ],
+)
+data class Agenda (
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(nullable = false)
-        var apNo: Long = 0,
-
-        @Column(nullable = false)
-        var published: Boolean = false,
+        var agendaNo: Long = 0,
 
         @Column(nullable = false, length = 100)
         var code: String = "",
@@ -37,6 +40,9 @@ data class ActivePanel (
         @Lob
         @Column(nullable = true)
         var data3: String? = null,
+
+        @OneToMany(mappedBy = "agenda")
+        val polls: List<AgendaPolls> = listOf(),
 
         @Column(nullable = false)
         var regDt: LocalDateTime = LocalDateTime.now()

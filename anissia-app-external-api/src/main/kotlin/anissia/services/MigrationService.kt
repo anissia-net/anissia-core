@@ -49,6 +49,8 @@ class MigrationService(
 
         // 공지
         bbs()
+
+        animeRepository.updateAllCaptionCount()
     }
 
     fun removeUnlinkedCaption() = query("""
