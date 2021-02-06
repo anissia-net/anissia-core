@@ -3,9 +3,6 @@ package anissia.rdb.domain
 import java.time.LocalDateTime
 import javax.persistence.*
 
-/**
- * asl is Anissia Log
- */
 @Entity
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["pollsNo"])],
@@ -37,9 +34,10 @@ data class AgendaPolls (
         @Column(nullable = true, length = 255)
         var comment: String = "",
 
-        @OneToMany(mappedBy = "anime")
-        val polls: List<AgendaPolls> = listOf(),
-
         @Column(nullable = false)
-        var regDt: LocalDateTime = LocalDateTime.now()
+        var regDt: LocalDateTime = LocalDateTime.now(),
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "agendaNo", nullable = false, insertable = false, updatable = false)
+        var agenda: Agenda? = null
 )

@@ -3,9 +3,6 @@ package anissia.rdb.domain
 import java.time.LocalDateTime
 import javax.persistence.*
 
-/**
- * asl is Anissia Log
- */
 @Entity
 @Table(
         uniqueConstraints = [UniqueConstraint(columnNames = ["agendaNo"])],
