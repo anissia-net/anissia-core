@@ -54,11 +54,12 @@ class AccountRegisterService(
             return ResultStatus("FAIL", "인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
         }
 
+        val ip = request.remoteAddr
         val auth = accountRegisterAuthRepository.save(
             AccountRegisterAuth(
                 token = Texts.createRandomBase62String(128, 256),
                 email = registerRequest.email,
-                ip = request.remoteAddr,
+                ip = ip,
                 data = As.toJsonString(registerRequest.apply { password = passwordEncoder.encode(password) }),
                 expDt = LocalDateTime.now().plusHours(1)
             )
@@ -69,7 +70,7 @@ class AccountRegisterService(
                 registerRequest.email,
                 "[애니시아] 회원가입 이메일 인증",
                 registerAuthHtml
-                    .replace("[[ip]]", request.remoteAddr)
+                    .replace("[[ip]]", ip)
                     .replace("[[exp_dt]]", auth.expDt.format(emailDateFormat))
                     .replace("[[url]]", "${host}/register/${auth.no}-${auth.token}")
             )
