@@ -17,18 +17,20 @@ class AnimeScheduleService(
     private val svgDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
 
     fun getSchedule(week: String): List<AnimeScheduleDto> =
-        scheduleCacheStore.find(week) {
-            animeRepository
-                .findAllSchedule(week)
-                .map { AnimeScheduleDto(it) }
-                .run {
-                    when(week) {
-                        "7" -> sortedByDescending { if (it.time != "") it.time else "9999" }
-                        "8" -> sortedBy { if (it.time != "") it.time else "9999" }
-                        else -> sortedBy { it.time }
-                    }
+        scheduleCacheStore.find(week) { getScheduleNotCache(week) }
+
+    // using for admin
+    fun getScheduleNotCache(week: String): List<AnimeScheduleDto> =
+        animeRepository
+            .findAllSchedule(week)
+            .map { AnimeScheduleDto(it) }
+            .run {
+                when(week) {
+                    "7" -> sortedByDescending { if (it.time != "") it.time else "9999" }
+                    "8" -> sortedBy { if (it.time != "") it.time else "9999" }
+                    else -> sortedBy { it.time }
                 }
-        }
+            }
 
     fun getScheduleSvg(width: String, color: String): String =
         LocalDateTime.now().let { dt -> getSchedule((dt.dayOfWeek.value % 7).toString()).run {

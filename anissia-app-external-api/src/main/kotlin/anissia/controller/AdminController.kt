@@ -1,9 +1,11 @@
 package anissia.controller
 
 import anissia.rdb.dto.AnimeDto
+import anissia.rdb.dto.AnimeScheduleDto
 import anissia.rdb.dto.request.AnimeCaptionRequest
 import anissia.rdb.dto.request.AnimeRequest
 import anissia.services.AdminService
+import anissia.services.AnimeScheduleService
 import anissia.services.AnimeService
 import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.*
@@ -13,7 +15,8 @@ import javax.validation.Valid
 @RequestMapping("/api/admin")
 class AdminController(
     private val adminService: AdminService,
-    private val animeService: AnimeService
+    private val animeService: AnimeService,
+    private val animeScheduleService: AnimeScheduleService
 ) {
     @GetMapping("/anime/list/{page:[\\d]+}")
     fun getAnimeList(@RequestParam q: String?, @PathVariable page: Int): Page<AnimeDto> = animeService.getList(q ?: "", page)
@@ -23,6 +26,9 @@ class AdminController(
 
     @GetMapping("/anime/animeNo/{animeNo:[\\d]+}")
     fun getAnime(@PathVariable animeNo: Long): AnimeDto = animeService.getAnime(animeNo)
+
+    @GetMapping("/anime/schedule/{week:[0-8]}")
+    fun getSchedule(@PathVariable week: String): List<AnimeScheduleDto> = animeScheduleService.getScheduleNotCache(week)
 
     @GetMapping("/caption/list/{active}/{page}")
     fun getCaptionList(@PathVariable active: Int, @PathVariable page: Int) = adminService.getCaptionList(active, page)
