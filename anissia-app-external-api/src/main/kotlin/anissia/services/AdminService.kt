@@ -94,9 +94,9 @@ class AdminService(
         animeRepository.save(anime)
 
         if (isNew) {
-            activePanel.data1 = "[$userName]님이 애니메이션 [${anime.subject}] 을(를) 추가하였습니다."
+            activePanel.data1 = "[$userName]님이 애니메이션 [${anime.subject}]을(를) 추가하였습니다."
         } else {
-            activePanel.data1 = "[$userName]님이 애니메이션 [${anime.subject}] 을(를) 수정하였습니다."
+            activePanel.data1 = "[$userName]님이 애니메이션 [${anime.subject}]을(를) 수정하였습니다."
         }
 
         activePanelService.save(activePanel)

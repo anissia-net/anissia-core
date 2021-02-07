@@ -2,6 +2,7 @@ package anissia.rdb.dto.request
 
 import anissia.misc.As
 import anissia.rdb.domain.AnimeStatus
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.Pattern
@@ -28,10 +29,13 @@ data class AnimeRequest (
         As.throwHttp400If("장르가 입력되지 않았습니다.", genres.isBlank())
         As.throwHttp400If("장르는 3개까지만 입력가능합니다.", genresList.size > 3)
         As.throwHttp400Exception("시작일이 규격에 맞지 않습니다.") {
-            if (startDate.isNotEmpty()) LocalDateTime.parse(startDate, As.DTF_ISO_YMD)
+            if (startDate.isNotEmpty()) LocalDate.parse(startDate, As.DTF_ISO_YMD)
         }
         As.throwHttp400Exception("종료일이 규격에 맞지 않습니다.") {
-            if (endDate.isNotEmpty()) LocalDateTime.parse(endDate, As.DTF_ISO_YMD)
+            if (endDate.isNotEmpty()) LocalDate.parse(endDate, As.DTF_ISO_YMD)
+        }
+        if (startDate.isNotEmpty() && endDate.isNotEmpty() && LocalDate.parse(startDate, As.DTF_ISO_YMD).isAfter(LocalDate.parse(endDate, As.DTF_ISO_YMD))) {
+            As.throwHttp400("시작일은 종료일보다 미래일 수 없습니다.")
         }
         if (!(website == "" || website.startsWith("https://") || website.startsWith("http://"))) {
 
