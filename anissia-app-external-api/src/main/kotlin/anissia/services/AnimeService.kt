@@ -77,15 +77,6 @@ class AnimeService(
             ?.also { animeRankService.hitAsync(it.animeNo, request.remoteAddr) }
             ?: AnimeDto()
 
-    // 임시
-    fun getDelist(page: Int): Page<AnimeDto> =
-        getList("", page)
-
-    // 임시
-    fun getAnimeTemp(animeNo: Long): AnimeDto =
-        animeRepository.findWithCaptionsByAnimeNo(animeNo)
-            ?.let { AnimeDto(it, true) }
-            ?: AnimeDto()
 
     fun getGenres() =
         genresCacheStore.find("genre") { animeGenreRepository.findAll().map { it.genre }.apply { sorted() }.let { As.toJsonString(it) } }

@@ -18,8 +18,8 @@ class AdminController(
     @GetMapping("/anime/list/{page:[\\d]+}")
     fun getAnimeList(@RequestParam q: String?, @PathVariable page: Int): Page<AnimeDto> = animeService.getList(q ?: "", page)
     
-    @GetMapping("/anime/delist/{page:[\\d]+}")
-    fun getAnimeDelist(@PathVariable page: Int): Page<AnimeDto> = animeService.getDelist(page)
+    @GetMapping("/anime/delist")
+    fun getAnimeDelist(): Page<Map<String, Any>> = adminService.getAnimeDelist()
 
     @GetMapping("/anime/animeNo/{animeNo:[\\d]+}")
     fun getAnime(@PathVariable animeNo: Long): AnimeDto = animeService.getAnime(animeNo)
@@ -44,4 +44,7 @@ class AdminController(
 
     @DeleteMapping("/anime/{animeNo}")
     fun deleteAnime(@PathVariable animeNo: Long) = adminService.deleteAnime(animeNo)
+
+    @PostMapping("/anime/recover/{agendaNo}")
+    fun recoverAnime(@PathVariable agendaNo: Long) = adminService.recoverAnime(agendaNo)
 }

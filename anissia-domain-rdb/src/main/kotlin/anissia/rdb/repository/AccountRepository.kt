@@ -17,6 +17,9 @@ interface AccountRepository : JpaRepository<Account, Long>, QuerydslPredicateExe
     fun findWithRolesByAn(an: Long): Account?
 
     @EntityGraph(attributePaths = ["roles"])
+    fun findWithRolesByName(name: String): Account?
+
+    @EntityGraph(attributePaths = ["roles"])
     fun findWithRolesByEmail(email: String): Account?
 
     fun findByOldAccount(oldAccount: String): Account?

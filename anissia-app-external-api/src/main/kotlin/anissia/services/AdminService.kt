@@ -2,27 +2,22 @@ package anissia.services
 
 import anissia.configruration.logger
 import anissia.misc.As
-import anissia.rdb.domain.ActivePanel
-import anissia.rdb.domain.Agenda
-import anissia.rdb.domain.Anime
-import anissia.rdb.domain.AnimeCaption
+import anissia.rdb.domain.*
 import anissia.rdb.dto.AdminCaptionDto
 import anissia.rdb.dto.AnimeDto
+import anissia.rdb.dto.ResultData
 import anissia.rdb.dto.ResultStatus
 import anissia.rdb.dto.request.AnimeCaptionRequest
 import anissia.rdb.dto.request.AnimeRequest
-import anissia.rdb.repository.AgendaRepository
-import anissia.rdb.repository.AnimeCaptionRepository
-import anissia.rdb.repository.AnimeGenreRepository
-import anissia.rdb.repository.AnimeRepository
+import anissia.rdb.repository.*
+import com.fasterxml.jackson.core.type.TypeReference
 import me.saro.kit.lang.Koreans
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.Column
-import javax.persistence.Lob
+import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
 @Service
@@ -35,7 +30,8 @@ class AdminService(
     private val activePanelService: ActivePanelService,
     private val animeService: AnimeService,
     private val agendaService: AgendaService,
-    private val agendaRepository: AgendaRepository
+    private val agendaRepository: AgendaRepository,
+    private val accountRepository: AccountRepository
 ) {
 
     val log = logger<AnimeService>()
@@ -109,7 +105,7 @@ class AdminService(
 
     @Transactional
     fun deleteAnime(animeNo: Long): ResultStatus {
-        val agenda = Agenda(code = "ANIME-DEL", status = "WAIT", an = userAn)
+        val agenda = Agenda(code = "ANIME-DEL", status = "wait", an = userAn)
 
         val anime = animeRepository.findWithCaptionsByAnimeNo(animeNo)
             ?.also { agenda.data1 = As.toJsonString(AnimeDto(it, true)) }
@@ -123,6 +119,58 @@ class AdminService(
         agendaRepository.save(agenda)
 
         return ResultStatus("OK")
+    }
+
+    @Transactional
+    fun recoverAnime(agendaNo: Long): ResultData<Long> {
+        val agenda = agendaRepository
+            .findByIdOrNull(agendaNo)?.takeIf { it.code == "ANIME-DEL" && it.status == "wait" }
+            ?: return ResultData("FAIL", "이미 복원되었거나 존재하지 않는 애니메이션입니다.")
+
+        val animeDto = As.OBJECT_MAPPER.readValue(agenda.data1, object: TypeReference<AnimeDto>() {})
+
+        if (animeRepository.existsById(animeDto.animeNo)) {
+            return ResultData("FAIL", "이미 복원되었거나 존재하지 않는 애니메이션입니다.")
+        }
+        if (animeRepository.existsBySubject(animeDto.subject)) {
+            return ResultData("FAIL", "이미 해당 제목의 에니메이션이 있습니다.")
+        }
+
+        val anime = animeRepository.save(Anime(
+            status = AnimeStatus.valueOf(animeDto.status),
+            week = animeDto.week,
+            time = animeDto.time,
+            subject = animeDto.subject,
+            autocorrect = Koreans.toJasoAtom(animeDto.subject),
+            genres = animeDto.genres,
+            startDate = animeDto.startDate,
+            endDate = animeDto.endDate,
+            website = animeDto.website,
+            captionCount = animeDto.captionCount
+        ))
+
+        animeDto.captions.forEach { caption ->
+            val account = accountRepository.findWithRolesByName(caption.name)
+            if (account?.isAdmin == true) {
+                animeCaptionRepository.save(
+                    AnimeCaption(
+                        animeNo = anime.animeNo,
+                        an = account.an,
+                        episode = caption.episode,
+                        updDt = LocalDateTime.parse(caption.updDt, As.DTF_ISO_YMDHMS),
+                        website = caption.website
+                    )
+                )
+            }
+        }
+
+        activePanelService.saveText("[$userName]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다.", true)
+
+        animeService.updateDocument(anime)
+        animeRepository.updateCaptionCount(anime.animeNo)
+        agendaRepository.save(agenda.apply { status = "recover" })
+
+        return ResultData("OK", "", anime.animeNo)
     }
 
     @Transactional
@@ -179,4 +227,9 @@ class AdminService(
                 ResultStatus("OK")
             }
             ?: ResultStatus("FAIL", "이미 삭제되었습니다.")
+
+
+    fun getAnimeDelist(): Page<Map<String, Any>> =
+        agendaRepository.findAllByCodeAndStatusOrderByAgendaNoDesc("ANIME-DEL", "wait")
+            .map { As.OBJECT_MAPPER.readValue(it.data1!!, object: TypeReference<HashMap<String, Any>>(){}).apply { put("agendaNo", it.agendaNo) } }
 }
