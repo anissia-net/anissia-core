@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
 interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key> {
@@ -19,6 +20,10 @@ interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key>
     @EntityGraph(attributePaths = ["anime"])
     @Query("SELECT a FROM AnimeCaption a JOIN a.anime b WHERE a.an = :an AND b.status = anissia.rdb.domain.AnimeStatus.END ORDER BY a.updDt DESC")
     fun findAllWithAnimeForAdminCaptionEndList(an: Long, pageable: Pageable): Page<AnimeCaption>
+
+    @Modifying
+    @Query("DELETE FROM AnimeCaption a WHERE a.animeNo = :animeNo")
+    fun deleteByAnimeNo(animeNo: Long): Int
 
 //
 //    @EntityGraph(attributePaths = ["anime"])

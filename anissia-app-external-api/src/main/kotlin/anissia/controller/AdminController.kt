@@ -41,4 +41,7 @@ class AdminController(
 
     @PutMapping("/anime/{animeNo}")
     fun updateAnime(@PathVariable animeNo: Long, @Valid @RequestBody animeRequest: AnimeRequest) = adminService.updateAnime(animeNo, animeRequest)
+
+    @DeleteMapping("/anime/{animeNo}")
+    fun deleteAnime(@PathVariable animeNo: Long) = adminService.deleteAnime(animeNo)
 }

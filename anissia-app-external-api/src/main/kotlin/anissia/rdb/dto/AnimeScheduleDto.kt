@@ -8,6 +8,7 @@ data class AnimeScheduleDto (
     var time: String = "",
     var subject: String = "",
     var genres: String = "",
+    var captionCount: Int = 0,
     var startDate: String = "",
     var endDate: String = "",
     var website: String = "",
@@ -18,6 +19,7 @@ data class AnimeScheduleDto (
         time = if (!anime.week.matches("7|8".toRegex())) anime.time else anime.startDate,
         subject = anime.subject,
         genres = anime.genres,
+        captionCount = anime.captionCount,
         startDate = anime.startDate,
         endDate = anime.endDate,
         website = anime.website

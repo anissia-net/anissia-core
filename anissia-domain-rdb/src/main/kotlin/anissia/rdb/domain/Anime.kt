@@ -1,6 +1,7 @@
 package anissia.rdb.domain
 
 import org.hibernate.annotations.UpdateTimestamp
+import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.*
 

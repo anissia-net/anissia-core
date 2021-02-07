@@ -3,14 +3,15 @@ package anissia.services
 import anissia.configruration.logger
 import anissia.misc.As
 import anissia.rdb.domain.ActivePanel
+import anissia.rdb.domain.Agenda
 import anissia.rdb.domain.Anime
 import anissia.rdb.domain.AnimeCaption
-import anissia.rdb.domain.AnimeStatus
 import anissia.rdb.dto.AdminCaptionDto
 import anissia.rdb.dto.AnimeDto
 import anissia.rdb.dto.ResultStatus
 import anissia.rdb.dto.request.AnimeCaptionRequest
 import anissia.rdb.dto.request.AnimeRequest
+import anissia.rdb.repository.AgendaRepository
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeGenreRepository
 import anissia.rdb.repository.AnimeRepository
@@ -21,8 +22,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import javax.persistence.Column
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
+import javax.persistence.Lob
 import javax.servlet.http.HttpServletRequest
 
 @Service
@@ -33,7 +33,9 @@ class AdminService(
     private val request: HttpServletRequest,
     private val sessionService: SessionService,
     private val activePanelService: ActivePanelService,
-    private val animeService: AnimeService
+    private val animeService: AnimeService,
+    private val agendaService: AgendaService,
+    private val agendaRepository: AgendaRepository
 ) {
 
     val log = logger<AnimeService>()
@@ -88,7 +90,7 @@ class AdminService(
                     website = animeRequest.website
                 }
                 ?.also { activePanel.data3 = As.toJsonString(AnimeDto(it, false)) }
-                ?: return ResultStatus("FAIL", "존재하지 않는 자막입니다.")
+                ?: return ResultStatus("FAIL", "존재하지 않는 애니메이션입니다.")
         }
 
         animeRepository.save(anime)
@@ -101,6 +103,24 @@ class AdminService(
 
         activePanelService.save(activePanel)
         animeService.updateDocument(anime)
+
+        return ResultStatus("OK")
+    }
+
+    @Transactional
+    fun deleteAnime(animeNo: Long): ResultStatus {
+        val agenda = Agenda(code = "ANIME-DEL", status = "WAIT", an = userAn)
+
+        val anime = animeRepository.findWithCaptionsByAnimeNo(animeNo)
+            ?.also { agenda.data1 = As.toJsonString(AnimeDto(it, true)) }
+            ?: return ResultStatus("FAIL", "존재하지 않는 애니메이션입니다.")
+
+        activePanelService.saveText("[$userName]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다.", true)
+
+        animeCaptionRepository.deleteByAnimeNo(animeNo)
+        animeRepository.delete(anime)
+        animeService.deleteDocument(animeNo)
+        agendaRepository.save(agenda)
 
         return ResultStatus("OK")
     }

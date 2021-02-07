@@ -96,8 +96,8 @@ class AnimeService(
             .also { animeRankService.hitAsync(animeNo, request.remoteAddr) }
 
     fun updateDocument(animeNo: Long) = animeRepository.findByIdOrNull(animeNo)?.also { updateDocument(it) }
-
-    fun updateDocument(anime: Anime) =
+    
+    fun updateDocument(anime: Anime): AnimeDocument =
         animeDocumentRepository
             .findById(anime.animeNo)
             .orElseGet { AnimeDocument(animeNo = anime.animeNo) }
@@ -107,4 +107,6 @@ class AnimeService(
                 it.genres = anime.genres.split(",".toRegex())
                 animeDocumentRepository.save(it)
             }
+
+    fun deleteDocument(animeNo: Long) = animeDocumentRepository.deleteById(animeNo)
 }
