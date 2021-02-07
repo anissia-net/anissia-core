@@ -23,10 +23,10 @@ interface AccountRepository : JpaRepository<Account, Long>, QuerydslPredicateExe
     fun findWithRolesByEmail(email: String): Account?
 
     fun findByOldAccount(oldAccount: String): Account?
-//
-//    fun existsByName(name: String): Boolean
-//
-//    fun existsByAccount(account: String): Boolean
-//
-//    fun existsByEmail(mail: String): Boolean
+
+    fun existsByName(name: String): Boolean
+
+    fun existsByEmail(mail: String): Boolean
+
+
 }

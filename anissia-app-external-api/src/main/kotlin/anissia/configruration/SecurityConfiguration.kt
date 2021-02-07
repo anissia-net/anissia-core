@@ -62,6 +62,13 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .authorizeRequests().antMatchers("/api/session").permitAll().and()
             .authorizeRequests().antMatchers("/api/session/**").permitAll().and()
 
+            // account
+            .authorizeRequests().antMatchers("/api/account/register").permitAll().and()
+            .authorizeRequests().antMatchers("/api/account/lost").permitAll().and()
+
+            // account user
+            .authorizeRequests().antMatchers("/api/account/**").authenticated().and()
+
             // Legacy
             .authorizeRequests().antMatchers("/anitime/list_img").permitAll().and()
 
@@ -74,31 +81,5 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .authorizeRequests().antMatchers("/api/admin/**").hasAnyRole(ROOT, TRANSLATOR).and()
 
             .authorizeRequests().antMatchers("/**").hasAnyRole(ROOT);
-
-//                // authorize requests after ignore resource setting
-//                .authorizeRequests().antMatchers(
-//                        "/api/lobby/**",
-//                        "/api/anime/**",
-//                        "/api/timetable/**",
-//                        "/api/auth/**",
-//                        "/api/board/any/**",
-//                        "/api/asl/any/**",
-//                        "/mig"
-//                ).permitAll().and()
-//
-//                .authorizeRequests().antMatchers(
-//                        "/api/user/**",
-//                        "/api/asl/user/**",
-//                        "/api/board/user/**"
-//                ).authenticated().and()
-//
-//                .authorizeRequests().antMatchers(
-//                        "/api/manage/**",
-//                        "/api/asl/**"
-//                ).hasAnyRole(TRANSLATOR, ROOT).and()
-//
-//                .authorizeRequests().antMatchers(
-//                        "/**"
-//                ).hasAnyRole(ROOT)
     }
 }

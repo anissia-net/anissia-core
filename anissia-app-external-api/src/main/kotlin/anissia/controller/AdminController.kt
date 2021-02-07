@@ -27,7 +27,7 @@ class AdminController(
     @GetMapping("/anime/animeNo/{animeNo:[\\d]+}")
     fun getAnime(@PathVariable animeNo: Long): AnimeDto = animeService.getAnime(animeNo)
 
-    @GetMapping("/anime/schedule/{week:[0-8]}")
+    @GetMapping("/schedule/{week:[0-8]}")
     fun getSchedule(@PathVariable week: String): List<AnimeScheduleDto> = animeScheduleService.getScheduleNotCache(week)
 
     @GetMapping("/caption/list/{active}/{page}")
