@@ -6,11 +6,11 @@ import javax.persistence.*
 
 @Entity
 @Table(uniqueConstraints = [
-        UniqueConstraint(columnNames = ["an"]),
-        UniqueConstraint(columnNames = ["email"]),
-        UniqueConstraint(columnNames = ["name"]),
+        UniqueConstraint(name = "account_pk1", columnNames = ["an"]),
+        UniqueConstraint(name = "account_pk2", columnNames = ["email"]),
+        UniqueConstraint(name = "account_pk3", columnNames = ["name"]),
         // deprecated
-        UniqueConstraint(columnNames = ["oldAccount"])
+        UniqueConstraint(name = "account_pk4", columnNames = ["oldAccount"])
 ])
 data class Account (
         @Id

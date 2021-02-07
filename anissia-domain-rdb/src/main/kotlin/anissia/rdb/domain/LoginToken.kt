@@ -5,8 +5,8 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["tokenNo"])],
-        indexes = [Index(columnList = "expDt")]
+        uniqueConstraints = [UniqueConstraint(name = "login_token_pk1", columnNames = ["tokenNo"])],
+        indexes = [Index(name = "login_token_idx1", columnList = "expDt")]
 )
 data class LoginToken (
         @Id

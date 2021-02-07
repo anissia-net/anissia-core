@@ -25,7 +25,7 @@ subprojects {
 
 	dependencies {
 		val implementation by configurations
-		implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+		implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk6")
 		implementation("org.jetbrains.kotlin:kotlin-reflect")
 	}
 

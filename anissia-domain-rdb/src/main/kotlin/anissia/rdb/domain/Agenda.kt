@@ -5,10 +5,10 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["agendaNo"])],
+        uniqueConstraints = [UniqueConstraint(name = "agenda_pk1", columnNames = ["agendaNo"])],
         indexes = [
-                Index(columnList = "code,status,agendaNo"),
-                Index(columnList = "code,status,an,agendaNo")
+                Index(name = "agenda_idx1", columnList = "code,status,agendaNo"),
+                Index(name = "agenda_idx2", columnList = "code,status,an,agendaNo")
         ],
 )
 data class Agenda (

@@ -5,9 +5,9 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["pollsNo"])],
+        uniqueConstraints = [UniqueConstraint(name = "agenda_polls_pk1", columnNames = ["pollsNo"])],
         indexes = [
-                Index(columnList = "agendaNo,pollsNo")
+                Index(name = "agenda_polls_idx1", columnList = "agendaNo,pollsNo")
         ],
 )
 data class AgendaPolls (

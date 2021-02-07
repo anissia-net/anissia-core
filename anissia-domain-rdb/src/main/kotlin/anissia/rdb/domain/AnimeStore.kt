@@ -4,7 +4,7 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["code"])]
+        uniqueConstraints = [UniqueConstraint(name = "anime_store_pk1", columnNames = ["code"])]
 )
 data class AnimeStore (
 

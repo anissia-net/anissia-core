@@ -5,8 +5,8 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["topicNo"])],
-        indexes = [Index(columnList = "ticker,fixed,topicNo")]
+        uniqueConstraints = [UniqueConstraint(name = "board_topic_pk1", columnNames = ["topicNo"])],
+        indexes = [Index(name = "board_topic_idx1", columnList = "ticker,fixed,topicNo")]
 )
 data class BoardTopic (
     @Id

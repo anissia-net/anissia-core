@@ -5,10 +5,10 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["loginPassNo"])],
+        uniqueConstraints = [UniqueConstraint(name = "login_pass_pk1", columnNames = ["loginPassNo"])],
         indexes = [
-                Index(columnList = "passDt"),
-                Index(columnList = "an")
+                Index(name = "login_pass_idx1", columnList = "passDt"),
+                Index(name = "login_pass_idx2", columnList = "an")
         ]
 )
 data class LoginPass (

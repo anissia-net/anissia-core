@@ -5,8 +5,8 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["no"])],
-        indexes = [Index(columnList = "un,expDt")]
+        uniqueConstraints = [UniqueConstraint(name = "account_recover_auth_pk1", columnNames = ["no"])],
+        indexes = [Index(name = "account_recover_auth_idx1", columnList = "un,expDt")]
 )
 data class AccountRecoverAuth (
         @Id

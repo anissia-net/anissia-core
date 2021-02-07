@@ -4,7 +4,7 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["ticker"])],
+        uniqueConstraints = [UniqueConstraint(name = "board_ticker_pk1", columnNames = ["ticker"])],
 )
 data class BoardTicker (
     @Id

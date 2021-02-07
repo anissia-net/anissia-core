@@ -4,8 +4,8 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["id"])],
-        indexes = [Index(columnList = "hour, animeNo, ip")]
+        uniqueConstraints = [UniqueConstraint(name = "anime_hit_pk1", columnNames = ["id"])],
+        indexes = [Index(name = "anime_hit_idx1", columnList = "hour, animeNo, ip")]
 )
 data class AnimeHit (
         @Id

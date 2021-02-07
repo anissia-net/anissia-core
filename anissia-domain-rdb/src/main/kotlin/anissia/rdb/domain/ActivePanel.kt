@@ -3,11 +3,8 @@ package anissia.rdb.domain
 import java.time.LocalDateTime
 import javax.persistence.*
 
-/**
- * asl is Anissia Log
- */
 @Entity
-@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["apNo"])])
+@Table(uniqueConstraints = [UniqueConstraint(name = "active_panel_pk1", columnNames = ["apNo"])])
 data class ActivePanel (
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)

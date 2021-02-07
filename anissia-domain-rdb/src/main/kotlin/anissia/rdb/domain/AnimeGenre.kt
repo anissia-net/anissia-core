@@ -4,7 +4,7 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["genre"])]
+        uniqueConstraints = [UniqueConstraint(name = "anime_genre_pk1", columnNames = ["genre"])]
 )
 data class AnimeGenre (
         @Id

@@ -7,11 +7,11 @@ import javax.persistence.*
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(columnNames = ["animeNo"])],
+        uniqueConstraints = [UniqueConstraint(name = "anime_pk1", columnNames = ["animeNo"])],
         indexes = [
-            Index(columnList = "status,week,time"),
-            Index(columnList = "status,animeNo"),
-            Index(columnList = "autocorrect"),
+            Index(name = "anime_idx1", columnList = "status,week,time"),
+            Index(name = "anime_idx2", columnList = "status,animeNo"),
+            Index(name = "anime_idx3", columnList = "autocorrect"),
         ]
 )
 data class Anime (
