@@ -38,9 +38,9 @@ data class Agenda (
         @Column(nullable = true)
         var data3: String? = null,
 
-        @OneToMany(mappedBy = "agenda")
-        val polls: List<AgendaPolls> = listOf(),
-
         @Column(nullable = false)
-        var regDt: LocalDateTime = LocalDateTime.now()
+        var regDt: LocalDateTime = LocalDateTime.now(),
+
+        @OneToMany(mappedBy = "agenda")
+        val polls: List<AgendaPolls> = listOf()
 )
