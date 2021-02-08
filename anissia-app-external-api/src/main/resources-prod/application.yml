@@ -2,6 +2,8 @@ env: prod
 host: https://anissia.net
 
 server.port: 8001
+server.tomcat.remote_ip_header: x-forwarded-for
+server.tomcat.protocol_header: x-forwarded-proto
 
 anissia:
   rdb:
