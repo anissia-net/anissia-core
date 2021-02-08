@@ -27,5 +27,16 @@ class LegacyController() {
 </text>
 </svg>"""
 
+    @RequestMapping("/anitime/list")
+    fun list() = """[{"i":0,"s":"애니시아 API 주소 이전","t":"0000","g":"공지","l":"https://anissia.net","a":true,"sd":"00000000","ed":"00000000"}]"""
+
+    @RequestMapping("/anitime/cap")
+    fun cap() = """[{"s":"00010","d":"20210208000000","a":"https://anissia.net","n":"애니시아"}]"""
+
+    @RequestMapping("/anitime/list.js")
+    fun listJs() = "anitimeJson(${list()});"
+
+    @RequestMapping("/anitime/cap.js")
+    fun capJs() = "anitimeJson(${cap()});"
 
 }

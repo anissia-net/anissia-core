@@ -71,11 +71,10 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
             // Legacy
             .authorizeRequests().antMatchers("/anitime/list_img").permitAll().and()
-
-            // other
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/mig").permitAll().and()
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/rank").permitAll().and()
-            .authorizeRequests().antMatchers(HttpMethod.GET, "/cc").permitAll().and()
+            .authorizeRequests().antMatchers("/anitime/list").permitAll().and()
+            .authorizeRequests().antMatchers("/anitime/cap").permitAll().and()
+            .authorizeRequests().antMatchers("/anitime/list.js").permitAll().and()
+            .authorizeRequests().antMatchers("/anitime/cap.js").permitAll().and()
 
             // admin
             .authorizeRequests().antMatchers("/api/admin/**").hasAnyRole(ROOT, TRANSLATOR).and()
