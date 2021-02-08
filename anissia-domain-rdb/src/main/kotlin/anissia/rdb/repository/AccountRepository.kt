@@ -7,12 +7,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 interface AccountRepository : JpaRepository<Account, Long>, QuerydslPredicateExecutor<Account> {
 
-//    @EntityGraph(attributePaths = ["roles"])
-//    fun findWithRolesByAccount(account: String): Account?
-//
-//    @EntityGraph(attributePaths = ["roles"])
-//    fun findWithRolesByEmail(email: String): Account?
-//
     @EntityGraph(attributePaths = ["roles"])
     fun findWithRolesByAn(an: Long): Account?
 
@@ -24,9 +18,9 @@ interface AccountRepository : JpaRepository<Account, Long>, QuerydslPredicateExe
 
     fun findByOldAccount(oldAccount: String): Account?
 
+    fun findByEmailAndName(email: String, name: String): Account?
+
     fun existsByName(name: String): Boolean
 
     fun existsByEmail(mail: String): Boolean
-
-
 }

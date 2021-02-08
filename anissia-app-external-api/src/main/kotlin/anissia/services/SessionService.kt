@@ -92,7 +92,7 @@ class SessionService (
             ?.let { token ->
                 accountRepository.findWithRolesByAn(token.an)
                     ?.also { account ->
-                        accountRepository.save(account)
+                        accountRepository.save(account.apply { lastLoginDt = LocalDateTime.now() })
                         val session = Session.cast(account).apply { context.authentication = AnissiaAuthentication(this) }
 
                         // clean up and return

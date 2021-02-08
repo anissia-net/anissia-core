@@ -4,7 +4,7 @@ import anissia.misc.As
 import me.saro.kit.Valids
 import javax.validation.constraints.*
 
-data class RegisterRequest (
+data class AccountRegisterRequest (
     @field:NotEmpty(message = "이메일이 형식에 맞지 않습니다.")
     @field:Size(min = 1, max = 64, message = "이메일이 형식에 맞지 않습니다.")
     @field:Email(regexp = Valids.IS_MAIL, message = "이메일이 형식에 맞지 않습니다.")

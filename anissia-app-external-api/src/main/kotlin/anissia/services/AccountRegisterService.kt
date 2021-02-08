@@ -5,8 +5,8 @@ import anissia.misc.As
 import anissia.rdb.domain.Account
 import anissia.rdb.domain.AccountRegisterAuth
 import anissia.rdb.dto.ResultStatus
-import anissia.rdb.dto.request.RegisterEmailAuthTokenRequest
-import anissia.rdb.dto.request.RegisterRequest
+import anissia.rdb.dto.request.EmailAuthTokenRequest
+import anissia.rdb.dto.request.AccountRegisterRequest
 import anissia.rdb.repository.AccountBanNameRepository
 import anissia.rdb.repository.AccountRegisterAuthRepository
 import anissia.rdb.repository.AccountRepository
@@ -33,7 +33,7 @@ class AccountRegisterService(
 ) {
 
     private val log = logger<AccountRegisterService>()
-    private val registerAuthHtml = As.getResource("/email/register-auth.html").readText()
+    private val registerAuthHtml = As.getResource("/email/account-register-auth.html").readText()
     private val emailDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초")
 
     companion object {
@@ -41,16 +41,16 @@ class AccountRegisterService(
     }
 
     @Transactional
-    fun register(registerRequest: RegisterRequest): ResultStatus {
-        if (accountRepository.existsByEmail(registerRequest.email)) {
+    fun register(accountRegisterRequest: AccountRegisterRequest): ResultStatus {
+        if (accountRepository.existsByEmail(accountRegisterRequest.email)) {
             return ResultStatus("FAIL", "이미 가입된 계정입니다.")
         }
 
-        if (accountRepository.existsByName(registerRequest.name) || accountBanNameRepository.existsById(registerRequest.name)) {
+        if (accountRepository.existsByName(accountRegisterRequest.name) || accountBanNameRepository.existsById(accountRegisterRequest.name)) {
             return ResultStatus("FAIL", "사용중이거나 사용할 수 없는 이름입니다.")
         }
 
-        if (accountRegisterAuthRepository.existsByEmailAndExpDtAfter(registerRequest.email, LocalDateTime.now())) {
+        if (accountRegisterAuthRepository.existsByEmailAndExpDtAfter(accountRegisterRequest.email, LocalDateTime.now())) {
             return ResultStatus("FAIL", "인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
         }
 
@@ -58,16 +58,16 @@ class AccountRegisterService(
         val auth = accountRegisterAuthRepository.save(
             AccountRegisterAuth(
                 token = Texts.createRandomBase62String(128, 256),
-                email = registerRequest.email,
+                email = accountRegisterRequest.email,
                 ip = ip,
-                data = As.toJsonString(registerRequest.apply { password = passwordEncoder.encode(password) }),
+                data = As.toJsonString(accountRegisterRequest.apply { password = passwordEncoder.encode(password) }),
                 expDt = LocalDateTime.now().plusHours(1)
             )
         )
 
         asyncService.async {
             emailService.send(
-                registerRequest.email,
+                accountRegisterRequest.email,
                 "[애니시아] 회원가입 이메일 인증",
                 registerAuthHtml
                     .replace("[[ip]]", ip)
@@ -80,11 +80,11 @@ class AccountRegisterService(
     }
 
     @Transactional
-    fun registerValidation(tokenRequest: RegisterEmailAuthTokenRequest): ResultStatus {
+    fun registerValidation(tokenRequest: EmailAuthTokenRequest): ResultStatus {
         val auth: AccountRegisterAuth = accountRegisterAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(tokenRequest.tn, tokenRequest.token, LocalDateTime.now())
                 ?: return ResultStatus("FAIL", "이메일 인증이 만료되었습니다.")
 
-        val register = As.OBJECT_MAPPER.readValue(auth.data, object: TypeReference<RegisterRequest>() {})
+        val register = As.OBJECT_MAPPER.readValue(auth.data, object: TypeReference<AccountRegisterRequest>() {})
 
         if (accountRepository.existsByEmail(register.email)) {
             return ResultStatus("FAIL", "이미 가입된 계정입니다.")

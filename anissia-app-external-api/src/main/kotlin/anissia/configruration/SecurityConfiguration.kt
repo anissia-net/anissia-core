@@ -64,7 +64,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
             // account
             .authorizeRequests().antMatchers("/api/account/register").permitAll().and()
-            .authorizeRequests().antMatchers("/api/account/lost").permitAll().and()
+            .authorizeRequests().antMatchers("/api/account/recover").permitAll().and()
+            .authorizeRequests().antMatchers("/api/account/recover/**").permitAll().and()
 
             // account user
             .authorizeRequests().antMatchers("/api/account/**").authenticated().and()
