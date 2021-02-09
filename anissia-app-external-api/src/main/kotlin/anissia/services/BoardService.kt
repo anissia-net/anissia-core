@@ -1,13 +1,15 @@
 package anissia.services
 
-import anissia.rdb.dto.BoardTopicDto
+import anissia.dto.BoardTopicDto
 import anissia.misc.As
+import anissia.dto.BoardTickerDto
 import anissia.rdb.repository.BoardPostRepository
 import anissia.rdb.repository.BoardTopicRepository
 import anissia.rdb.repository.BoardTickerRepository
 import me.saro.kit.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.format.DateTimeFormatter
 
@@ -15,14 +17,14 @@ import java.time.format.DateTimeFormatter
 class BoardService(
     private val boardTopicRepository: BoardTopicRepository,
     private val boardPostRepository: BoardPostRepository,
-    private val boardTickerRepository: BoardTickerRepository
+    private val boardTickerRepository: BoardTickerRepository,
+    private val sessionService: SessionService
 ) {
     private val tickerCacheStore = CacheStore<String, String>((24 * 60 * 60000).toLong())
     private val recentCacheStore = CacheStore<Int, String>((5 * 60000).toLong())
+    private val account get() = sessionService.session
 
-    fun getTicker(ticker: String): String =
-        tickerCacheStore
-            .find(ticker) { boardTickerRepository.findById(ticker).map { As.toJsonString(it) }.orElse("{}") }
+
 
     fun getTopic(ticker: String, topicNo: Long): BoardTopicDto =
         boardTopicRepository
@@ -36,8 +38,13 @@ class BoardService(
             .map { BoardTopicDto(it) }
 
     fun getRecent(): String =
-        recentCacheStore
-            .find(1) { As.toJsonString(mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))) }
+        recentCacheStore.find(1) { As.toJsonString(mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))) }
+
+    fun getTickerCached(ticker: String): String =
+        tickerCacheStore.find(ticker) { getTicker(ticker)?.let { e -> As.toJsonString(e) } ?: "{}" }
+
+    private fun getTicker(ticker: String): BoardTickerDto? =
+        boardTickerRepository.findByIdOrNull(ticker)?.let { BoardTickerDto(it) }
 
     private fun getRecent(ticker: String): List<Map<String, Any>> =
         boardTopicRepository

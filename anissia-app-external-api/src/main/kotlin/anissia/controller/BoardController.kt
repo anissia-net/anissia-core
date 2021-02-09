@@ -1,6 +1,6 @@
 package anissia.controller
 
-import anissia.rdb.dto.BoardTopicDto
+import anissia.dto.BoardTopicDto
 import anissia.services.BoardService
 import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,7 +16,7 @@ class BoardController(
 
 
     @GetMapping("/ticker/{ticker}")
-    fun getTicker(@PathVariable ticker: String): String = boardService.getTicker(ticker)
+    fun getTicker(@PathVariable ticker: String): String = boardService.getTickerCached(ticker)
 
     @GetMapping("/topic/{ticker}/{topicNo}")
     fun getTopic(@PathVariable ticker: String, @PathVariable topicNo: Long): BoardTopicDto = boardService.getTopic(ticker, topicNo)

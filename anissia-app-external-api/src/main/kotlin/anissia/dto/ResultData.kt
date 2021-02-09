@@ -1,4 +1,4 @@
-package anissia.rdb.dto
+package anissia.dto
 
 /**
  * basically web result

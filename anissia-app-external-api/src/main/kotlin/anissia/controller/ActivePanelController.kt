@@ -1,6 +1,6 @@
 package anissia.controller
 
-import anissia.rdb.dto.request.ActivePanelNoticeRequest
+import anissia.dto.request.ActivePanelNoticeRequest
 import anissia.services.ActivePanelService
 import org.springframework.web.bind.annotation.*
 

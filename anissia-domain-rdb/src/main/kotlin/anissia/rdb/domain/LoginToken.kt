@@ -25,3 +25,15 @@ data class LoginToken (
 ) {
         val absoluteToken: String get() = "${tokenNo}-${token}"
 }
+
+/*
+CREATE TABLE `login_token` (
+  `token_no` bigint(20) NOT NULL AUTO_INCREMENT,
+  `token` varchar(512) NOT NULL,
+  `an` bigint(20) NOT NULL,
+  `exp_dt` datetime NOT NULL,
+  PRIMARY KEY (`token_no`),
+  UNIQUE KEY `login_token_uk1` (`token`),
+  KEY `login_token_idx1` (`exp_dt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

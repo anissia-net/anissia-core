@@ -4,9 +4,9 @@ import anissia.configruration.logger
 import anissia.misc.As
 import anissia.rdb.domain.Account
 import anissia.rdb.domain.AccountRegisterAuth
-import anissia.rdb.dto.ResultStatus
-import anissia.rdb.dto.request.EmailAuthTokenRequest
-import anissia.rdb.dto.request.AccountRegisterRequest
+import anissia.dto.ResultStatus
+import anissia.dto.request.EmailAuthTokenRequest
+import anissia.dto.request.AccountRegisterRequest
 import anissia.rdb.repository.AccountBanNameRepository
 import anissia.rdb.repository.AccountRegisterAuthRepository
 import anissia.rdb.repository.AccountRepository

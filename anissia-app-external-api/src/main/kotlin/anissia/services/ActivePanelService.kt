@@ -2,8 +2,8 @@ package anissia.services
 
 import anissia.misc.As
 import anissia.rdb.domain.ActivePanel
-import anissia.rdb.dto.ActivePanelDto
-import anissia.rdb.dto.ResultStatus
+import anissia.dto.ActivePanelDto
+import anissia.dto.ResultStatus
 import anissia.rdb.repository.ActivePanelRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest

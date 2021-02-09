@@ -1,4 +1,4 @@
-package anissia.rdb.dto
+package anissia.dto
 
 import anissia.rdb.domain.BoardPost
 import java.time.LocalDateTime

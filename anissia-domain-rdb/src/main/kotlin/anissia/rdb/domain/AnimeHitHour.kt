@@ -25,3 +25,13 @@ data class AnimeHitHour (
 
         data class Key(var hour: Long = 0, var animeNo: Long = 0) : Serializable
 }
+
+/*
+CREATE TABLE `anime_hit_hour` (
+  `hour` bigint(20) NOT NULL,
+  `anime_no` bigint(20) NOT NULL,
+  `hit` bigint(20) NOT NULL,
+  PRIMARY KEY (`anime_no`,`hour`),
+  KEY `anime_hit_hour_idx1` (`anime_no`,`hour`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

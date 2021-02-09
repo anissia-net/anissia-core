@@ -19,3 +19,12 @@ data class AnimeStore (
         @Column(nullable = true)
         var data: String = "" // long value
 )
+
+/*
+CREATE TABLE `anime_store` (
+  `code` varchar(64) NOT NULL,
+  `cv` varchar(128) DEFAULT NULL,
+  `data` longtext DEFAULT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

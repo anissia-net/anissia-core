@@ -5,11 +5,11 @@ import anissia.rdb.domain.Account
 import anissia.rdb.domain.LoginFail
 import anissia.rdb.domain.LoginPass
 import anissia.rdb.domain.LoginToken
-import anissia.rdb.dto.ResultData
-import anissia.rdb.dto.ResultStatus
-import anissia.rdb.dto.Session
-import anissia.rdb.dto.request.LoginRequest
-import anissia.rdb.dto.request.LoginTokenRequest
+import anissia.dto.ResultData
+import anissia.dto.ResultStatus
+import anissia.dto.Session
+import anissia.dto.request.LoginRequest
+import anissia.dto.request.LoginTokenRequest
 import anissia.misc.As
 import anissia.rdb.repository.AccountRepository
 import anissia.rdb.repository.LoginFailRepository

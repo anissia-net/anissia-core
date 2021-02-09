@@ -41,3 +41,19 @@ data class AgendaPolls (
         @JoinColumn(name = "agendaNo", nullable = false, insertable = false, updatable = false)
         var agenda: Agenda? = null
 )
+
+/*
+CREATE TABLE `agenda_polls` (
+  `polls_no` bigint(20) NOT NULL AUTO_INCREMENT,
+  `agenda_no` bigint(20) NOT NULL,
+  `vote_up` int(11) NOT NULL,
+  `vote_down` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `an` bigint(20) NOT NULL,
+  `comment` varchar(255) DEFAULT NULL,
+  `reg_dt` datetime NOT NULL,
+  PRIMARY KEY (`polls_no`),
+  KEY `agenda_polls_idx1` (`agenda_no`,`polls_no`),
+  CONSTRAINT `agenda_polls_fk1` FOREIGN KEY (`agenda_no`) REFERENCES `agenda` (`agenda_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

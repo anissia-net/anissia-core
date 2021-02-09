@@ -1,6 +1,6 @@
 package anissia.configruration
 
-import anissia.rdb.dto.ResultData
+import anissia.dto.ResultData
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException

@@ -1,22 +1,15 @@
 package anissia.misc
 
-import anissia.rdb.dto.AnimeDto
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import me.saro.kit.dates.Dates
 import org.springframework.core.MethodParameter
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.util.HtmlUtils
-import java.lang.reflect.Parameter
 import java.net.URL
 import java.time.format.DateTimeFormatter
-import java.util.*
-import java.util.function.Predicate
 import org.springframework.validation.BeanPropertyBindingResult
-import kotlin.reflect.full.primaryConstructor
 
 
 /**
@@ -53,7 +46,7 @@ class As {
 
         fun throwHttp400(msg: String) {
             val errors = BeanPropertyBindingResult(null, "").apply { reject("400", msg) }
-            throw MethodArgumentNotValidException(MethodParameter(As.javaClass.constructors[0], 0, 0), errors)
+            throw MethodArgumentNotValidException(MethodParameter(As::class.java.constructors[0], 0, 0), errors)
         }
 
         fun throwHttp400If(msg: String, isError: Boolean) {

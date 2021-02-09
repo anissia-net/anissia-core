@@ -40,3 +40,19 @@ data class BoardTopic (
     @JoinColumn(name = "topicNo", nullable = false, insertable = false)
     var posts: MutableList<BoardPost> = mutableListOf()
 )
+
+/*
+CREATE TABLE `board_topic` (
+  `topic_no` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ticker` varchar(10) NOT NULL,
+  `fixed` bit(1) NOT NULL,
+  `topic` varchar(64) NOT NULL,
+  `an` bigint(20) NOT NULL,
+  `post_count` int(11) NOT NULL,
+  `reg_dt` datetime NOT NULL,
+  PRIMARY KEY (`topic_no`),
+  KEY `board_topic_idx1` (`ticker`,`fixed`,`topic_no`),
+  KEY `board_topic_fk_idx1` (`an`),
+  CONSTRAINT `board_topic_fk1` FOREIGN KEY (`an`) REFERENCES `account` (`an`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

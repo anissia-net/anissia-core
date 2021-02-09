@@ -1,33 +1,27 @@
-package anissia.rdb.dto
+package anissia.dto
 
 import anissia.rdb.domain.Anime
 
-
-data class AnimeDto (
+data class AnimeScheduleDto (
     var animeNo: Long = 0,
     var status: String = "",
-    var week: String = "",
     var time: String = "",
     var subject: String = "",
-    var captionCount: Int = 0,
     var genres: String = "",
+    var captionCount: Int = 0,
     var startDate: String = "",
     var endDate: String = "",
     var website: String = "",
-    var captions: List<AnimeCaptionDto> = emptyList()
 ) {
-    constructor(anime: Anime, includeCaption: Boolean = false): this(
+    constructor(anime: Anime): this(
         animeNo = anime.animeNo,
         status = anime.status.toString(),
-        week = anime.week,
-        time = anime.time,
+        time = if (!anime.week.matches("7|8".toRegex())) anime.time else anime.startDate,
         subject = anime.subject,
-        captionCount = anime.captionCount,
         genres = anime.genres,
+        captionCount = anime.captionCount,
         startDate = anime.startDate,
         endDate = anime.endDate,
-        website = anime.website,
-        captions = if (includeCaption) anime.captions.map { AnimeCaptionDto(it) } else emptyList()
+        website = anime.website
     )
 }
-

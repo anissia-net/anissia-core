@@ -1,7 +1,7 @@
 package anissia.rdb.repository
 
 import anissia.rdb.domain.AnimeHitHour
-import anissia.rdb.dto.AnimeRankDto
+import anissia.dto.AnimeRankDto
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -17,7 +17,7 @@ interface AnimeHitHourRepository : JpaRepository<AnimeHitHour, AnimeHitHour.Key>
 
     @Query("""
         SELECT
-            new anissia.rdb.dto.AnimeRankDto(a.animeNo, (SELECT b.subject FROM Anime b WHERE b.animeNo = a.animeNo), sum(a.hit))
+            new anissia.dto.AnimeRankDto(a.animeNo, (SELECT b.subject FROM Anime b WHERE b.animeNo = a.animeNo), sum(a.hit))
         FROM AnimeHitHour a
         WHERE a.hour >= :startHour
         GROUP BY a.animeNo ORDER BY sum(a.hit) DESC

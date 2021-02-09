@@ -26,3 +26,15 @@ data class LoginFail (
         @Column(nullable = false)
         var failDt: LocalDateTime = LocalDateTime.now()
 )
+
+/*
+CREATE TABLE `login_fail` (
+  `fn` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(40) NOT NULL,
+  `email` varchar(64) NOT NULL,
+  `fail_dt` datetime NOT NULL,
+  PRIMARY KEY (`fn`),
+  KEY `login_fail_idx1` (`fail_dt`),
+  KEY `login_fail_idx2` (`ip`,`email`,`fail_dt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

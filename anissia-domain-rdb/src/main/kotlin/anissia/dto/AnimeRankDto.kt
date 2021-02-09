@@ -1,4 +1,4 @@
-package anissia.rdb.dto
+package anissia.dto
 
 data class AnimeRankDto (
         var animeNo: Long = 0,

@@ -5,8 +5,8 @@ import anissia.elasticsearch.domain.AnimeDocument
 import anissia.elasticsearch.repository.AnimeDocumentRepository
 import anissia.misc.As
 import anissia.rdb.domain.Anime
-import anissia.rdb.dto.AnimeCaptionDto
-import anissia.rdb.dto.AnimeDto
+import anissia.dto.AnimeCaptionDto
+import anissia.dto.AnimeDto
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeGenreRepository
 import anissia.rdb.repository.AnimeRepository
@@ -30,7 +30,6 @@ class AnimeService(
 ) {
 
     private val log = logger<AnimeService>()
-    private val captionCacheStore = CacheStore<Long, List<AnimeCaptionDto>>((5 * 60000).toLong())
     private val autocorrectStore = CacheStore<String, String>(60 * 60000)
     private val genresCacheStore = CacheStore<String, String>(60 * 60000)
 
@@ -58,8 +57,8 @@ class AnimeService(
         else  getAnimeAutocorrectPrivate(q)
 
     private fun getAnimeAutocorrectPrivate(q: String): String =
-        q?.let { it.replace("%", "").trim() }
-            ?.takeIf { it.isNotEmpty() }
+        q.let { it.replace("%", "").trim() }
+            .takeIf { it.isNotEmpty() }
             ?.let { As.toJsonString(animeRepository.findTop10ByAutocorrectStartsWith(Koreans.toJasoAtom(it))) }
             ?: "[]"
 
@@ -82,8 +81,7 @@ class AnimeService(
         genresCacheStore.find("genre") { animeGenreRepository.findAll().map { it.genre }.apply { sorted() }.let { As.toJsonString(it) } }
 
     fun getCaptionByAnimeNo(animeNo: Long): List<AnimeCaptionDto> =
-        captionCacheStore
-            .find(animeNo) { animeCaptionRepository.findAllWithAccountByAnimeNoOrderByUpdDtDesc(animeNo).map { AnimeCaptionDto(it) } }
+        animeCaptionRepository.findAllWithAccountByAnimeNoOrderByUpdDtDesc(animeNo).map { AnimeCaptionDto(it) }
             .also { animeRankService.hitAsync(animeNo, request.remoteAddr) }
 
     fun updateDocument(animeNo: Long) = animeRepository.findByIdOrNull(animeNo)?.also { updateDocument(it) }

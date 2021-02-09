@@ -74,3 +74,26 @@ data class Anime (
     @Column(nullable = false)
     var oldAnimeNo: Long = 0
 )
+
+/*
+CREATE TABLE `anime` (
+  `anime_no` bigint(20) NOT NULL AUTO_INCREMENT,
+  `status` varchar(255) NOT NULL,
+  `week` varchar(1) NOT NULL,
+  `time` varchar(5) NOT NULL,
+  `subject` varchar(100) NOT NULL,
+  `autocorrect` varchar(512) NOT NULL,
+  `genres` varchar(64) NOT NULL,
+  `start_date` varchar(10) NOT NULL,
+  `end_date` varchar(10) NOT NULL,
+  `website` varchar(128) NOT NULL,
+  `caption_count` int(11) NOT NULL,
+  `upd_dt` datetime NOT NULL,
+  `old_anime_no` bigint(20) NOT NULL,
+  PRIMARY KEY (`anime_no`),
+  UNIQUE KEY `anime_uk1` (`subject`),
+  KEY `anime_idx1` (`status`,`week`,`time`),
+  KEY `anime_idx2` (`status`,`anime_no`),
+  KEY `anime_idx3` (`autocorrect`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

@@ -1,6 +1,6 @@
 package anissia.services
 
-import anissia.rdb.dto.AnimeScheduleDto
+import anissia.dto.AnimeScheduleDto
 import anissia.misc.As.Companion.escapeHtml
 import anissia.rdb.repository.AnimeRepository
 import me.saro.kit.CacheStore

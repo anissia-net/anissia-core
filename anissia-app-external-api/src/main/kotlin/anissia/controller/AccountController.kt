@@ -1,9 +1,9 @@
 package anissia.controller
 
-import anissia.rdb.dto.request.AccountRecoverPasswordRequest
-import anissia.rdb.dto.request.AccountRecoverRequest
-import anissia.rdb.dto.request.EmailAuthTokenRequest
-import anissia.rdb.dto.request.AccountRegisterRequest
+import anissia.dto.request.AccountRecoverPasswordRequest
+import anissia.dto.request.AccountRecoverRequest
+import anissia.dto.request.EmailAuthTokenRequest
+import anissia.dto.request.AccountRegisterRequest
 import anissia.services.AccountRecoverService
 import anissia.services.AccountRegisterService
 import anissia.services.AccountService

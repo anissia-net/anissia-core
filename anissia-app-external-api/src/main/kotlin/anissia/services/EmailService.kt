@@ -1,7 +1,7 @@
 package anissia.services
 
 import anissia.configruration.logger
-import anissia.rdb.dto.ResultData
+import anissia.dto.ResultData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.slf4j.Logger
@@ -100,7 +100,7 @@ class EmailService (
             }
             ResultData("OK", "", "")
         } else {
-            log.info("""
+            log.debug("""
                     EMAIL DEVELOP MODE
                     to: $to
                     cc: $cc
@@ -110,7 +110,7 @@ class EmailService (
             ResultData("OK", "", "")
         }
     } catch (e: Exception) {
-        log.info("""
+        log.debug("""
             EMAIL ERROR
             to: $to
             cc: $cc

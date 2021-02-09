@@ -28,3 +28,16 @@ data class LoginPass (
         @Column(nullable = false)
         var passDt: LocalDateTime = LocalDateTime.now()
 )
+
+/*
+CREATE TABLE `login_pass` (
+  `login_pass_no` bigint(20) NOT NULL AUTO_INCREMENT,
+  `an` bigint(20) NOT NULL,
+  `conn_type` varchar(10) NOT NULL,
+  `ip` varchar(40) NOT NULL,
+  `pass_dt` datetime NOT NULL,
+  PRIMARY KEY (`login_pass_no`),
+  KEY `login_pass_idx1` (`pass_dt`),
+  KEY `login_pass_idx2` (`an`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

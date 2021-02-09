@@ -38,3 +38,18 @@ data class ActivePanel (
         @Column(nullable = false)
         var regDt: LocalDateTime = LocalDateTime.now()
 )
+
+/*
+CREATE TABLE `active_panel` (
+  `ap_no` bigint(20) NOT NULL AUTO_INCREMENT,
+  `published` bit(1) NOT NULL,
+  `code` varchar(100) NOT NULL,
+  `status` varchar(32) NOT NULL,
+  `an` bigint(20) NOT NULL,
+  `data1` longtext DEFAULT NULL,
+  `data2` longtext DEFAULT NULL,
+  `data3` longtext DEFAULT NULL,
+  `reg_dt` datetime NOT NULL,
+  PRIMARY KEY (`ap_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

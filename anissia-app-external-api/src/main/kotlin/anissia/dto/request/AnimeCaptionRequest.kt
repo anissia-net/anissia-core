@@ -1,4 +1,4 @@
-package anissia.rdb.dto.request
+package anissia.dto.request
 
 import anissia.misc.As
 import java.time.LocalDateTime

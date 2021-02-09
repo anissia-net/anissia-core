@@ -32,3 +32,19 @@ data class AccountRegisterAuth (
         @Column(nullable = true)
         var usedDt: LocalDateTime? = null
 )
+
+/*
+CREATE TABLE `account_register_auth` (
+  `no` bigint(20) NOT NULL AUTO_INCREMENT,
+  `token` varchar(512) NOT NULL,
+  `email` varchar(64) NOT NULL,
+  `ip` varchar(40) NOT NULL,
+  `data` varchar(255) NOT NULL,
+  `exp_dt` datetime NOT NULL,
+  `used_dt` datetime DEFAULT NULL,
+  PRIMARY KEY (`no`),
+  UNIQUE KEY `account_register_auth_uk1` (`email`),
+  UNIQUE KEY `account_register_auth_uk2` (`token`),
+  KEY `account_register_auth_idx1` (`email`,`exp_dt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

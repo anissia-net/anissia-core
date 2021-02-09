@@ -11,3 +11,10 @@ data class AnimeGenre (
         @Column(nullable = false, length = 100, unique = true)
         var genre: String = ""
 )
+
+/*
+CREATE TABLE `anime_genre` (
+  `genre` varchar(100) NOT NULL,
+  PRIMARY KEY (`genre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */

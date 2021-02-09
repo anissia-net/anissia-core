@@ -1,4 +1,4 @@
-package anissia.rdb.dto
+package anissia.dto
 
 import anissia.rdb.domain.Account
 import anissia.rdb.domain.AccountRole

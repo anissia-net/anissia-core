@@ -22,3 +22,14 @@ data class AnimeHit (
         @Column(nullable = false)
         var hour: Long = 0
 )
+
+/*
+CREATE TABLE `anime_hit` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(39) NOT NULL,
+  `anime_no` bigint(20) NOT NULL,
+  `hour` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `anime_hit_idx1` (`hour`,`anime_no`,`ip`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ */
