@@ -108,6 +108,6 @@ class AccountRecoverService(
             ?: ResultData("FAIL", "2021년 02월 09일 이후 로그인에 성공했거나 존재하지 않는 닉네임입니다.")
 
     private fun masking(text: String) =
-        if (text.length > 3) text.substring(0, 2) + "***" +  text.substring(text.length) else "$text***"
+        if (text.length > 3) text.substring(0, 2) + "***" +  text.substring(text.length - 1) else "$text***"
 
 }
