@@ -19,9 +19,9 @@ class ActivePanelService(
 
     fun save(activePanel: ActivePanel) = activePanelRepository.save(activePanel)
 
-    fun getList(page: Int): Page<ActivePanelDto> =
+    fun getList(isAdminMode: Boolean, page: Int): Page<ActivePanelDto> =
         activePanelRepository.findAllByOrderByApNoDesc(PageRequest.of(page, 20))
-            .run { if (isManager) this else As.filterPage(this) { it.published } }
+            .run { if (isAdminMode && isManager) this else As.filterPage(this) { it.published } }
             .map { ActivePanelDto(it) }
 
     fun saveText(text: String, published: Boolean = true, an: Long? = null) =

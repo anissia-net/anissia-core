@@ -10,7 +10,7 @@ class ActivePanelController(
     private val activePanelService: ActivePanelService
 ) {
     @GetMapping("/list/{page:[\\d]+}")
-    fun getList(@PathVariable page: Int) = activePanelService.getList(page)
+    fun getList(@RequestParam mode: String, @PathVariable page: Int) = activePanelService.getList(mode == "admin", page)
 
     @PostMapping("/notice")
     fun addNotice(@RequestBody apnr: ActivePanelNoticeRequest) = activePanelService.saveNotice(apnr.text, apnr.published)
