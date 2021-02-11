@@ -41,6 +41,7 @@ class AccountRegisterService(
     }
 
     @Transactional
+    @Synchronized
     fun register(accountRegisterRequest: AccountRegisterRequest): ResultStatus {
         if (accountRepository.existsByEmail(accountRegisterRequest.email)) {
             return ResultStatus("FAIL", "이미 가입된 계정입니다.")

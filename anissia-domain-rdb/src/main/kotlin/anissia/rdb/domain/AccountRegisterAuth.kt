@@ -17,7 +17,7 @@ data class AccountRegisterAuth (
         @Column(nullable = false, length = 512, unique = true)
         var token: String = "",
 
-        @Column(nullable = false, length = 64, unique = true)
+        @Column(nullable = false, length = 64)
         var email: String = "",
 
         @Column(nullable = false, length = 40)
@@ -43,7 +43,6 @@ CREATE TABLE `account_register_auth` (
   `exp_dt` datetime NOT NULL,
   `used_dt` datetime DEFAULT NULL,
   PRIMARY KEY (`no`),
-  UNIQUE KEY `account_register_auth_uk1` (`email`),
   UNIQUE KEY `account_register_auth_uk2` (`token`),
   KEY `account_register_auth_idx1` (`email`,`exp_dt`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
