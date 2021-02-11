@@ -24,11 +24,11 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
     fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?
 
     @Modifying
-    @Query("UPDATE Anime A SET A.captionCount = A.captions.size WHERE A.animeNo = :animeNo")
+    @Query("UPDATE Anime A SET A.captionCount = size(A.captions) WHERE A.animeNo = :animeNo")
     fun updateCaptionCount(animeNo: Long): Int
 
     @Modifying
-    @Query("UPDATE Anime A SET A.captionCount = A.captions.size")
+    @Query("UPDATE Anime A SET A.captionCount = size(A.captions)")
     fun updateAllCaptionCount(): Int
 
     /**

@@ -24,6 +24,10 @@
 		<appender-ref ref="file" />
 	</logger>
 
+	<logger name="org.springframework.data.convert.CustomConversions" level="ERROR" additivity="false" >
+		<appender-ref ref="file" />
+	</logger>
+
 	<logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="INFO" additivity="false" >
 		<appender-ref ref="file" />
 	</logger>

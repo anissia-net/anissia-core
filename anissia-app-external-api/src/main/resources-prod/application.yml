@@ -37,3 +37,5 @@ spring:
       ddl-auto: none
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    open-in-view: true
+  data.elasticsearch.repositories.enabled: false
