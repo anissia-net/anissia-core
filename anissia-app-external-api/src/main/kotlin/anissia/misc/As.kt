@@ -10,6 +10,7 @@ import org.springframework.web.util.HtmlUtils
 import java.net.URL
 import java.time.format.DateTimeFormatter
 import org.springframework.validation.BeanPropertyBindingResult
+import java.time.LocalDate
 
 
 /**
@@ -46,7 +47,7 @@ class As {
 
         fun throwHttp400(msg: String) {
             val errors = BeanPropertyBindingResult(null, "").apply { reject("400", msg) }
-            throw MethodArgumentNotValidException(MethodParameter(As::class.java.constructors[0], 0, 0), errors)
+            throw MethodArgumentNotValidException(MethodParameter(As::class.java.constructors[0], -1, 0), errors)
         }
 
         fun throwHttp400If(msg: String, isError: Boolean) {
@@ -56,5 +57,18 @@ class As {
 
         fun isWebSite(website: String, allowEmpty: Boolean = false) =
             (allowEmpty && website == "") || website.startsWith("https://") || website.startsWith("http://")
+
+        // anissia anime date yyyy-MM-dd, yyyy-MM-99, yyyy-99-99 or empty
+        fun isAsAnimeDate(animeDate: String): Boolean {
+            if (animeDate.isEmpty()) {
+                return true
+            } else if (animeDate.matches("[\\d]{4}-[\\d]{2}-[\\d]{2}".toRegex())) {
+                try {
+                    LocalDate.parse(animeDate.replace("-99", "-01"), As.DTF_ISO_YMD)
+                    return true
+                } catch (e: Exception) { }
+            }
+            return false
+        }
     }
 }

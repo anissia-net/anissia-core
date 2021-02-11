@@ -27,18 +27,9 @@ data class AnimeRequest (
         As.throwHttp400Exception("존재하지 않는 상태입니다.") { statusEnum }
         As.throwHttp400If("장르가 입력되지 않았습니다.", genres.isBlank())
         As.throwHttp400If("장르는 3개까지만 입력가능합니다.", genresList.size > 3)
-        As.throwHttp400Exception("시작일이 규격에 맞지 않습니다.") {
-            if (startDate.isNotEmpty()) LocalDate.parse(startDate, As.DTF_ISO_YMD)
-        }
-        As.throwHttp400Exception("종료일이 규격에 맞지 않습니다.") {
-            if (endDate.isNotEmpty()) LocalDate.parse(endDate, As.DTF_ISO_YMD)
-        }
-        if (startDate.isNotEmpty() && endDate.isNotEmpty() && LocalDate.parse(startDate, As.DTF_ISO_YMD).isAfter(LocalDate.parse(endDate, As.DTF_ISO_YMD))) {
-            As.throwHttp400("시작일은 종료일보다 미래일 수 없습니다.")
-        }
-        if (!(website == "" || website.startsWith("https://") || website.startsWith("http://"))) {
-
-        }
+        As.throwHttp400If("시작일이 규격에 맞지 않습니다.", !As.isAsAnimeDate(startDate))
+        As.throwHttp400If("종료일이 규격에 맞지 않습니다.", !As.isAsAnimeDate(endDate))
+        As.throwHttp400If("시작일은 종료일보다 미래일 수 없습니다.", startDate.isNotEmpty() && endDate.isNotEmpty() && startDate > endDate)
         As.throwHttp400If("사이트주소는 공백이거나 http:// https:// 로시작해야합니다.", !As.isWebSite(website, true))
     }
 }

@@ -73,6 +73,19 @@ class AdminService(
             )
         } else {
             anime = animeRepository.findByIdOrNull(animeNo)
+                ?.also {
+                    if (
+                        it.week == animeRequest.week &&
+                        it.time == animeRequest.time &&
+                        it.subject == animeRequest.subject &&
+                        it.genres == animeRequest.genres &&
+                        it.startDate == animeRequest.startDate &&
+                        it.endDate == animeRequest.endDate &&
+                        it.website == animeRequest.website
+                    ) {
+                        return ResultStatus("FAIL", "변경사항이 없습니다.")
+                    }
+                }
                 ?.also { activePanel.data2 = As.toJsonString(AnimeDto(it, false)) }
                 ?.apply {
                     status = animeRequest.statusEnum
