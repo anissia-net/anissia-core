@@ -1,7 +1,14 @@
 env: local
 host: http://localhost:8080
 
-server.port: 8001
+server:
+  port: 8001
+  tomcat:
+    remoteip:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
+
+server-forward-headers: true
 
 anissia:
   rdb:
@@ -12,12 +19,6 @@ anissia:
   ndb:
     host: localhost
     port: 9200
-
-mail:
-  enable: false
-  path.conf: ./email.conf
-
-server-forward-headers: true
 
 decorator.datasource.p6spy:
   enable-logging: true
@@ -37,3 +38,4 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     open-in-view: true
   data.elasticsearch.repositories.enabled: false
+

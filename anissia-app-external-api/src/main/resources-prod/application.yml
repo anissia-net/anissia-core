@@ -1,9 +1,14 @@
 env: prod
 host: https://anissia.net
 
-server.port: 8001
-server.tomcat.remote_ip_header: x-forwarded-for
-server.tomcat.protocol_header: x-forwarded-proto
+server:
+  port: 8001
+  tomcat:
+    remoteip:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
+
+server-forward-headers: true
 
 anissia:
   rdb:
@@ -14,12 +19,6 @@ anissia:
   ndb:
     host: localhost
     port: 9200
-
-mail:
-  enable: false
-  path.conf: ./email.conf
-
-server-forward-headers: true
 
 decorator.datasource.p6spy:
   enable-logging: false
