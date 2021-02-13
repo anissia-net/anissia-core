@@ -18,5 +18,5 @@ data class AnimeDocument (
         var genres: List<String> = listOf(),
 
         @Field(index = true)
-        var translator: List<String> = listOf()
+        var translators: List<String> = listOf()
 )

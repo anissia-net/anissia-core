@@ -2,6 +2,7 @@ package anissia.rdb.repository
 
 import anissia.rdb.domain.Anime
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
@@ -31,10 +32,6 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
     @Query("UPDATE Anime A SET A.captionCount = size(A.captions)")
     fun updateAllCaptionCount(): Int
 
-    /**
-     * use nativeQuery for the performance and system resource
-     * fun findTop10ByAutocorrectStartsWithOrderBySubject(autocorrect: String): List<Anime>
-     */
-    @Query("SELECT concat(anime_no, ' ', subject) FROM anime WHERE autocorrect LIKE concat(:autocorrect, '%') LIMIT 10", nativeQuery = true)
-    fun findTop10ByAutocorrectStartsWith(autocorrect: String): List<String>
+    @Query("SELECT concat(a.animeNo, ' ', a.subject) FROM Anime a WHERE a.autocorrect LIKE concat(:autocorrect, '%')")
+    fun findTop10ByAutocorrectStartsWith(autocorrect: String, pageable: Pageable = PageRequest.of(0, 10)): List<String>
 }

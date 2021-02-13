@@ -37,15 +37,17 @@ class AnimeService(
         if (q.isNotBlank()) {
             val keywords = ArrayList<String>()
             val genres = ArrayList<String>()
+            val translators = ArrayList<String>()
 
             q.split("[\\s]+".toRegex()).stream().map { it.trim() }.filter { it.isNotEmpty() }.forEach { word ->
                 if (word[0] == '#' && word.length > 1) genres.add(word.substring(1))
+                else if (word[0] == '@' && word.length > 1) translators.add(word.substring(1))
                 else keywords.add(word)
             }
 
-            val result = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, PageRequest.of(page, 20))
+            val result = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, translators, PageRequest.of(page, 20))
 
-            log.info("anime search $keywords $genres ${result.totalElements}")
+            log.info("anime search $keywords $genres $translators ${result.totalElements}")
 
             As.replacePage(result, animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(result.content).map { AnimeDto(it) })
         } else {
@@ -94,7 +96,7 @@ class AnimeService(
                 it.animeNo = anime.animeNo
                 it.subject = anime.subject
                 it.genres = anime.genres.split(",".toRegex())
-                it.translator = animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo)
+                it.translators = animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo)
                 animeDocumentRepository.save(it)
             }
 
