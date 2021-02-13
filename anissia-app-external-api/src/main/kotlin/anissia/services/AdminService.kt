@@ -224,6 +224,7 @@ class AdminService(
 
         if (isNew) {
             animeRepository.updateCaptionCount(animeNo)
+            animeService.updateDocument(animeNo)
             activePanelService.saveText("[$userName]님이 [${anime.subject}] 자막을 시작하였습니다.")
         }
 
@@ -236,6 +237,7 @@ class AdminService(
             ?.run {
                 animeCaptionRepository.delete(this)
                 animeRepository.updateCaptionCount(animeNo)
+                animeService.updateDocument(animeNo)
                 activePanelService.saveText("[$userName]님이 [${anime?.subject}] 자막을 종료하였습니다.")
                 ResultStatus("OK")
             }

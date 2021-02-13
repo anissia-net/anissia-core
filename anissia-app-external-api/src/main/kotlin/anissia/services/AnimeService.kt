@@ -94,6 +94,7 @@ class AnimeService(
                 it.animeNo = anime.animeNo
                 it.subject = anime.subject
                 it.genres = anime.genres.split(",".toRegex())
+                it.translator = animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo)
                 animeDocumentRepository.save(it)
             }
 
