@@ -8,8 +8,10 @@ import anissia.rdb.domain.AnimeGenre
 import anissia.rdb.domain.BoardTicker
 import anissia.rdb.repository.AccountRepository
 import anissia.rdb.repository.AnimeGenreRepository
+import anissia.rdb.repository.AnimeRepository
 import anissia.rdb.repository.BoardTickerRepository
 import anissia.services.AnimeRankService
+import anissia.services.AnimeService
 import io.netty.handler.codec.http.HttpContent
 import org.apache.http.entity.ContentType
 import org.springframework.beans.factory.annotation.Value
@@ -31,9 +33,18 @@ class TestDataController(
     private val animeGenreRepository: AnimeGenreRepository,
     private val accountRepository: AccountRepository,
     private val boardTickerRepository: BoardTickerRepository,
+    private val animeService: AnimeService,
+    private val animeRepository: AnimeRepository,
     @Value("\${env}") private val env: String
 ) {
     var log = logger<AnissiaCoreApplication>()
+
+    @GetMapping("/all-anime")
+    fun allAnime() {
+        animeRepository.findAll().forEach {
+            animeService.updateDocument(it)
+        }
+    }
 
     // basic information
     @GetMapping("/basic", produces = [MediaType.TEXT_PLAIN_VALUE])
