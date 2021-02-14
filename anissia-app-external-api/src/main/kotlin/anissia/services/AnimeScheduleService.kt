@@ -48,7 +48,7 @@ class AnimeScheduleService(
 <text x="0" y="0" fill="#${list}" font-family="'Malgun Gothic'" font-size="13">
 <tspan x="50%" dy="20" fill="#${title}" text-anchor="middle" font-size="13" font-weight="bold">애니편성표</tspan>
 <tspan x="50%" dy="25" fill="#${ymd}" text-anchor="middle" font-size="12">${dt.format(svgDateFormat)}</tspan>
-${joinToString("\n") { """<tspan x="2" dy="20">${it.time} ${it.subject.escapeHtml()}</tspan>""" }}
+${joinToString("\n") { """<tspan x="2" dy="20"><![CDATA[${it.time} ${it.subject}]]></tspan>""" }}
 </text>
 </svg>""" }}
 }
