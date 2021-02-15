@@ -39,9 +39,9 @@ class AnimeService(
             val genres = ArrayList<String>()
             val translators = ArrayList<String>()
 
-            q.split("[\\s]+".toRegex()).stream().map { it.trim() }.filter { it.isNotEmpty() }.forEach { word ->
+            q.toLowerCase().split("[\\s]+".toRegex()).stream().map { it.trim() }.filter { it.isNotEmpty() }.forEach { word ->
                 if (word[0] == '#' && word.length > 1) genres.add(word.substring(1))
-                else if (word[0] == '@' && word.length > 1) translators.add(word.substring(1).toLowerCase())
+                else if (word[0] == '@' && word.length > 1) translators.add(word.substring(1))
                 else keywords.add(word)
             }
 
