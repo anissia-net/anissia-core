@@ -31,7 +31,7 @@ class BoardController(
     @GetMapping("/recent/home")
     fun getHomeRecent(): String = boardService.getRecent()
 
-    @PostMapping("/topic")
+    @PostMapping("/topic/{ticker}")
     fun createTopic(@PathVariable ticker: String, @RequestBody @Valid boardTopicRequest: BoardTopicRequest) = boardService.createTopic(ticker, boardTopicRequest)
 
     @PutMapping("/topic/{topicNo}")
@@ -40,7 +40,7 @@ class BoardController(
     @DeleteMapping("/topic/{topicNo}")
     fun deleteTopic(@PathVariable topicNo: Long) = boardService.deleteTopic(topicNo)
 
-    @PostMapping("/post")
+    @PostMapping("/post/{topicNo}")
     fun createPost(@PathVariable topicNo: Long, @RequestBody @Valid boardPostRequest: BoardPostRequest) = boardService.createPost(topicNo, boardPostRequest)
 
     @PutMapping("/post/{postNo}")

@@ -47,7 +47,7 @@ class BoardService(
     @Transactional
     fun createTopic(ticker: String, boardTopicRequest: BoardTopicRequest) =
         ticker
-            .takeIf { permission(it, "post") }
+            .takeIf { permission(it, "topic") }
             ?.let {
                 val topic = boardTopicRepository.saveAndFlush(BoardTopic(
                     ticker = ticker,
@@ -101,7 +101,9 @@ class BoardService(
                     topicNo = topicNo,
                     content = boardPostRequest.content,
                     an = session!!.an,
-                )).run { ResultStatus("OK") }
+                ))
+                boardTopicRepository.updatePostCount(topicNo)
+                ResultStatus("OK")
             }
             ?: ResultStatus("FAIL", "권한이 없거나 존재하지 않는 글 혹은 게시판입니다.")
 
