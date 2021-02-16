@@ -30,7 +30,6 @@ class BoardService(
     private val sessionService: SessionService
 ) {
     private val tickerCacheStore = CacheStore<String, String>((24 * 60 * 60000).toLong())
-    private val recentCacheStore = CacheStore<Int, String>((5 * 60000).toLong())
     private val session get() = sessionService.session
 
     fun getTopic(ticker: String, topicNo: Long): BoardTopicDto =
@@ -131,8 +130,8 @@ class BoardService(
             }
             ?: ResultStatus("FAIL", "권한이 없거나 존재하지 않는 글입니다.")
 
-    fun getRecent(): String =
-        recentCacheStore.find(1) { As.toJsonString(mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))) }
+    fun getRecent() =
+        mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))
 
     fun getTickerCached(ticker: String): String =
         tickerCacheStore.find(ticker) { getTicker(ticker)?.let { e -> As.toJsonString(e) } ?: "{}" }

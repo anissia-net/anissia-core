@@ -1,16 +1,10 @@
 package anissia.controller
 
 import anissia.dto.BoardTopicDto
-import anissia.dto.ResultData
-import anissia.dto.ResultStatus
 import anissia.dto.request.BoardPostRequest
 import anissia.dto.request.BoardTopicRequest
-import anissia.rdb.domain.BoardPost
-import anissia.rdb.domain.BoardTopic
 import anissia.services.BoardService
 import org.springframework.data.domain.Page
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -29,7 +23,7 @@ class BoardController(
     fun getList(@PathVariable ticker: String, @PathVariable page: Int): Page<BoardTopicDto> = boardService.getList(ticker, page)
 
     @GetMapping("/recent/home")
-    fun getHomeRecent(): String = boardService.getRecent()
+    fun getHomeRecent() = boardService.getRecent()
 
     @PostMapping("/topic/{ticker}")
     fun createTopic(@PathVariable ticker: String, @RequestBody @Valid boardTopicRequest: BoardTopicRequest) = boardService.createTopic(ticker, boardTopicRequest)
