@@ -1,20 +1,24 @@
 package anissia.controller
 
 import anissia.dto.BoardTopicDto
+import anissia.dto.ResultData
+import anissia.dto.ResultStatus
+import anissia.dto.request.BoardPostRequest
+import anissia.dto.request.BoardTopicRequest
+import anissia.rdb.domain.BoardPost
+import anissia.rdb.domain.BoardTopic
 import anissia.services.BoardService
 import org.springframework.data.domain.Page
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/board")
 class BoardController(
     private val boardService: BoardService
 ) {
-
-
     @GetMapping("/ticker/{ticker}")
     fun getTicker(@PathVariable ticker: String): String = boardService.getTickerCached(ticker)
 
@@ -26,4 +30,22 @@ class BoardController(
 
     @GetMapping("/recent/home")
     fun getHomeRecent(): String = boardService.getRecent()
+
+    @PostMapping("/topic")
+    fun createTopic(@PathVariable ticker: String, @RequestBody @Valid boardTopicRequest: BoardTopicRequest) = boardService.createTopic(ticker, boardTopicRequest)
+
+    @PutMapping("/topic/{topicNo}")
+    fun updateTopic(@PathVariable topicNo: Long, @RequestBody @Valid boardTopicRequest: BoardTopicRequest) = boardService.updateTopic(topicNo, boardTopicRequest)
+
+    @DeleteMapping("/topic/{topicNo}")
+    fun deleteTopic(@PathVariable topicNo: Long) = boardService.deleteTopic(topicNo)
+
+    @PostMapping("/post")
+    fun createPost(@PathVariable topicNo: Long, @RequestBody @Valid boardPostRequest: BoardPostRequest) = boardService.createPost(topicNo, boardPostRequest)
+
+    @PutMapping("/post/{postNo}")
+    fun updatePost(@PathVariable postNo: Long, @RequestBody @Valid boardPostRequest: BoardPostRequest) = boardService.updatePost(postNo, boardPostRequest)
+
+    @DeleteMapping("/post/{postNo}")
+    fun deletePost(@PathVariable postNo: Long) = boardService.deletePost(postNo)
 }

@@ -28,10 +28,6 @@ interface AnimeRepository : JpaRepository<Anime, Long>, QuerydslPredicateExecuto
     @Query("UPDATE Anime A SET A.captionCount = size(A.captions) WHERE A.animeNo = :animeNo")
     fun updateCaptionCount(animeNo: Long): Int
 
-    @Modifying
-    @Query("UPDATE Anime A SET A.captionCount = size(A.captions)")
-    fun updateAllCaptionCount(): Int
-
     @Query("SELECT concat(a.animeNo, ' ', a.subject) FROM Anime a WHERE a.autocorrect LIKE concat(:autocorrect, '%')")
     fun findTop10ByAutocorrectStartsWith(autocorrect: String, pageable: Pageable = PageRequest.of(0, 10)): List<String>
 }

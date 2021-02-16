@@ -57,6 +57,9 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
             // board
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/board/**").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.POST, "/api/board/**").authenticated().and()
+            .authorizeRequests().antMatchers(HttpMethod.PUT, "/api/board/**").authenticated().and()
+            .authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/board/**").authenticated().and()
 
             // login
             .authorizeRequests().antMatchers("/api/session").permitAll().and()

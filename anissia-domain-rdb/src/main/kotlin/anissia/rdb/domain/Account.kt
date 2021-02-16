@@ -44,7 +44,7 @@ data class Account (
         val roles: MutableSet<AccountRole> = mutableSetOf(),
 
         // deprecated
-        @Column(nullable = false, length = 64, unique = true)
+        @Column(nullable = false, length = 64)
         var oldAccount: String = "",
 
         @Column(nullable = false)
@@ -68,7 +68,6 @@ CREATE TABLE `account` (
 PRIMARY KEY (`an`),
 UNIQUE KEY `account_pk2` (`email`),
 UNIQUE KEY `account_pk3` (`name`),
-UNIQUE KEY `account_pk1` (`old_account`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `account_role` (

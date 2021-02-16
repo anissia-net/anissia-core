@@ -3,6 +3,8 @@ package anissia.rdb.repository
 import anissia.rdb.domain.BoardPost
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 interface BoardPostRepository : JpaRepository<BoardPost, Long>, QuerydslPredicateExecutor<BoardPost> {
@@ -11,6 +13,12 @@ interface BoardPostRepository : JpaRepository<BoardPost, Long>, QuerydslPredicat
     @EntityGraph(attributePaths = ["account"])
     fun findAllWithAccountByTopicNoOrderByPostNo(topicNo: Long): List<BoardPost>
 
+    @EntityGraph(attributePaths = ["account"])
+    fun findWithAccountByTopicNoAndRootIsTrue(topicNo: Long): BoardPost?
+
+    @Modifying
+    @Query("DELETE FROM BoardPost A WHERE A.topicNo = :topicNo")
+    fun deleteAllByTopicNo(topicNo: Long): Int
 
 //    @EntityGraph(attributePaths = ["user"])
 //    fun findAllWithUserByCodeOrderByBnDesc(code: String, pageable: Pageable): Page<BoardTopic>
