@@ -22,14 +22,14 @@ class GoogleAnalyticsProxyService(
         val ua = request.getHeader("user-agent") ?: throw getHttp400("does not exist user-agent")
 
         asyncService.async {
-            val body = "v=1&tid=$id&cid=555&t=pageview&dp=${path.encodeUrl()}&uip=$ip&ua=${ua.encodeUrl()}"
+            val body = "v=1&tid=$id&cid=$ip&t=pageview&dp=${path.encodeUrl()}&uip=$ip&ua=${ua.encodeUrl()}"
             println(body)
             HttpRequest.newBuilder()
                 .uri(URI.create("https://www.google-analytics.com/collect"))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build()
                 .run { HttpClient.newHttpClient().send(this, BodyHandlers.ofString()) }
-                .statusCode()
+                .body()
         }
     }
 }

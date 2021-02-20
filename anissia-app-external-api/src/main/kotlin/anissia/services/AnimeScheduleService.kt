@@ -20,7 +20,7 @@ class AnimeScheduleService(
     fun getSchedule(week: String): List<AnimeScheduleDto> =
         scheduleCacheStore
             .find(week) { getScheduleNotCache(week) }
-            .also { googleAnalyticsProxyService.send("/api/anime/schedule") }
+            .also { googleAnalyticsProxyService.send("/api/anime/schedule/$week") }
 
     // using for admin
     fun getScheduleNotCache(week: String): List<AnimeScheduleDto> =
