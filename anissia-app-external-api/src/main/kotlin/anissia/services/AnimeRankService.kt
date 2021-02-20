@@ -23,7 +23,7 @@ class AnimeRankService(
 
     fun getRank(type: String): String =
         when (type) {
-            "day", "week", "month" ->
+            "week", "month", "quarter" ->
                 rankCacheStore.find(type) { animeStoreRepository.findById("rank.$type").map { it.data }.orElse("[]") }
             else ->
                 "[]"
@@ -34,8 +34,8 @@ class AnimeRankService(
      */
     @Transactional
     fun animeRankBatch() {
-        // step 1. remove hit history older then 96 days
-        animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(96).format(As.DTF_RANK_HOUR).toLong())
+        // step 1. remove hit history older then 365 days
+        animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(365).format(As.DTF_RANK_HOUR).toLong())
         // step 2. merge anime hits
         mergeAnimeHit()
         // step 3. extract and bind rank
