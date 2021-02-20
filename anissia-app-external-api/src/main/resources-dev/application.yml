@@ -1,5 +1,6 @@
 env: dev
 host: http://localhost:8080
+google.analytics.id: UA-55036751-1
 
 server:
   port: 8001

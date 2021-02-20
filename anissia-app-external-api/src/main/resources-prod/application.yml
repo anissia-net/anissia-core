@@ -1,5 +1,6 @@
 env: prod
 host: https://anissia.net
+google.analytics.id: UA-55036751-1
 
 server:
   port: 8001

@@ -10,6 +10,8 @@ import org.springframework.web.util.HtmlUtils
 import java.net.URL
 import java.time.format.DateTimeFormatter
 import org.springframework.validation.BeanPropertyBindingResult
+import java.net.URLEncoder
+import java.nio.charset.Charset
 import java.time.LocalDate
 
 
@@ -37,6 +39,8 @@ class As {
 
         fun String.escapeHtml() = HtmlUtils.htmlEscape(this)
 
+        fun String.encodeUrl() = URLEncoder.encode(this, Charsets.UTF_8)
+
         fun <T> String.toClassByJson(valueTypeRef: TypeReference<T>) = OBJECT_MAPPER.readValue(this, valueTypeRef)!!
 
         fun <T> String.toMapByJson() = this.toClassByJson(object: TypeReference<Map<String, Any>>(){})
@@ -45,9 +49,13 @@ class As {
 
         fun <T> filterPage(page: Page<T>, filter: (T) -> Boolean): Page<T> = PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements)
 
-        fun throwHttp400(msg: String) {
+        fun getHttp400(msg: String): MethodArgumentNotValidException {
             val errors = BeanPropertyBindingResult(null, "").apply { reject("400", msg) }
-            throw MethodArgumentNotValidException(MethodParameter(As::class.java.constructors[0], -1, 0), errors)
+            return MethodArgumentNotValidException(MethodParameter(As::class.java.constructors[0], -1, 0), errors)
+        }
+
+        fun throwHttp400(msg: String) {
+            throw getHttp400(msg)
         }
 
         fun throwHttp400If(msg: String, isError: Boolean) {

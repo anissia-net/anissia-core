@@ -10,14 +10,17 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class AnimeScheduleService(
-    private val animeRepository: AnimeRepository
+    private val animeRepository: AnimeRepository,
+    private val googleAnalyticsProxyService: GoogleAnalyticsProxyService
 ) {
     private val scheduleCacheStore = CacheStore<String, List<AnimeScheduleDto>>((5 * 60000).toLong())
 
     private val svgDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
 
     fun getSchedule(week: String): List<AnimeScheduleDto> =
-        scheduleCacheStore.find(week) { getScheduleNotCache(week) }
+        scheduleCacheStore
+            .find(week) { getScheduleNotCache(week) }
+            .also { googleAnalyticsProxyService.send("/api/anime/schedule") }
 
     // using for admin
     fun getScheduleNotCache(week: String): List<AnimeScheduleDto> =
@@ -51,4 +54,5 @@ class AnimeScheduleService(
 ${joinToString("\n") { """<tspan x="2" dy="20"><![CDATA[${it.time} ${it.subject}]]></tspan>""" }}
 </text>
 </svg>""" }}
+            .also { googleAnalyticsProxyService.send("/api/anime/schedule/svg") }
 }
