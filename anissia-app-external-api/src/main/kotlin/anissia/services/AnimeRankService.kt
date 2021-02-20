@@ -56,13 +56,13 @@ class AnimeRankService(
 
     private fun extractAllRank() {
         val dt = LocalDateTime.now()
-        val day48List = extractRank(dt.minusDays(48).format(As.DTF_RANK_HOUR))
-        val day28List = extractRank(dt.minusDays(28).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day48List) }
+        val day168List = extractRank(dt.minusDays(168).format(As.DTF_RANK_HOUR))
+        val day84List = extractRank(dt.minusDays(84).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day168List) }
+        val day28List = extractRank(dt.minusDays(28).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day84List) }
         val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day28List) }
-        val day1List = extractRank(dt.minusHours(24).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day7List) }
-        animeStoreRepository.save(AnimeStore("rank.day", "", toString(day1List)))
         animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
         animeStoreRepository.save(AnimeStore("rank.month", "", toString(day28List)))
+        animeStoreRepository.save(AnimeStore("rank.quarter", "", toString(day84List)))
     }
 
     private fun toString(list: List<AnimeRankDto>): String = list.run { As.toJsonString(if (size > 30) list.subList(0, 30) else list) }
