@@ -67,7 +67,7 @@ class BoardService(
     fun updateTopic(topicNo: Long, boardTopicRequest: BoardTopicRequest) =
         boardTopicRepository
             .findByIdOrNull(topicNo)
-            ?.takeIf { it.an == session?.an || session?.isRoot() == true /* temp - delete */ }
+            ?.takeIf { it.an == session?.an }
             ?.let { node ->
                 boardPostRepository
                     .findWithAccountByTopicNoAndRootIsTrue(topicNo)
