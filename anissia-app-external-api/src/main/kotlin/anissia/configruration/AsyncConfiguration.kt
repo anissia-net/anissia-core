@@ -11,6 +11,6 @@ import java.util.concurrent.Executors
 class AsyncConfiguration {
 
     @Bean(destroyMethod = "shutdown")
-    fun taskScheduler(): Executor = Executors.newScheduledThreadPool(20) as Executor
+    fun taskExecutor(): Executor = Executors.newScheduledThreadPool(100) as Executor
 
 }
