@@ -7,5 +7,15 @@ import org.springframework.stereotype.Service
 class TranslatorService(
     private val agendaRepository: AgendaRepository
 ) {
+    fun getApplyList() {
 
+    }
+
+    fun createApply() {
+
+    }
+
+    fun deleteApply() {
+
+    }
 }
