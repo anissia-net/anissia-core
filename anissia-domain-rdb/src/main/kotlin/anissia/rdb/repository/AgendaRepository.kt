@@ -11,5 +11,5 @@ interface AgendaRepository : JpaRepository<Agenda, Long>, QuerydslPredicateExecu
 
     fun findAllByCodeAndStatusOrderByAgendaNoDesc(code: String, status: String, pageable: Pageable = PageRequest.of(0, 100)): Page<Agenda>
 
-    fun findAllByCodeOrderByStatusDescAndAgendaNoDesc(code: String, pageable: Pageable = PageRequest.of(0, 100)): Page<Agenda>
+    fun findAllByCodeOrderByStatusDescAgendaNoDesc(code: String, pageable: Pageable = PageRequest.of(0, 100)): Page<Agenda>
 }

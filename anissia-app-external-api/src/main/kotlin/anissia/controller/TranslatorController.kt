@@ -1,15 +1,20 @@
 package anissia.controller
 
-import anissia.dto.AnimeDto
-import anissia.rdb.domain.TranslatorService
-import org.springframework.data.domain.Page
+import anissia.dto.ResultData
+import anissia.dto.request.TranslatorApplyRequest
+import anissia.services.TranslatorService
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/translator")
 class TranslatorController(
     private val translatorService: TranslatorService
 ) {
-    @GetMapping("/anime/list/{page:[\\d]+}")
-    fun getAnimeList(@PathVariable page: Int) = translatorService.getApplyList(page)
+    @GetMapping("/apply/list/{page:[\\d]+}")
+    fun getApplyList(@PathVariable page: Int) = translatorService.getApplyList(page)
+
+    @PostMapping("/apply")
+    fun createApply(@RequestBody @Valid translatorApplyRequest: TranslatorApplyRequest) =
+            translatorService.createApply(translatorApplyRequest)
 }
