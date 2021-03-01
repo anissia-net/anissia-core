@@ -73,6 +73,12 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             // account user
             .authorizeRequests().antMatchers("/api/account/**").authenticated().and()
 
+            // translator
+            .authorizeRequests().antMatchers(HttpMethod.GET, "/api/translator/**").permitAll().and()
+            .authorizeRequests().antMatchers(HttpMethod.POST, "/api/translator/**").authenticated().and()
+            .authorizeRequests().antMatchers(HttpMethod.PUT, "/api/translator/**").authenticated().and()
+            .authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/translator/**").authenticated().and()
+
             // Legacy
             .authorizeRequests().antMatchers("/anitime/list_img").permitAll().and()
             .authorizeRequests().antMatchers("/anitime/list").permitAll().and()
