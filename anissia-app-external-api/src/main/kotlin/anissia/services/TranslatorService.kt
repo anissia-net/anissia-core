@@ -1,6 +1,7 @@
 package anissia.services
 
 import anissia.dto.ResultData
+import anissia.dto.TranslatorApplyDto
 import anissia.dto.request.TranslatorApplyRequest
 import anissia.misc.As
 import anissia.rdb.domain.Agenda
@@ -21,7 +22,8 @@ class TranslatorService(
     private val code = "TRANSLATOR-APPLY"
     private val user get() = sessionService.session
 
-    fun getApplyList(page: Int) = agendaRepository.findAllByCodeOrderByStatusDescAgendaNoDesc(code, PageRequest.of(page, 30))
+    fun getApplyList(page: Int) =
+            agendaRepository.findAllByCodeOrderByStatusDescAgendaNoDesc(code, PageRequest.of(page, 30)).map { TranslatorApplyDto(it) }
 
     fun getApply(applyNo: Long) {
 

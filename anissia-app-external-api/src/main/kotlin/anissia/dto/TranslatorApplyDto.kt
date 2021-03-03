@@ -1,33 +1,26 @@
 package anissia.dto
 
-import anissia.rdb.domain.Anime
+import anissia.rdb.domain.Agenda
+import java.time.LocalDateTime
 
 
 data class TranslatorApplyDto (
-    var animeNo: Long = 0,
-    var status: String = "",
-    var week: String = "",
-    var time: String = "",
-    var subject: String = "",
-    var captionCount: Int = 0,
-    var genres: String = "",
-    var startDate: String = "",
-    var endDate: String = "",
-    var website: String = "",
-    var captions: List<AnimeCaptionDto> = emptyList()
+        var applyNo: Long = 0,
+        var status: String = "",
+        var an: Long = 0,
+        var data1: String? = null,
+        var data2: String? = null,
+        var data3: String? = null,
+        var regDt: LocalDateTime = LocalDateTime.now(),
 ) {
-    constructor(anime: Anime, includeCaption: Boolean = false): this(
-        animeNo = anime.animeNo,
-        status = anime.status.toString(),
-        week = anime.week,
-        time = anime.time,
-        subject = anime.subject,
-        captionCount = anime.captionCount,
-        genres = anime.genres,
-        startDate = anime.startDate,
-        endDate = anime.endDate,
-        website = anime.website,
-        captions = if (includeCaption) anime.captions.map { AnimeCaptionDto(it) } else emptyList()
+    constructor(agenda: Agenda, includePolls: Boolean = false): this(
+            applyNo = agenda.agendaNo,
+            status = agenda.status,
+            an = agenda.an,
+            data1 = agenda.data1,
+            data2 = agenda.data2,
+            data3 = agenda.data3,
+            regDt = agenda.regDt,
     )
 }
 
