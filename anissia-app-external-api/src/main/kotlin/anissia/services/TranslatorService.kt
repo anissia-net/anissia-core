@@ -7,7 +7,9 @@ import anissia.misc.As
 import anissia.rdb.domain.Agenda
 import anissia.rdb.repository.AgendaPollsRepository
 import anissia.rdb.repository.AgendaRepository
+import javassist.Translator
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.text.DateFormat
 import java.time.LocalDateTime
@@ -25,9 +27,10 @@ class TranslatorService(
     fun getApplyList(page: Int) =
             agendaRepository.findAllByCodeOrderByStatusDescAgendaNoDesc(code, PageRequest.of(page, 30)).map { TranslatorApplyDto(it) }
 
-    fun getApply(applyNo: Long) {
-
-    }
+    fun getApply(applyNo: Long) =
+            agendaRepository.findByIdOrNull(applyNo)?.takeIf { it.code == code }
+                    ?.let { TranslatorApplyDto(it, true) }
+                    ?: TranslatorApplyDto()
 
     fun createApply(translatorApplyRequest: TranslatorApplyRequest): ResultData<Long> {
         translatorApplyRequest.validate()
@@ -39,9 +42,9 @@ class TranslatorService(
                 code = code,
                 status = "ACT",
                 an = user!!.an,
-                data1 = user!!.name,
-                data2 = translatorApplyRequest.website,
-                data3 = LocalDateTime.now().format(As.DTF_ISO_YMD)
+                data1 = "ACT",
+                data2 = user!!.name,
+                data3 = translatorApplyRequest.website,
         )).run { return ResultData("OK", "", agendaNo) }
     }
 

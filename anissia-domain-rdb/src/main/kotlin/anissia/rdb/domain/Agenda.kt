@@ -41,6 +41,9 @@ data class Agenda (
         @Column(nullable = false)
         var regDt: LocalDateTime = LocalDateTime.now(),
 
+        @Column(nullable = false)
+        var updDt: LocalDateTime = LocalDateTime.now(),
+
         @OneToMany(mappedBy = "agenda")
         val polls: List<AgendaPolls> = listOf()
 )
@@ -55,6 +58,7 @@ CREATE TABLE `agenda` (
   `data2` longtext DEFAULT NULL,
   `data3` longtext DEFAULT NULL,
   `reg_dt` datetime NOT NULL,
+  `upd_dt` datetime NOT NULL,
   PRIMARY KEY (`agenda_no`),
   KEY `agenda_idx1` (`code`,`status`,`agenda_no`),
   KEY `agenda_idx2` (`code`,`status`,`an`,`agenda_no`)

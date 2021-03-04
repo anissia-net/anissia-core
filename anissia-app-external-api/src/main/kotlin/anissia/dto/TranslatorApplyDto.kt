@@ -6,20 +6,18 @@ import java.time.LocalDateTime
 
 data class TranslatorApplyDto (
         var applyNo: Long = 0,
-        var status: String = "",
-        var an: Long = 0,
-        var data1: String? = null,
-        var data2: String? = null,
-        var data3: String? = null,
+        var status: String? = "",
+        var result: String? = "",
+        var name: String? = null,
+        var website: String? = null,
         var regDt: LocalDateTime = LocalDateTime.now(),
 ) {
     constructor(agenda: Agenda, includePolls: Boolean = false): this(
             applyNo = agenda.agendaNo,
             status = agenda.status,
-            an = agenda.an,
-            data1 = agenda.data1,
-            data2 = agenda.data2,
-            data3 = agenda.data3,
+            result = agenda.data1,
+            name = agenda.data2,
+            website = agenda.data3,
             regDt = agenda.regDt,
     )
 }
