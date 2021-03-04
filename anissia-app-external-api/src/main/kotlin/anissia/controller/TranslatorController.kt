@@ -14,6 +14,9 @@ class TranslatorController(
     @GetMapping("/apply/list/{page:[\\d]+}")
     fun getApplyList(@PathVariable page: Int) = translatorService.getApplyList(page)
 
+    @GetMapping("/apply/applyNo/{applyNo:[\\d]+}")
+    fun getApply(@PathVariable applyNo: Long) = translatorService.getApply(applyNo)
+
     @PostMapping("/apply")
     fun createApply(@RequestBody @Valid translatorApplyRequest: TranslatorApplyRequest) =
             translatorService.createApply(translatorApplyRequest)
