@@ -1,42 +1,55 @@
 package anissia.services
 
 import anissia.dto.ResultData
+import anissia.dto.ResultStatus
 import anissia.dto.TranslatorApplyDto
+import anissia.dto.request.TranslatorApplyPollRequest
 import anissia.dto.request.TranslatorApplyRequest
-import anissia.misc.As
+import anissia.rdb.domain.AccountRole
 import anissia.rdb.domain.Agenda
-import anissia.rdb.repository.AgendaPollsRepository
+import anissia.rdb.domain.AgendaPoll
+import anissia.rdb.repository.AccountRepository
+import anissia.rdb.repository.AgendaPollRepository
 import anissia.rdb.repository.AgendaRepository
-import javassist.Translator
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.text.DateFormat
 import java.time.LocalDateTime
-import javax.persistence.*
 
 @Service
 class TranslatorService(
-    private val agendaRepository: AgendaRepository,
-    private val agendaPollsRepository: AgendaPollsRepository,
-    private val sessionService: SessionService
+        private val agendaRepository: AgendaRepository,
+        private val agendaPollRepository: AgendaPollRepository,
+        private val sessionService: SessionService,
+        private val activePanelService: ActivePanelService,
+        private val accountRepository: AccountRepository
 ) {
     private val code = "TRANSLATOR-APPLY"
     private val user get() = sessionService.session
 
     fun getApplyList(page: Int) =
-            agendaRepository.findAllByCodeOrderByStatusDescAgendaNoDesc(code, PageRequest.of(page, 30)).map { TranslatorApplyDto(it) }
+            agendaRepository.findAllByCodeOrderByStatusAscAgendaNoDesc(code, PageRequest.of(page, 30)).map { TranslatorApplyDto(it) }
+
+    fun getApplyCount() = mapOf("count" to agendaRepository.countByCodeAndStatus(code, "ACT"))
 
     fun getApply(applyNo: Long) =
-            agendaRepository.findByIdOrNull(applyNo)?.takeIf { it.code == code }
+            agendaRepository.findWithPollsByAgendaNoAndCode(applyNo, code)
                     ?.let { TranslatorApplyDto(it, true) }
                     ?: TranslatorApplyDto()
 
     fun createApply(translatorApplyRequest: TranslatorApplyRequest): ResultData<Long> {
         translatorApplyRequest.validate()
-//        if (user?.isManager() == true) {
-//            return ResultData("FAIL", "이미 권한이 있습니다.")
-//        }
+        if (user?.isManager() == true) {
+            return ResultData("FAIL", "이미 권한이 있습니다.")
+        }
+
+        if (agendaRepository.existsByCodeAndStatusAndAn(code, "ACT", user!!.an)) {
+            return ResultData("FAIL", "신청중인 진행사항이 있습니다.")
+        }
+
+        if (agendaRepository.existsByCodeAndStatusAndAnAndUpdDtAfter(code, "DONE", user!!.an, LocalDateTime.now().minusDays(7))) {
+            return ResultData("FAIL", "심사완료 일주일 후부터 재심사를 요청할 수 있습니다.")
+        }
 
         agendaRepository.saveAndFlush(Agenda(
                 code = code,
@@ -48,11 +61,55 @@ class TranslatorService(
         )).run { return ResultData("OK", "", agendaNo) }
     }
 
-    fun createApplyPoll() {
+    fun createApplyPoll(applyNo: Long, translatorApplyPollRequest: TranslatorApplyPollRequest): ResultStatus {
+        var point = translatorApplyPollRequest.point.toInt()
+        val comment = translatorApplyPollRequest.comment
+        var app = agendaRepository.findByIdOrNull(applyNo)?.takeIf { it.code == code }
+                ?: return ResultStatus("FAIL", "존재하지 않는 신청입니다.")
 
+        app.takeIf { it.status == "ACT" }
+                ?: return ResultStatus("FAIL", "종료된 신청서입니다.")
+
+        if (! (user!!.isManager() || (user!!.an == app.an && point == 0))) {
+            return ResultStatus("FAIL", "권한이 없습니다.")
+        }
+
+        if (user!!.isRoot()) {
+            point *= 10
+        }
+        agendaPollRepository.saveAndFlush(AgendaPoll(
+                agendaNo = app.agendaNo,
+                voteUp = if (point > 0) point else 0,
+                voteDown = if (point < 0) point else 0,
+                name = user!!.name,
+                an = user!!.an,
+                comment = comment,
+        ))
+
+        val vote = app.polls.map { it.voteUp + it.voteDown }.sum()
+        if (vote >= 3) {
+            app.status = "DONE"
+            app.data1 = "PASS"
+            val account = accountRepository.findByIdOrNull(app.an)!!
+            account.roles.add(AccountRole.TRANSLATOR)
+            accountRepository.saveAndFlush(account)
+            activePanelService.saveText("[${account.name}]님이 자막제작자로 참여하였습니다.", true)
+            agendaPollRepository.saveAndFlush(toApplySystemPoll(applyNo, "조건이 충족되어 권한이 부여되었습니다."))
+        } else if (vote <= -3) {
+            app.status = "DONE"
+            app.data1 = "FAIL"
+            agendaPollRepository.saveAndFlush(toApplySystemPoll(applyNo, "최종 반려되었습니다. (7일 후 재신청이 가능합니다.)"))
+        }
+        agendaRepository.saveAndFlush(app.apply { updDt = LocalDateTime.now() })
+
+        return ResultStatus("OK", "")
     }
 
-    fun deleteApplyPoll() {
+    private fun toApplySystemPoll(applyNo: Long, comment: String) = AgendaPoll(
+            agendaNo = applyNo,
+            name = "애니시아",
+            an = 0,
+            comment = comment,
+    )
 
-    }
 }

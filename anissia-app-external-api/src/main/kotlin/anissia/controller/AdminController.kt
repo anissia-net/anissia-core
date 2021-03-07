@@ -7,6 +7,7 @@ import anissia.dto.request.AnimeRequest
 import anissia.services.AdminService
 import anissia.services.AnimeScheduleService
 import anissia.services.AnimeService
+import anissia.services.TranslatorService
 import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
@@ -16,6 +17,7 @@ import javax.validation.Valid
 class AdminController(
     private val adminService: AdminService,
     private val animeService: AnimeService,
+    private val translatorService: TranslatorService,
     private val animeScheduleService: AnimeScheduleService
 ) {
     @GetMapping("/anime/list/{page:[\\d]+}")
@@ -23,6 +25,9 @@ class AdminController(
     
     @GetMapping("/anime/delist")
     fun getAnimeDelist(): Page<Map<String, Any>> = adminService.getAnimeDelist()
+
+    @GetMapping("/translator/apply/count")
+    fun getTranslatorApplyCount() = translatorService.getApplyCount()
 
     @GetMapping("/anime/animeNo/{animeNo:[\\d]+}")
     fun getAnime(@PathVariable animeNo: Long): AnimeDto = animeService.getAnime(animeNo)

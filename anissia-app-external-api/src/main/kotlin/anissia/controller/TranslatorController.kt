@@ -1,6 +1,6 @@
 package anissia.controller
 
-import anissia.dto.ResultData
+import anissia.dto.request.TranslatorApplyPollRequest
 import anissia.dto.request.TranslatorApplyRequest
 import anissia.services.TranslatorService
 import org.springframework.web.bind.annotation.*
@@ -14,10 +14,14 @@ class TranslatorController(
     @GetMapping("/apply/list/{page:[\\d]+}")
     fun getApplyList(@PathVariable page: Int) = translatorService.getApplyList(page)
 
-    @GetMapping("/apply/applyNo/{applyNo:[\\d]+}")
+    @GetMapping("/apply/{applyNo:[\\d]+}")
     fun getApply(@PathVariable applyNo: Long) = translatorService.getApply(applyNo)
 
     @PostMapping("/apply")
     fun createApply(@RequestBody @Valid translatorApplyRequest: TranslatorApplyRequest) =
             translatorService.createApply(translatorApplyRequest)
+
+    @PostMapping("/apply/{applyNo:[\\d]+}/poll")
+    fun createApplyPoll(@PathVariable applyNo: Long, @RequestBody @Valid translatorApplyPollRequest: TranslatorApplyPollRequest) =
+            translatorService.createApplyPoll(applyNo, translatorApplyPollRequest)
 }

@@ -1,10 +1,10 @@
 package anissia.rdb.repository
 
-import anissia.rdb.domain.AgendaPolls
+import anissia.rdb.domain.AgendaPoll
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
-interface AgendaPollsRepository : JpaRepository<AgendaPolls, Long>, QuerydslPredicateExecutor<AgendaPolls> {
+interface AgendaPollRepository : JpaRepository<AgendaPoll, Long>, QuerydslPredicateExecutor<AgendaPoll> {
 
 
 }

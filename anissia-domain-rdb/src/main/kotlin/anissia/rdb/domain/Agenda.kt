@@ -45,7 +45,7 @@ data class Agenda (
         var updDt: LocalDateTime = LocalDateTime.now(),
 
         @OneToMany(mappedBy = "agenda")
-        val polls: List<AgendaPolls> = listOf()
+        val polls: List<AgendaPoll> = listOf()
 )
 
 /*

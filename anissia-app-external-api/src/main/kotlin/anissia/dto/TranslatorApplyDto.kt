@@ -11,6 +11,7 @@ data class TranslatorApplyDto (
         var name: String? = null,
         var website: String? = null,
         var regDt: LocalDateTime = LocalDateTime.now(),
+        var polls: List<TranslatorApplyPollDto> = listOf()
 ) {
     constructor(agenda: Agenda, includePolls: Boolean = false): this(
             applyNo = agenda.agendaNo,
@@ -19,6 +20,7 @@ data class TranslatorApplyDto (
             name = agenda.data2,
             website = agenda.data3,
             regDt = agenda.regDt,
+            polls = if (includePolls) agenda.polls.map { TranslatorApplyPollDto(it) }.sortedBy { it.no } else listOf()
     )
 }
 
