@@ -5,14 +5,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.core.MethodParameter
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
+import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.util.HtmlUtils
 import java.net.URL
-import java.time.format.DateTimeFormatter
-import org.springframework.validation.BeanPropertyBindingResult
 import java.net.URLEncoder
-import java.nio.charset.Charset
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -23,6 +22,7 @@ class As {
     companion object {
         val OBJECT_MAPPER = jacksonObjectMapper()
         const val IS_NAME = "[0-9A-Za-z가-힣㐀-䶵一-龻ぁ-ゖゝ-ヿ々_]{2,16}"
+        const val IS_MAIL = "[_a-z0-9\\-]+(\\.[_a-z0-9\\-]+)*@([_a-z0-9\\-]+\\.)+[a-z]{2,}";
         val DTF_ISO_YMD = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val DTF_ISO_YMDHMS = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         val DTF_ISO_CAPTION = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
