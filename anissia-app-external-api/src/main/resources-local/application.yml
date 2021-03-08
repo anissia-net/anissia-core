@@ -4,6 +4,7 @@ google.analytics.id: UA-55036751-1
 
 server:
   port: 8001
+  max-http-header-size: 48000
   tomcat:
     remoteip:
       remote-ip-header: x-forwarded-for
