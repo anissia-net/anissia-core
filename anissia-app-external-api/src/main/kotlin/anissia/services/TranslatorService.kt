@@ -74,6 +74,12 @@ class TranslatorService(
             return ResultStatus("FAIL", "권한이 없습니다.")
         }
 
+        if (point != 0) {
+            if (app.polls.filter { it.an == user!!.an }.map { it.voteUp + it.voteDown }.sum() != 0) {
+                return ResultStatus("FAIL", "찬성/반대는 한 신청처에 한번만 할 수 있습니다.")
+            }
+        }
+
         if (user!!.isRoot()) {
             point *= 10
         }
