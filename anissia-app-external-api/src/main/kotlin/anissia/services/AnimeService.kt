@@ -7,6 +7,7 @@ import anissia.misc.As
 import anissia.rdb.domain.Anime
 import anissia.dto.AnimeCaptionDto
 import anissia.dto.AnimeDto
+import anissia.rdb.domain.AnimeStatus
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeGenreRepository
 import anissia.rdb.repository.AnimeRepository
@@ -95,6 +96,7 @@ class AnimeService(
             .also {
                 it.animeNo = anime.animeNo
                 it.subject = anime.subject
+                it.end = anime.status == AnimeStatus.END
                 it.genres = anime.genres.split(",".toRegex())
                 it.translators = animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo)
                 animeDocumentRepository.save(it)
