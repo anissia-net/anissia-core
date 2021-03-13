@@ -40,10 +40,11 @@ class TestDataController(
     var log = logger<AnissiaCoreApplication>()
 
     @GetMapping("/all-anime")
-    fun allAnime() {
+    fun allAnime(): String {
         animeRepository.findAll().forEach {
             animeService.updateDocument(it)
         }
+        return "OK"
     }
 
     // basic information

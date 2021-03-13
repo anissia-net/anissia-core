@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.ConcurrentHashMap
 import javax.servlet.http.HttpServletRequest
 
@@ -39,14 +40,15 @@ class AnimeService(
             val keywords = ArrayList<String>()
             val genres = ArrayList<String>()
             val translators = ArrayList<String>()
+            val end = (q.indexOf("/완결") != -1)
 
-            q.toLowerCase().split("[\\s]+".toRegex()).stream().map { it.trim() }.filter { it.isNotEmpty() }.forEach { word ->
+            q.toLowerCase().split("[\\s]+".toRegex()).stream().map { it.trim() }.filter { it.isNotEmpty() && it != "/완결" }.forEach { word ->
                 if (word[0] == '#' && word.length > 1) genres.add(word.substring(1))
                 else if (word[0] == '@' && word.length > 1) translators.add(word.substring(1))
                 else keywords.add(word)
             }
 
-            val result = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, translators, PageRequest.of(page, 20))
+            val result = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, translators, end, PageRequest.of(page, 20))
 
             log.info("anime search $keywords $genres $translators ${result.totalElements}")
 
@@ -88,7 +90,8 @@ class AnimeService(
             .also { animeRankService.hitAsync(animeNo, request.remoteAddr) }
 
     fun updateDocument(animeNo: Long) = animeRepository.findByIdOrNull(animeNo)?.also { updateDocument(it) }
-    
+
+    @Transactional
     fun updateDocument(anime: Anime): AnimeDocument =
         animeDocumentRepository
             .findById(anime.animeNo)
@@ -96,9 +99,10 @@ class AnimeService(
             .also {
                 it.animeNo = anime.animeNo
                 it.subject = anime.subject
-                it.end = anime.status == AnimeStatus.END
+                it.status = anime.status.name
                 it.genres = anime.genres.split(",".toRegex())
                 it.translators = animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo)
+                it.endDate = anime.endDate.replace("-", "").run { if (isEmpty()) 0L else toLong() }
                 animeDocumentRepository.save(it)
             }
 
