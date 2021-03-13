@@ -40,7 +40,7 @@ class AnimeService(
             val keywords = ArrayList<String>()
             val genres = ArrayList<String>()
             val translators = ArrayList<String>()
-            val end = (q.indexOf("/완결") != -1)
+            val end = q.indexOf("/완결") != -1
 
             q.toLowerCase().split("[\\s]+".toRegex()).stream().map { it.trim() }.filter { it.isNotEmpty() && it != "/완결" }.forEach { word ->
                 if (word[0] == '#' && word.length > 1) genres.add(word.substring(1))
@@ -50,7 +50,7 @@ class AnimeService(
 
             val result = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, translators, end, PageRequest.of(page, 20))
 
-            log.info("anime search $keywords $genres $translators ${result.totalElements}")
+            log.info("anime search $keywords $genres $translators $end ${result.totalElements}")
 
             As.replacePage(result, animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(result.content).map { AnimeDto(it) })
         } else {
