@@ -74,8 +74,9 @@ class TranslatorService(
             return ResultStatus("FAIL", "권한이 없습니다.")
         }
 
+        val polls = app.polls
         if (point != 0) {
-            if (app.polls.filter { it.an == user!!.an }.map { it.voteUp + it.voteDown }.sum() != 0) {
+            if (polls.filter { it.an == user!!.an }.map { it.voteUp + it.voteDown }.sum() != 0) {
                 return ResultStatus("FAIL", "찬성/반대는 한 신청처에 한번만 할 수 있습니다.")
             }
         }
@@ -83,30 +84,30 @@ class TranslatorService(
         if (user!!.isRoot()) {
             point *= 10
         }
-        agendaPollRepository.saveAndFlush(AgendaPoll(
+        val poll = agendaPollRepository.save(AgendaPoll(
                 agendaNo = app.agendaNo,
                 voteUp = if (point > 0) point else 0,
                 voteDown = if (point < 0) point else 0,
                 name = user!!.name,
                 an = user!!.an,
-                comment = comment,
+                comment = comment
         ))
 
-        val vote = app.polls.map { it.voteUp + it.voteDown }.sum()
+        val vote = (polls + poll).map { it.voteUp + it.voteDown }.sum()
         if (vote >= 3) {
             app.status = "DONE"
             app.data1 = "PASS"
             val account = accountRepository.findByIdOrNull(app.an)!!
             account.roles.add(AccountRole.TRANSLATOR)
-            accountRepository.saveAndFlush(account)
+            accountRepository.save(account)
             activePanelService.saveText("[${account.name}]님이 자막제작자로 참여하였습니다.", true)
-            agendaPollRepository.saveAndFlush(toApplySystemPoll(applyNo, "조건이 충족되어 권한이 부여되었습니다."))
+            agendaPollRepository.save(toApplySystemPoll(applyNo, "조건이 충족되어 권한이 부여되었습니다."))
         } else if (vote <= -3) {
             app.status = "DONE"
             app.data1 = "FAIL"
-            agendaPollRepository.saveAndFlush(toApplySystemPoll(applyNo, "최종 반려되었습니다. (7일 후 재신청이 가능합니다.)"))
+            agendaPollRepository.save(toApplySystemPoll(applyNo, "최종 반려되었습니다. (7일 후 재신청이 가능합니다.)"))
         }
-        agendaRepository.saveAndFlush(app.apply { updDt = LocalDateTime.now() })
+        agendaRepository.save(app.apply { updDt = LocalDateTime.now() })
 
         return ResultStatus("OK", "")
     }
