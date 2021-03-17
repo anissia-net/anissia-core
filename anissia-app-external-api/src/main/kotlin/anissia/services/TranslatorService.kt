@@ -114,7 +114,7 @@ class TranslatorService(
 
     private fun toApplySystemPoll(applyNo: Long, comment: String) = AgendaPoll(
             agendaNo = applyNo,
-            name = "애니시아",
+            name = "",
             an = 0,
             comment = comment,
     )
