@@ -2,26 +2,13 @@
 애니시아 코어 프로젝트
 
 ## 개발환경
-* language : kotlin jdk 12
+* language : kotlin jdk 13
 * conventions :
    * Tab : 4 spaces
    * Charset : UTF-8
 * IDE : IntelliJ IDEA (Ultimate, Community), Eclipse
    * IDE가 제공하는 방법으로 gradle import 를 합니다.
-   * Eclipse 의 경우 컨벤션 세팅
-      * 4 space tab
-         1. Window -> Preferences -> Java -> Code Style -> Formatter
-         1. Active profile 에서 Edit 클릭 -> Indentation 탭
-            ```
-            Tab policy: space only
-            indentation size: 4
-            tab size: 4
-            ```
-      * default utf-8 charset
-         1. Window -> Preferences -> General -> workspace
-            ```
-            text file encoding : UTF-8
-            ```
+   * Eclipse 의 경우 4 space tab / encoding UTF-8 세팅 필수.
 * charset
    * 글자가 깨질경우 -Dfile.encoding=UTF-8 옵션을 추가합니다.
    * IntelliJ 기준 Help -> Edit Custom VM Options
