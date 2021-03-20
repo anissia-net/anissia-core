@@ -15,10 +15,11 @@ internal class AccountRecoverPasswordRequestTest {
     @DisplayName("@Valid - 계정복구(암호찾기) 암호입력")
     fun valid() {
 
-        var tn = Texts.createRandomString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray(), 128, 512)
-        var password = "asdfaffsdf";
+        val tn = (Math.random() * Long.MAX_VALUE).toLong().toString()
+        val token = Texts.createRandomString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray(), 128, 512)
+        var password = Texts.createRandomString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+ ".toCharArray(), 8, 128)
 
-        val sut = AccountRecoverPasswordRequest(tn, password)
+        val sut = AccountRecoverPasswordRequest("$tn-$token", password)
 
         val result = validator.validate(sut)
 
