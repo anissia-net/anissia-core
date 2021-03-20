@@ -9,8 +9,6 @@ import javax.persistence.*
         UniqueConstraint(name = "account_pk1", columnNames = ["an"]),
         UniqueConstraint(name = "account_pk2", columnNames = ["email"]),
         UniqueConstraint(name = "account_pk3", columnNames = ["name"]),
-        // deprecated
-        UniqueConstraint(name = "account_pk4", columnNames = ["oldAccount"])
 ])
 data class Account (
         @Id
