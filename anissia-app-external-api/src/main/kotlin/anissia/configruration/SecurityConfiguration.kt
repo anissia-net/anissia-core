@@ -84,8 +84,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .authorizeRequests().antMatchers("/anitime/list.js").permitAll().and()
             .authorizeRequests().antMatchers("/anitime/cap.js").permitAll().and()
 
-            // test
-            .authorizeRequests().antMatchers("/test/**").permitAll().and()
+            // data (test-data, data-normalize)
+            .authorizeRequests().antMatchers("/data/**").permitAll().and()
 
             // admin
             .authorizeRequests().antMatchers("/api/admin/**").hasAnyRole(ROOT, TRANSLATOR).and()
