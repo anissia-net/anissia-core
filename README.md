@@ -54,8 +54,8 @@ gradlew :anissia-app-external-api:build -Penv prod
       
       |구분|계정|암호|
       |---|---|---|
-      |관리자|admin@admin.com|asdfasdf|
-      |사용자|user@user.com|asdfasdf|
+      |관리자|admin@test.com|asdfasdf|
+      |사용자|user@test.com|asdfasdf|
     
 - 데이터를 초기화하려면 anissia-app-external-api 폴더 내 다음 파일을 삭제한다.
     - anissia-local.lock.db
