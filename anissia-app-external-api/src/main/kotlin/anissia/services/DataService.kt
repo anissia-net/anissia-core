@@ -44,6 +44,7 @@ class DataService(
                 animeRankService.hitAsync(it.animeNo, fakeRandomIp, fakeRandomHour)
             }
         }
+        animeRankService.animeRankBatch()
         return ResultStatus("OK")
     }
 

@@ -63,6 +63,7 @@ class AnimeRankService(
         animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
         animeStoreRepository.save(AnimeStore("rank.month", "", toString(day28List)))
         animeStoreRepository.save(AnimeStore("rank.quarter", "", toString(day84List)))
+        rankCacheStore.clear()
     }
 
     private fun toString(list: List<AnimeRankDto>): String = list.run { As.toJsonString(if (size > 30) list.subList(0, 30) else list) }
