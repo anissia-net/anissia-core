@@ -48,15 +48,16 @@ gradlew :anissia-app-external-api:build -Penv prod
 ```
 
 #### 로컬 실행
-- 위 Elastic Search 가 먼저 설치되어 있어야 한다.
+- Elastic Search 를 설치한다 (위 개발환경 참고)
 - 기본데이터 생성 http://localhost:8001/data/test/basic
     - 기본데이터 (계정)
       
       |구분|계정|암호|
-          |---|---|---|
+      |---|---|---|
       |관리자|admin@admin.com|asdfasdf|
       |사용자|user@user.com|asdfasdf|
-- 데이터를 초기화하려면 anissia-app-external-api 폴더내 다음 파일을 삭제한다.
+    
+- 데이터를 초기화하려면 anissia-app-external-api 폴더 내 다음 파일을 삭제한다.
     - anissia-local.lock.db
     - anissia-local.mv.db
 
@@ -66,7 +67,7 @@ gradlew :anissia-app-external-api:build -Penv prod
    - 별도의 SQL 클라이언트 사용시 아래의 연결정보를 입력합니다.\
      (최초 bootRun 실행, anissia-local.mv.db 파일 생성 후 접속 가능)
       
-      |jdbc url|jdbc:h2:프로젝트경로/anissia-app-external-api/anissia-local;AUTO_SERVER=TRUE|
+      |jdbc url|jdbc:h2:<anissia-app-external-api 경로>/anissia-local;AUTO_SERVER=TRUE|
       |---|---|
       |user|sa|
       |password|anissia|
