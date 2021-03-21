@@ -243,6 +243,14 @@ class AdminService(
             }
             ?: ResultStatus("FAIL", "이미 삭제되었습니다.")
 
+    fun deleteCaption(account: Account) {
+        val captions = animeCaptionRepository.findAllByAn(account.an)
+        val animeNoList = captions.map { it.animeNo }
+        animeCaptionRepository.deleteAll(captions)
+        for (animeNo in animeNoList) {
+            animeService.updateDocument(animeNo)
+        }
+    }
 
     fun getAnimeDelist(): Page<Map<String, Any>> =
         agendaRepository.findAllByCodeAndStatusOrderByAgendaNoDesc("ANIME-DEL", "wait")

@@ -13,5 +13,5 @@ class ActivePanelController(
     fun getList(@RequestParam mode: String, @PathVariable page: Int) = activePanelService.getList(mode == "admin", page)
 
     @PostMapping("/notice")
-    fun addNotice(@RequestBody apnr: ActivePanelNoticeRequest) = activePanelService.saveNotice(apnr.text, apnr.published)
+    fun addNotice(@RequestBody apnr: ActivePanelNoticeRequest) = activePanelService.saveNotice(apnr)
 }

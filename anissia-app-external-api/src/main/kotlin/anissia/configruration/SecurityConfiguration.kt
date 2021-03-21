@@ -53,7 +53,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
             // active-panel
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/active-panel/**").permitAll().and()
-            .authorizeRequests().antMatchers(HttpMethod.POST, "/api/active-panel/**").hasAnyRole(ROOT).and()
+            .authorizeRequests().antMatchers(HttpMethod.POST, "/api/active-panel/**").hasAnyRole(ROOT, TRANSLATOR).and()
 
             // board
             .authorizeRequests().antMatchers(HttpMethod.GET, "/api/board/**").permitAll().and()

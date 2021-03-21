@@ -29,6 +29,8 @@ interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key>
     @Query("SELECT a.name FROM Account a WHERE a.an in (SELECT b.an FROM AnimeCaption b where b.animeNo = :animeNo)")
     fun findAllTranslatorByAnimeNo(animeNo: Long): List<String>
 
+    fun findAllByAn(an: Long): List<AnimeCaption>
+
 //
 //    @EntityGraph(attributePaths = ["anime"])
 //    fun findAllWithAnimeByUnOrderByUpdDtDesc(un: Long, pageable: Pageable): Page<AnimeCaption>

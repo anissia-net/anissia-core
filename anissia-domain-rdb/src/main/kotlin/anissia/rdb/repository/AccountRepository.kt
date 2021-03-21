@@ -20,6 +20,8 @@ interface AccountRepository : JpaRepository<Account, Long>, QuerydslPredicateExe
 
     fun findByEmailAndName(email: String, name: String): Account?
 
+    fun findByName(name: String): Account?
+
     fun existsByName(name: String): Boolean
 
     fun existsByEmail(mail: String): Boolean
