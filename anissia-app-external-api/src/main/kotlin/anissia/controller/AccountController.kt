@@ -1,12 +1,10 @@
 package anissia.controller
 
-import anissia.dto.request.AccountRecoverPasswordRequest
-import anissia.dto.request.AccountRecoverRequest
-import anissia.dto.request.EmailAuthTokenRequest
-import anissia.dto.request.AccountRegisterRequest
+import anissia.dto.request.*
 import anissia.services.AccountRecoverService
 import anissia.services.AccountRegisterService
 import anissia.services.AccountService
+import anissia.services.SessionService
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -36,6 +34,17 @@ class AccountController(
     @PutMapping("/recover/password")
     fun recoverPassword(@Valid @RequestBody accountRecoverPasswordRequest: AccountRecoverPasswordRequest) =
         accountRecoverService.recoverPassword(accountRecoverPasswordRequest)
+
+    @GetMapping("/user")
+    fun getUser() = accountService.getUser()
+
+    @PutMapping("/user/password")
+    fun updateUserPassword(accountUpdatePasswordRequest: AccountUpdatePasswordRequest) =
+        accountService.updateUserPassword(accountUpdatePasswordRequest)
+
+    @PutMapping("/user/name")
+    fun updateUserName(accountUpdateNameRequest: AccountUpdateNameRequest) =
+        accountService.updateUserName(accountUpdateNameRequest)
 
     // temp: 운영진들이 계정을 찾을 때 까지만
     @GetMapping("/recover/email/{name}")
