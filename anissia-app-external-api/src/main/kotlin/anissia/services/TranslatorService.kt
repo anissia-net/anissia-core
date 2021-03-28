@@ -43,7 +43,7 @@ class TranslatorService(
             return ResultData("FAIL", "이미 권한이 있습니다.")
         }
 
-        if (agendaRepository.existsByCodeAndStatusAndAn(code, "ACT", user!!.an)) {
+        if (existDoingApply()) {
             return ResultData("FAIL", "신청중인 진행사항이 있습니다.")
         }
 
@@ -111,6 +111,8 @@ class TranslatorService(
 
         return ResultStatus("OK", "")
     }
+
+    fun existDoingApply() = agendaRepository.existsByCodeAndStatusAndAn(code, "ACT", user!!.an)
 
     private fun toApplySystemPoll(applyNo: Long, comment: String) = AgendaPoll(
             agendaNo = applyNo,

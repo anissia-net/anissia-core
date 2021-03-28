@@ -39,11 +39,11 @@ class AccountController(
     fun getUser() = accountService.getUser()
 
     @PutMapping("/user/password")
-    fun updateUserPassword(accountUpdatePasswordRequest: AccountUpdatePasswordRequest) =
+    fun updateUserPassword(@Valid @RequestBody accountUpdatePasswordRequest: AccountUpdatePasswordRequest) =
         accountService.updateUserPassword(accountUpdatePasswordRequest)
 
     @PutMapping("/user/name")
-    fun updateUserName(accountUpdateNameRequest: AccountUpdateNameRequest) =
+    fun updateUserName(@Valid @RequestBody accountUpdateNameRequest: AccountUpdateNameRequest) =
         accountService.updateUserName(accountUpdateNameRequest)
 
     // temp: 운영진들이 계정을 찾을 때 까지만
