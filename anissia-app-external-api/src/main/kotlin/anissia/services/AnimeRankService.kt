@@ -70,9 +70,9 @@ class AnimeRankService(
 
     private fun extractRank(startHour: String): List<AnimeRankDto> =
         animeHitHourRepository
-            .extractAllAnimeRank(startHour.toLong())
-            .filter { it.subject != "" } // filter "not-exist anime (removed)"
-            .apply { calculateRank(this) }
+                .extractAllAnimeRank(startHour.toLong())
+                .filter { it.exist }
+                .apply { calculateRank(this) }
 
     private fun calculateRank(animeRank: List<AnimeRankDto>): List<AnimeRankDto> =
             animeRank.apply {
