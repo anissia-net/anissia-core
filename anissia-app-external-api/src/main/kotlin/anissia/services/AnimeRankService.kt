@@ -30,7 +30,7 @@ class AnimeRankService(
         }
     
     /**
-     * anime rank system batch
+     * anime rank batch
      */
     @Transactional
     fun animeRankBatch() {
@@ -57,9 +57,9 @@ class AnimeRankService(
     private fun extractAllRank() {
         val dt = LocalDateTime.now()
         val day168List = extractRank(dt.minusDays(168).format(As.DTF_RANK_HOUR))
-        val day84List = extractRank(dt.minusDays(84).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day168List) }
-        val day28List = extractRank(dt.minusDays(28).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day84List) }
-        val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR)).apply { bindDiff(this, day28List) }
+        val day84List = extractRank(dt.minusDays(84).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day168List) }
+        val day28List = extractRank(dt.minusDays(28).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day84List) }
+        val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day28List) }
         animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
         animeStoreRepository.save(AnimeStore("rank.month", "", toString(day28List)))
         animeStoreRepository.save(AnimeStore("rank.quarter", "", toString(day84List)))
@@ -71,8 +71,11 @@ class AnimeRankService(
     private fun extractRank(startHour: String): List<AnimeRankDto> =
         animeHitHourRepository
             .extractAllAnimeRank(startHour.toLong())
-            .filter { it.subject != "" } // remove not exist anime
-            .apply {
+            .filter { it.subject != "" } // filter "not-exist anime (removed)"
+            .apply { calculateRank(this) }
+
+    private fun calculateRank(animeRank: List<AnimeRankDto>): List<AnimeRankDto> =
+            animeRank.apply {
                 var rank = 0
                 var hit = -1L
                 forEachIndexed { index, node ->
@@ -84,6 +87,10 @@ class AnimeRankService(
                 }
             }
 
-    private fun bindDiff(nowList: List<AnimeRankDto>, prevList: List<AnimeRankDto>) =
-        nowList.forEach { now -> prevList.find { prev -> prev.animeNo == now.animeNo }?.also { prev -> now.diff = -(now.rank - prev.rank) } }
+    private fun calculateRankDiff(rankList: List<AnimeRankDto>, prevRankList: List<AnimeRankDto>) =
+        rankList.forEach { now ->
+            prevRankList
+                    .find { prev -> prev.animeNo == now.animeNo }
+                    ?.also { prev -> now.diff = -(now.rank - prev.rank) }
+        }
 }
