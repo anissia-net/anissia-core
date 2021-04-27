@@ -7,7 +7,10 @@ import javax.persistence.*
 @Entity
 @Table(
         uniqueConstraints = [UniqueConstraint(name = "anime_caption_pk1", columnNames = ["animeNo", "an"])],
-        indexes = [Index(name = "anime_caption_idx1", columnList = "an,updDt")]
+        indexes = [
+                Index(name = "anime_caption_idx1", columnList = "an,updDt"),
+                Index(name = "anime_caption_idx2", columnList = "updDt")
+        ]
 )
 @IdClass(AnimeCaption.Key::class)
 data class AnimeCaption (
@@ -48,6 +51,7 @@ CREATE TABLE `anime_caption` (
   `website` varchar(512) NOT NULL,
   PRIMARY KEY (`an`,`anime_no`),
   KEY `anime_caption_idx1` (`an`,`upd_dt`),
+  KEY `anime_caption_idx2` (`upd_dt`),
   KEY `anime_caption_fk_idx1` (`anime_no`),
   CONSTRAINT `anime_caption_fk1` FOREIGN KEY (`anime_no`) REFERENCES `anime` (`anime_no`),
   CONSTRAINT `anime_caption_fk2` FOREIGN KEY (`an`) REFERENCES `account` (`an`)
