@@ -31,6 +31,9 @@ interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key>
 
     fun findAllByAn(an: Long): List<AnimeCaption>
 
+    @EntityGraph(attributePaths = ["account", "anime"])
+    fun findTop30ByOrderByUpdDtDesc(): List<AnimeCaption>
+
 //
 //    @EntityGraph(attributePaths = ["anime"])
 //    fun findAllWithAnimeByUnOrderByUpdDtDesc(un: Long, pageable: Pageable): Page<AnimeCaption>
