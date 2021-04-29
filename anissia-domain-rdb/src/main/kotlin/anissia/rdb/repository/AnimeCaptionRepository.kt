@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import java.time.LocalDateTime
 
 interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key> {
 
@@ -32,7 +33,7 @@ interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key>
     fun findAllByAn(an: Long): List<AnimeCaption>
 
     @EntityGraph(attributePaths = ["account", "anime"])
-    fun findTop30ByOrderByUpdDtDesc(): List<AnimeCaption>
+    fun findTop30ByUpdDtBeforeAndWebsiteNotOrderByUpdDtDesc(updDt: LocalDateTime = LocalDateTime.now().plusMinutes(10), website: String = ""): List<AnimeCaption>
 
 //
 //    @EntityGraph(attributePaths = ["anime"])
