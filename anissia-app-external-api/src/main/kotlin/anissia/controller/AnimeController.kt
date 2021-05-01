@@ -1,7 +1,6 @@
 package anissia.controller
 
 import anissia.dto.AnimeCaptionDto
-import anissia.dto.AnimeCaptionRecentDto
 import anissia.dto.AnimeDto
 import anissia.dto.AnimeScheduleDto
 import anissia.services.AnimeCaptionRecentService
