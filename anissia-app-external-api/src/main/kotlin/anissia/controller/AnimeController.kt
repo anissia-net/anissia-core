@@ -1,8 +1,10 @@
 package anissia.controller
 
 import anissia.dto.AnimeCaptionDto
+import anissia.dto.AnimeCaptionRecentDto
 import anissia.dto.AnimeDto
 import anissia.dto.AnimeScheduleDto
+import anissia.services.AnimeCaptionRecentService
 import anissia.services.AnimeRankService
 import anissia.services.AnimeScheduleService
 import anissia.services.AnimeService
@@ -15,7 +17,8 @@ import org.springframework.web.bind.annotation.*
 class AnimeController(
     private val animeService: AnimeService,
     private val animeScheduleService: AnimeScheduleService,
-    private val animeRankService: AnimeRankService
+    private val animeRankService: AnimeRankService,
+    private val animeCaptionRecentService: AnimeCaptionRecentService
 ) {
 
     // - anime
@@ -39,6 +42,9 @@ class AnimeController(
 
     @GetMapping("/caption/animeNo/{animeNo:[\\d]+}")
     fun getCaptionByAnimeNo(@PathVariable animeNo: Long): List<AnimeCaptionDto> = animeService.getCaptionByAnimeNo(animeNo)
+
+    @GetMapping("/caption/recent", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getCaptionRecent() = animeCaptionRecentService.getRecentList()
 
     // - schedule
 
