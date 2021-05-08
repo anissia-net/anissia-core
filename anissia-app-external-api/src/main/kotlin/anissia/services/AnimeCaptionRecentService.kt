@@ -15,6 +15,6 @@ class AnimeCaptionRecentService(
     private val recentListStore = CacheStore<String, String>(5 * 60000)
 
     fun getRecentList() = recentListStore.find("NONE") {
-        As.toJsonString(animeCaptionRepository.findTop30ByUpdDtBeforeAndWebsiteNotOrderByUpdDtDesc().map { AnimeCaptionRecentDto(it) })
+        As.toJsonString(animeCaptionRepository.findTop20ByUpdDtBeforeAndWebsiteNotOrderByUpdDtDesc().map { AnimeCaptionRecentDto(it) })
     }
 }
