@@ -15,7 +15,7 @@ data class AnimeCaptionRecentDto (
                 animeNo = animeCaption.animeNo,
                 subject = animeCaption.anime!!.subject,
                 episode = animeCaption.episode,
-                updDt = animeCaption.anime!!.updDt.format(As.DTF_ISO_CAPTION) + ":00",
+                updDt = animeCaption.updDt.format(As.DTF_ISO_CAPTION) + ":00",
                 website = animeCaption.website,
                 name = animeCaption.account!!.name
         )
