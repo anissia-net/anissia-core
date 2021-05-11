@@ -56,15 +56,10 @@ sourceSets {
 		val env = project.findProperty("env") ?: "local"
 
 		resources {
-			//srcDir("src/main/resources")
 			srcDir("src/main/resources-${env}")
 		}
 	}
 }
-
-//tasks.getByName<BootJar>("bootJar") {
-//	duplicatesStrategy = DuplicatesStrategy.INCLUDE
-//}
 
 tasks.getByName<BootRun>("bootRun") {
 	sourceResources(sourceSets["main"])
