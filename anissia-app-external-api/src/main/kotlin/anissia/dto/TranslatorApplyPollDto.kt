@@ -1,6 +1,6 @@
 package anissia.dto
 
-import anissia.rdb.domain.AgendaPoll
+import anissia.rdb.entity.AgendaPoll
 import java.time.LocalDateTime
 
 data class TranslatorApplyPollDto (

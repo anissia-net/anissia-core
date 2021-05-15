@@ -1,8 +1,7 @@
 package anissia.dto.request
 
 import anissia.misc.As
-import anissia.rdb.domain.AnimeStatus
-import java.time.LocalDate
+import anissia.rdb.entity.AnimeStatus
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.Pattern
 

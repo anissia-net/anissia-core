@@ -1,6 +1,6 @@
 package anissia.dto
 
-import anissia.rdb.domain.BoardTicker
+import anissia.rdb.entity.BoardTicker
 
 data class BoardTickerDto (
     var ticker: String = "",

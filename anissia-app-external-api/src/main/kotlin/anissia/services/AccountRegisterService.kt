@@ -2,8 +2,8 @@ package anissia.services
 
 import anissia.configruration.logger
 import anissia.misc.As
-import anissia.rdb.domain.Account
-import anissia.rdb.domain.AccountRegisterAuth
+import anissia.rdb.entity.Account
+import anissia.rdb.entity.AccountRegisterAuth
 import anissia.dto.ResultStatus
 import anissia.dto.request.EmailAuthTokenRequest
 import anissia.dto.request.AccountRegisterRequest

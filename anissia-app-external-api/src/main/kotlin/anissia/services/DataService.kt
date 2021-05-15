@@ -2,7 +2,7 @@ package anissia.services
 
 import anissia.dto.ResultStatus
 import anissia.misc.As
-import anissia.rdb.domain.*
+import anissia.rdb.entity.*
 import anissia.rdb.repository.*
 import me.saro.kit.lang.Koreans
 import org.springframework.beans.factory.annotation.Value

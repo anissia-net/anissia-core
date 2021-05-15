@@ -2,7 +2,7 @@ package anissia.services
 
 import anissia.configruration.logger
 import anissia.misc.As
-import anissia.rdb.domain.*
+import anissia.rdb.entity.*
 import anissia.dto.AdminCaptionDto
 import anissia.dto.AnimeDto
 import anissia.dto.ResultData

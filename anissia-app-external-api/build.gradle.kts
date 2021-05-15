@@ -13,9 +13,8 @@ plugins {
 
 dependencies {
 	// project
-	implementation(project(":anissia-misc"))
-	implementation(project(":anissia-domain-rdb"))
-	implementation(project(":anissia-domain-elasticsearch"))
+	implementation(project(":anissia-data"))
+	implementation(project(":anissia-data-elasticsearch"))
 
 	// JPA
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")

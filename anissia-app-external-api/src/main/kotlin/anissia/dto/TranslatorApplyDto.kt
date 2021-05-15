@@ -1,6 +1,6 @@
 package anissia.dto
 
-import anissia.rdb.domain.Agenda
+import anissia.rdb.entity.Agenda
 import java.time.LocalDateTime
 
 

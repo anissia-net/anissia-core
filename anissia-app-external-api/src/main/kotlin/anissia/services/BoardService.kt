@@ -7,8 +7,8 @@ import anissia.dto.ResultData
 import anissia.dto.ResultStatus
 import anissia.dto.request.BoardPostRequest
 import anissia.dto.request.BoardTopicRequest
-import anissia.rdb.domain.BoardPost
-import anissia.rdb.domain.BoardTopic
+import anissia.rdb.entity.BoardPost
+import anissia.rdb.entity.BoardTopic
 import anissia.rdb.repository.BoardPostRepository
 import anissia.rdb.repository.BoardTopicRepository
 import anissia.rdb.repository.BoardTickerRepository
@@ -19,8 +19,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.format.DateTimeFormatter
-import javax.persistence.Column
-import javax.persistence.Lob
 
 @Service
 class BoardService(

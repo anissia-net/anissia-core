@@ -2,12 +2,10 @@ package anissia.services
 
 import anissia.configruration.logger
 import anissia.dto.AccountUserDto
-import anissia.dto.ResultData
 import anissia.dto.ResultStatus
 import anissia.dto.request.AccountUpdateNameRequest
 import anissia.dto.request.AccountUpdatePasswordRequest
-import anissia.dto.request.AnimeCaptionRequest
-import anissia.rdb.domain.Agenda
+import anissia.rdb.entity.Agenda
 import anissia.rdb.repository.AccountBanNameRepository
 import anissia.rdb.repository.AccountRepository
 import anissia.rdb.repository.AgendaRepository
