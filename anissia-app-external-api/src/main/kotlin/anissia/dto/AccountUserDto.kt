@@ -1,7 +1,7 @@
 package anissia.dto
 
-import anissia.rdb.domain.Account
-import anissia.rdb.domain.AccountRole
+import anissia.rdb.entity.Account
+import anissia.rdb.entity.AccountRole
 import java.time.LocalDateTime
 
 data class AccountUserDto (

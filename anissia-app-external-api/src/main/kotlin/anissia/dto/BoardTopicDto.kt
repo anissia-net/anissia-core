@@ -1,7 +1,7 @@
 package anissia.dto
 
-import anissia.rdb.domain.BoardPost
-import anissia.rdb.domain.BoardTopic
+import anissia.rdb.entity.BoardPost
+import anissia.rdb.entity.BoardTopic
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 

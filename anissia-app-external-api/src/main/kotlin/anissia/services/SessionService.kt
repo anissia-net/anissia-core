@@ -1,10 +1,10 @@
 package anissia.services
 
 import anissia.configruration.AnissiaAuthentication
-import anissia.rdb.domain.Account
-import anissia.rdb.domain.LoginFail
-import anissia.rdb.domain.LoginPass
-import anissia.rdb.domain.LoginToken
+import anissia.rdb.entity.Account
+import anissia.rdb.entity.LoginFail
+import anissia.rdb.entity.LoginPass
+import anissia.rdb.entity.LoginToken
 import anissia.dto.ResultData
 import anissia.dto.ResultStatus
 import anissia.dto.Session

@@ -1,7 +1,7 @@
 package anissia.services
 
-import anissia.rdb.domain.AnimeHit
-import anissia.rdb.domain.AnimeStore
+import anissia.rdb.entity.AnimeHit
+import anissia.rdb.entity.AnimeStore
 import anissia.dto.AnimeRankDto
 import anissia.misc.As
 import anissia.rdb.repository.AnimeHitHourRepository

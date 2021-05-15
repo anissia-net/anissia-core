@@ -1,6 +1,6 @@
 package anissia.configruration
 
-import anissia.rdb.domain.AccountRole
+import anissia.rdb.entity.AccountRole
 import me.saro.kit.bytes.Bytes
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

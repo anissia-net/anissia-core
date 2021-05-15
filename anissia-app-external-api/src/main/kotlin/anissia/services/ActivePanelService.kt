@@ -1,11 +1,11 @@
 package anissia.services
 
 import anissia.misc.As
-import anissia.rdb.domain.ActivePanel
+import anissia.rdb.entity.ActivePanel
 import anissia.dto.ActivePanelDto
 import anissia.dto.ResultStatus
 import anissia.dto.request.ActivePanelNoticeRequest
-import anissia.rdb.domain.AccountRole
+import anissia.rdb.entity.AccountRole
 import anissia.rdb.repository.AccountRepository
 import anissia.rdb.repository.ActivePanelRepository
 import org.springframework.context.annotation.Lazy

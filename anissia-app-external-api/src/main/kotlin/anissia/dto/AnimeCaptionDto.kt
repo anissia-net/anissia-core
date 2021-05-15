@@ -1,6 +1,6 @@
 package anissia.dto
 
-import anissia.rdb.domain.AnimeCaption
+import anissia.rdb.entity.AnimeCaption
 import anissia.misc.As
 
 data class AnimeCaptionDto (

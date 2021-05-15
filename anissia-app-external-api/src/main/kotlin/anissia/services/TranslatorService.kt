@@ -5,9 +5,9 @@ import anissia.dto.ResultStatus
 import anissia.dto.TranslatorApplyDto
 import anissia.dto.request.TranslatorApplyPollRequest
 import anissia.dto.request.TranslatorApplyRequest
-import anissia.rdb.domain.AccountRole
-import anissia.rdb.domain.Agenda
-import anissia.rdb.domain.AgendaPoll
+import anissia.rdb.entity.AccountRole
+import anissia.rdb.entity.Agenda
+import anissia.rdb.entity.AgendaPoll
 import anissia.rdb.repository.AccountRepository
 import anissia.rdb.repository.AgendaPollRepository
 import anissia.rdb.repository.AgendaRepository

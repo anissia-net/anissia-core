@@ -1,6 +1,6 @@
 package anissia.dto
 
-import anissia.rdb.domain.BoardPost
+import anissia.rdb.entity.BoardPost
 import java.time.LocalDateTime
 
 data class BoardPostDto (

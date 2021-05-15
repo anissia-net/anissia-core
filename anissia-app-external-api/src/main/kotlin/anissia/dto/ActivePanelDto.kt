@@ -1,6 +1,6 @@
 package anissia.dto
 
-import anissia.rdb.domain.ActivePanel
+import anissia.rdb.entity.ActivePanel
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 

@@ -1,13 +1,12 @@
 package anissia.services
 
 import anissia.configruration.logger
-import anissia.elasticsearch.domain.AnimeDocument
+import anissia.elasticsearch.document.AnimeDocument
 import anissia.elasticsearch.repository.AnimeDocumentRepository
 import anissia.misc.As
-import anissia.rdb.domain.Anime
+import anissia.rdb.entity.Anime
 import anissia.dto.AnimeCaptionDto
 import anissia.dto.AnimeDto
-import anissia.rdb.domain.AnimeStatus
 import anissia.rdb.repository.AnimeCaptionRepository
 import anissia.rdb.repository.AnimeGenreRepository
 import anissia.rdb.repository.AnimeRepository
