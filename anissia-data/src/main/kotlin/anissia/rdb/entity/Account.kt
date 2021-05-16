@@ -43,10 +43,7 @@ data class Account (
 
         // deprecated
         @Column(nullable = false, length = 64)
-        var oldAccount: String = "",
-
-        @Column(nullable = false)
-        var oldAccountNo: Long = 0
+        var oldAccount: String = ""
 ) {
         val isBan: Boolean get() = lastLoginDt.isAfter(LocalDateTime.now())
         val isAdmin: Boolean get() = roles.any { it == AccountRole.TRANSLATOR || it == AccountRole.ROOT }
@@ -62,7 +59,6 @@ CREATE TABLE `account` (
 `last_login_dt` datetime NOT NULL,
 `ban_expire_dt` datetime DEFAULT NULL,
 `old_account` varchar(64) NOT NULL,
-`old_account_no` bigint(20) NOT NULL,
 PRIMARY KEY (`an`),
 UNIQUE KEY `account_pk2` (`email`),
 UNIQUE KEY `account_pk3` (`name`),
