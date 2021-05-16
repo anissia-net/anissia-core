@@ -68,10 +68,7 @@ data class Anime (
     var updDt: LocalDateTime = LocalDateTime.now(),
 
     @OneToMany(mappedBy = "anime")
-    val captions: List<AnimeCaption> = listOf(),
-
-    @Column(nullable = false)
-    var oldAnimeNo: Long = 0
+    val captions: List<AnimeCaption> = listOf()
 )
 
 /*
@@ -88,7 +85,6 @@ CREATE TABLE `anime` (
   `website` varchar(128) NOT NULL,
   `caption_count` int(11) NOT NULL,
   `upd_dt` datetime NOT NULL,
-  `old_anime_no` bigint(20) NOT NULL,
   PRIMARY KEY (`anime_no`),
   UNIQUE KEY `anime_uk1` (`subject`),
   KEY `anime_idx1` (`status`,`week`,`time`),
