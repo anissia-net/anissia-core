@@ -12,7 +12,7 @@ plugins {
 }
 
 allprojects {
-	group = "net.dhant"
+	group = "anissia"
 	version = "1.0"
 
 	repositories {
