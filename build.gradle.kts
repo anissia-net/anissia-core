@@ -9,6 +9,7 @@ plugins {
 	kotlin("plugin.allopen") version kotlinVersion apply false
 	id("org.springframework.boot") version "2.4.5" apply false
 	id("io.spring.dependency-management") version "1.0.11.RELEASE" apply false
+	id("org.ec4j.editorconfig") version "0.0.3"
 }
 
 allprojects {
