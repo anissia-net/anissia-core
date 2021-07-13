@@ -4,15 +4,6 @@
 
 ## 개발환경
 * language : kotlin jdk 13
-* conventions :
-   * Tab : 4 spaces
-   * Charset : UTF-8
-* IDE : IntelliJ IDEA (Ultimate, Community), Eclipse
-   * IDE가 제공하는 방법으로 gradle import 를 합니다.
-   * Eclipse 의 경우 4 space tab / encoding UTF-8 세팅 필수.
-* charset
-   * 글자가 깨질경우 -Dfile.encoding=UTF-8 옵션을 추가합니다.
-   * IntelliJ 기준 Help -> Edit Custom VM Options
 * **Elastic Search (필수)**
     - 아래의 주소에가서 다운 / 설치
     - windows (자동설치 버전을 다운받아도된다.)
