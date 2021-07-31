@@ -28,7 +28,7 @@ class AnimeRankService(
             else ->
                 "[]"
         }
-    
+
     /**
      * anime rank batch
      */
@@ -56,10 +56,13 @@ class AnimeRankService(
 
     private fun extractAllRank() {
         val dt = LocalDateTime.now()
-        val day168List = extractRank(dt.minusDays(168).format(As.DTF_RANK_HOUR))
-        val day84List = extractRank(dt.minusDays(84).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day168List) }
-        val day28List = extractRank(dt.minusDays(28).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day84List) }
-        val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day28List) }
+        val day112List = extractRank(dt.minusDays(112).format(As.DTF_RANK_HOUR))
+        val day84List = extractRank(dt.minusDays(84).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day112List) }
+        val day35List = extractRank(dt.minusDays(35).format(As.DTF_RANK_HOUR))
+        val day28List = extractRank(dt.minusDays(28).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day35List) }
+        val day14List = extractRank(dt.minusDays(14).format(As.DTF_RANK_HOUR))
+        val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day14List) }
+
         animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
         animeStoreRepository.save(AnimeStore("rank.month", "", toString(day28List)))
         animeStoreRepository.save(AnimeStore("rank.quarter", "", toString(day84List)))
