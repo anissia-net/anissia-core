@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- 파일출력 -->
+	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>logs/logfile.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/logfile.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>10</maxHistory>
+			<totalSizeCap>2GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{35} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 루트 -->
+	<root level="INFO">
+		<appender-ref ref="file" />
+	</root>
+
+	<!-- 스프링 -->
+	<logger name="org.springframework" level="INFO" additivity="false">
+		<appender-ref ref="file" />
+	</logger>
+
+	<logger name="org.springframework.data.convert.CustomConversions" level="ERROR" additivity="false" >
+		<appender-ref ref="file" />
+	</logger>
+
+	<logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="INFO" additivity="false" >
+		<appender-ref ref="file" />
+	</logger>
+
+</configuration>

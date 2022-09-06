@@ -1,0 +1,42 @@
+env: dev
+host: http://localhost:8080
+google.analytics.id: G-Z38PT7F09M
+
+server:
+  port: 8001
+  max-http-header-size: 48000
+  tomcat:
+    remoteip:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
+
+server-forward-headers: true
+
+anissia:
+  rdb:
+    driverClassName: org.mariadb.jdbc.Driver
+    jdbcUrl: jdbc:mariadb://localhost:3306/anissia
+    username: anissia
+    password: anissia
+  ndb:
+    host: localhost
+    port: 9200
+
+decorator.datasource.p6spy:
+  enable-logging: false
+  multiline: true
+  logging: slf4j
+  log-format: "%(category) | %(executionTime)ms | %(sql)"
+
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    properties.hibernate:
+      jdbc.batch_size: 4
+      dialect: org.hibernate.dialect.MariaDBDialect
+    hibernate:
+      ddl-auto: none
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    open-in-view: true
+  data.elasticsearch.repositories.enabled: false
