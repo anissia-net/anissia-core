@@ -25,19 +25,19 @@
 #### 실행/빌드 명령어
 ```
 # IntelliJ 기준으로 gradle 실행시 run 뒤에 -Penv=<VALUE> 입력
-# ex) anissia-app-external-api:bootRun -Penv=dev
+# ex) bootRun -Penv=dev
 
 # 로컬 실행 (기본값)
-gradlew :anissia-app-external-api:bootRun
+gradlew bootRun
 
 # 개발 실행 (애니시아 개발서버 VPN 필요)
-gradlew :anissia-app-external-api:bootRun -Penv=dev
+gradlew bootRun -Penv=dev
 
 # 운영 실행 (운영서버 내에서만 가능)
-gradlew :anissia-app-external-api:bootRun -Penv=prod
+gradlew bootRun -Penv=prod
 
 # 마찬가지로 빌드도 아래와 같이한다 (운영빌드 예제)
-gradlew :anissia-app-external-api:build -Penv=prod
+gradlew build -Penv=prod
 ```
 
 #### 로컬 실행
@@ -50,7 +50,7 @@ gradlew :anissia-app-external-api:build -Penv=prod
       |관리자|admin@test.com|asdfasdf|
       |사용자|user@test.com|asdfasdf|
     
-- 데이터를 초기화하려면 anissia-app-external-api 폴더 내 다음 파일을 삭제한다.
+- 데이터를 초기화하려면 프로젝트 폴더 내 다음 파일을 삭제한다.
     - anissia-local.lock.db
     - anissia-local.mv.db
 
@@ -60,17 +60,17 @@ gradlew :anissia-app-external-api:build -Penv=prod
    - 별도의 SQL 클라이언트 사용시 아래의 연결정보를 입력합니다.\
      (최초 bootRun 실행, anissia-local.mv.db 파일 생성 후 접속 가능)
       
-      |jdbc url|jdbc:h2:<anissia-app-external-api 경로>/anissia-local;AUTO_SERVER=TRUE|
-      |---|---|
-      |user|sa|
-      |password|anissia|
+      |jdbc url| jdbc:h2:<프로젝트 경로>/anissia-local;AUTO_SERVER=TRUE |
+      |--------------------------------------------------|---|
+      |user| sa                                               |
+      |password| anissia                                          |
       
       jdbc url example
       
       |OS|jdbc url example|
       |---|---|
-      |windows|jdbc:h2:file:C:/Users/username/anissia-core/anissia-app-external-api/anissia-local;AUTO_SERVER=TRUE|
-      |mac|jdbc:h2:/Users/username/anissia-core/anissia-app-external-api/anissia-local;AUTO_SERVER=TRUE|
+      |windows|jdbc:h2:file:C:/Users/username/anissia-core/anissia-local;AUTO_SERVER=TRUE|
+      |mac|jdbc:h2:/Users/username/anissia-core/anissia-local;AUTO_SERVER=TRUE|
 
 
 ## 참고 
