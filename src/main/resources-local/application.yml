@@ -1,0 +1,40 @@
+env: local
+host: http://localhost:8080
+google.analytics.id: G-Z38PT7F09M
+
+server:
+  port: 8001
+  max-http-header-size: 48000
+  forward-headers-strategy: native
+
+server-forward-headers: true
+
+anissia:
+  rdb:
+    driverClassName: org.h2.Driver
+    jdbcUrl: "jdbc:h2:file:./anissia-local;AUTO_SERVER=TRUE"
+    username: sa
+    password: anissia
+  ndb:
+    host: localhost
+    port: 9200
+
+decorator.datasource.p6spy:
+  enable-logging: true
+  multiline: true
+  logging: slf4j
+  log-format: "%(category) | %(executionTime)ms | %(sql)"
+
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties.hibernate:
+      jdbc.batch_size: 4
+      dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    open-in-view: true
+  data.elasticsearch.repositories.enabled: false
+
