@@ -1,5 +1,6 @@
 package anissia.domain.anime.core.service
 
+import anissia.domain.account.core.model.SearchAnimeDocumentCommand
 import anissia.domain.anime.core.model.AnimeItem
 import anissia.domain.anime.core.model.GetAnimeListCommand
 import anissia.domain.anime.core.ports.inbound.GetAnimeList
@@ -34,7 +35,13 @@ class GetAnimeListService(
                 else keywords.add(word)
             }
 
-            val result = animeDocumentRepository.findAllAnimeNoForAnimeSearch(keywords, genres, translators, end, PageRequest.of(page, 30))
+            val result = animeDocumentRepository.search(SearchAnimeDocumentCommand(
+                keywords = keywords,
+                genres = genres,
+                translators = translators,
+                end = end,
+                pageable = PageRequest.of(page, 30)
+            ))
 
             log.info("anime search $keywords $genres $translators $end ${result.totalElements}")
 

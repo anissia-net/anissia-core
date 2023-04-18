@@ -1,10 +1,10 @@
 package anissia.domain.anime.core.ports.outbound
 
+import anissia.domain.account.core.model.SearchAnimeDocumentCommand
 import anissia.domain.anime.core.AnimeDocument
 import anissia.infrastructure.common.As
 import co.elastic.clients.elasticsearch._types.SortOrder
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.SearchHitSupport
@@ -13,7 +13,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 interface AnimeDocumentRepository : ElasticsearchRepository<AnimeDocument, Long>, AnimeDocumentRepositoryCustom
 
 interface AnimeDocumentRepositoryCustom {
-    fun findAllAnimeNoForAnimeSearch(keywords: List<String>, genres: List<String>, translators: List<String>, end: Boolean, pageable: Pageable): Page<Long>
+    fun search(cmd: SearchAnimeDocumentCommand): Page<Long>
 }
 
 class AnimeDocumentRepositoryCustomImpl(
@@ -21,7 +21,12 @@ class AnimeDocumentRepositoryCustomImpl(
 ): AnimeDocumentRepositoryCustom {
 
     var log = As.logger<AnimeDocumentRepositoryCustomImpl>()
-    override fun findAllAnimeNoForAnimeSearch(keywords: List<String>, genres: List<String>, translators: List<String>, end: Boolean, pageable: Pageable): Page<Long> {
+    override fun search(cmd: SearchAnimeDocumentCommand): Page<Long> {
+        val keywords = cmd.keywords
+        val genres = cmd.genres
+        val translators = cmd.translators
+        val end = cmd.end
+        val pageable = cmd.pageable
         val query = NativeQueryBuilder().withPageable(pageable)
 
         if (keywords.isNotEmpty()) {
