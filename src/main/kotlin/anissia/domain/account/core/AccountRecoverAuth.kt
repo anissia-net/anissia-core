@@ -5,34 +5,36 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(
-        uniqueConstraints = [UniqueConstraint(name = "account_recover_auth_uk__token", columnNames = ["token"])],
-        indexes = [Index(name = "account_recover_auth_idx__an_expDt", columnList = "an,expDt")]
+    uniqueConstraints = [UniqueConstraint(name = "account_recover_auth_uk__token", columnNames = ["token"])],
+    indexes = [Index(name = "account_recover_auth_idx__an_expDt", columnList = "an,expDt")]
 )
 data class AccountRecoverAuth (
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(nullable = false)
-        var no: Long = 0,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
+    var no: Long = 0,
 
-        @Column(nullable = false, length = 512)
-        var token: String = "",
+    @Column(nullable = false, length = 512)
+    var token: String = "",
 
-        @Column(nullable = false)
-        var an: Long = 0,
+    @Column(nullable = false)
+    var an: Long = 0,
 
-        @Column(nullable = false, length = 40)
-        var ip: String = "",
+    @Column(nullable = false, length = 40)
+    var ip: String = "",
 
-        @Column(nullable = false)
-        var expDt: OffsetDateTime = OffsetDateTime.now(),
+    @Column(nullable = false)
+    var expDt: OffsetDateTime = OffsetDateTime.now(),
 
-        @Column(nullable = true)
-        var usedDt: OffsetDateTime? = null,
+    @Column(nullable = true)
+    var usedDt: OffsetDateTime? = null,
 
-        @OneToOne
-        @JoinColumn(name = "an", foreignKey = ForeignKey(name = "account_recover_auth_fk_account"), nullable = false, insertable = false, updatable = false)
-        var account: Account? = null
-)
+    @OneToOne
+    @JoinColumn(name = "an", foreignKey = ForeignKey(name = "account_recover_auth_fk_account"), nullable = false, insertable = false, updatable = false)
+    var account: Account? = null
+) {
+
+}
 
 /*
 CREATE TABLE `account_recover_auth` (

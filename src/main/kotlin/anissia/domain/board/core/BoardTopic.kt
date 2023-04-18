@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(
-        indexes = [Index(name = "board_topic_idx__ticker_fixed_topicNo", columnList = "ticker,fixed,topicNo")]
+    indexes = [Index(name = "board_topic_idx__ticker_fixed_topicNo", columnList = "ticker,fixed,topicNo")]
 )
 data class BoardTopic (
     @Id
@@ -39,7 +39,9 @@ data class BoardTopic (
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "topicNo", foreignKey = ForeignKey(name = "board_topic_fn_boardPost"), nullable = false, insertable = false)
     var posts: MutableList<BoardPost> = mutableListOf()
-)
+) {
+
+}
 
 /*
 CREATE TABLE `board_topic` (

@@ -8,10 +8,12 @@ import jakarta.persistence.Table
 @Entity
 @Table
 data class AnimeGenre (
-        @Id
-        @Column(nullable = false, length = 100)
-        var genre: String = ""
-)
+    @Id
+    @Column(nullable = false, length = 100)
+    var genre: String = ""
+) {
+
+}
 
 /*
 CREATE TABLE `anime_genre` (

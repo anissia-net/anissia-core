@@ -20,7 +20,9 @@ data class BoardTicker (
 
     @Column(nullable = false, length = 100)
     val writePostRoles: String = ""
-)
+) {
+
+}
 
 /*
 CREATE TABLE `board_ticker` (

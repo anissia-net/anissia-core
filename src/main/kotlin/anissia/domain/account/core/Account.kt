@@ -7,8 +7,8 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(uniqueConstraints = [
-        UniqueConstraint(name = "account_uk__email", columnNames = ["email"]),
-        UniqueConstraint(name = "account_uk__name", columnNames = ["name"]),
+    UniqueConstraint(name = "account_uk__email", columnNames = ["email"]),
+    UniqueConstraint(name = "account_uk__name", columnNames = ["name"]),
 ])
 data class Account (
     @Id

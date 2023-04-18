@@ -7,34 +7,34 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(
-        indexes = [
-                Index(name = "anime_caption_idx__an_updDt", columnList = "an,updDt"),
-                Index(name = "anime_caption_idx__updDt", columnList = "updDt")
-        ]
+    indexes = [
+        Index(name = "anime_caption_idx__an_updDt", columnList = "an,updDt"),
+        Index(name = "anime_caption_idx__updDt", columnList = "updDt")
+    ]
 )
 @IdClass(AnimeCaption.Key::class)
 data class AnimeCaption (
     @Id
-        @Column(nullable = false)
-        var an: Long = 0,
+    @Column(nullable = false)
+    var an: Long = 0,
 
     @Column(nullable = false, length = 10)
-        var episode: String = "0",
+    var episode: String = "0",
 
     @Column(nullable = false)
-        var updDt: OffsetDateTime = OffsetDateTime.now(),
+    var updDt: OffsetDateTime = OffsetDateTime.now(),
 
     @Column(nullable = false, length = 512)
-        var website: String = "",
+    var website: String = "",
 
     @OneToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "an", foreignKey = ForeignKey(name = "anime_caption_fk_account"), nullable = false, insertable = false, updatable = false)
-        var account: Account? = null,
+    @JoinColumn(name = "an", foreignKey = ForeignKey(name = "anime_caption_fk_account"), nullable = false, insertable = false, updatable = false)
+    var account: Account? = null,
 
     @Id
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "animeNo", foreignKey = ForeignKey(name = "anime_caption_fk_anime"))
-        var anime: Anime? = null
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "animeNo", foreignKey = ForeignKey(name = "anime_caption_fk_anime"))
+    var anime: Anime? = null
 ) {
     data class Key(val anime: Long = 0, val an: Long = 0) : Serializable
 }

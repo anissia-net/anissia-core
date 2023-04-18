@@ -77,7 +77,9 @@ data class Anime (
 
     @OneToMany(mappedBy = "anime")
     val captions: List<AnimeCaption> = listOf()
-)
+) {
+
+}
 
 /*
 -- PRIMARY KEY (`originalSubject`), 추가해야함

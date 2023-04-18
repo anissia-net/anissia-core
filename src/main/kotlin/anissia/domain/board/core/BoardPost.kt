@@ -7,10 +7,9 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(
-        indexes = [Index(name = "board_post_idx__topicNo_postNo", columnList = "topicNo,postNo")]
+    indexes = [Index(name = "board_post_idx__topicNo_postNo", columnList = "topicNo,postNo")]
 )
 data class BoardPost (
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -39,7 +38,9 @@ data class BoardPost (
     @OneToOne
     @JoinColumn(name = "an", foreignKey = ForeignKey(name = "board_post_fk_account"), nullable = false, insertable = false, updatable = false)
     var account: Account? = null,
-)
+) {
+
+}
 
 /*
 CREATE TABLE `board_post` (

@@ -6,38 +6,40 @@ import java.time.OffsetDateTime
 @Entity
 @Table
 data class ActivePanel (
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(nullable = false)
-        var apNo: Long = 0,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
+    var apNo: Long = 0,
 
-        @Column(nullable = false)
-        var published: Boolean = false,
+    @Column(nullable = false)
+    var published: Boolean = false,
 
-        @Column(nullable = false, length = 100)
-        var code: String = "",
+    @Column(nullable = false, length = 100)
+    var code: String = "",
 
-        @Column(nullable = false, length = 32)
-        var status: String = "",
+    @Column(nullable = false, length = 32)
+    var status: String = "",
 
-        @Column(nullable = false)
-        var an: Long = 0,
+    @Column(nullable = false)
+    var an: Long = 0,
 
-        @Lob
-        @Column(nullable = true)
-        var data1: String? = null,
+    @Lob
+    @Column(nullable = true)
+    var data1: String? = null,
 
-        @Lob
-        @Column(nullable = true)
-        var data2: String? = null,
+    @Lob
+    @Column(nullable = true)
+    var data2: String? = null,
 
-        @Lob
-        @Column(nullable = true)
-        var data3: String? = null,
+    @Lob
+    @Column(nullable = true)
+    var data3: String? = null,
 
-        @Column(nullable = false)
-        var regDt: OffsetDateTime = OffsetDateTime.now()
-)
+    @Column(nullable = false)
+    var regDt: OffsetDateTime = OffsetDateTime.now()
+) {
+
+}
 
 /*
 CREATE TABLE `active_panel` (

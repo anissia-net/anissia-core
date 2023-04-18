@@ -8,10 +8,12 @@ import jakarta.persistence.Table
 @Entity
 @Table
 data class AccountBanName (
-        @Id
-        @Column(nullable = false, length = 16)
-        var name: String = ""
-)
+    @Id
+    @Column(nullable = false, length = 16)
+    var name: String = ""
+) {
+
+}
 
 /*
 CREATE TABLE `account_ban_name` (

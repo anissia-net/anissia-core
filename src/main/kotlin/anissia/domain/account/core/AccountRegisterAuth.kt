@@ -5,35 +5,37 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(
-        uniqueConstraints = [
-            UniqueConstraint(name = "account_register_auth_uk__token", columnNames = ["token"])
-        ],
-        indexes = [Index(name = "account_register_auth_idx__email_expDt", columnList = "email,expDt")]
+    uniqueConstraints = [
+        UniqueConstraint(name = "account_register_auth_uk__token", columnNames = ["token"])
+    ],
+    indexes = [Index(name = "account_register_auth_idx__email_expDt", columnList = "email,expDt")]
 )
 data class AccountRegisterAuth (
     @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(nullable = false)
-        var no: Long = 0,
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
+    var no: Long = 0,
 
     @Column(nullable = false, length = 512)
-        var token: String = "",
+    var token: String = "",
 
     @Column(nullable = false, length = 64)
-        var email: String = "",
+    var email: String = "",
 
     @Column(nullable = false, length = 40)
-        var ip: String = "",
+    var ip: String = "",
 
     @Column(nullable = false)
-        var data: String = "",
+    var data: String = "",
 
     @Column(nullable = false)
-        var expDt: OffsetDateTime = OffsetDateTime.now(),
+    var expDt: OffsetDateTime = OffsetDateTime.now(),
 
     @Column(nullable = true)
-        var usedDt: OffsetDateTime? = null
-)
+    var usedDt: OffsetDateTime? = null
+) {
+
+}
 
 /*
 CREATE TABLE `account_register_auth` (
