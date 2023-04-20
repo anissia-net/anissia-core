@@ -27,7 +27,18 @@ data class LoginPass (
     @Column(nullable = false)
     var passDt: OffsetDateTime = OffsetDateTime.now()
 ) {
-
+    companion object {
+        fun create(
+            an: Long,
+            connType: String,
+            ip: String
+        ): LoginPass =
+            LoginPass(
+                an = an,
+                connType = connType,
+                ip = ip
+            )
+    }
 }
 
 /*

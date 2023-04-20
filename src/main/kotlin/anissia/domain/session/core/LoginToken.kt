@@ -1,6 +1,7 @@
 package anissia.domain.session.core
 
 import jakarta.persistence.*
+import me.saro.kit.Texts
 import java.time.OffsetDateTime
 
 @Entity
@@ -21,8 +22,19 @@ data class LoginToken (
     var an: Long = 0,
 
     @Column(nullable = false)
-    var expDt: OffsetDateTime = OffsetDateTime.now()
+    var expDt: OffsetDateTime
 ) {
+    companion object {
+        fun create(
+            an: Long,
+        ): LoginToken =
+            LoginToken(
+                token = Texts.createRandomBase62String(128, 512),
+                an = an,
+                expDt = OffsetDateTime.now().plusDays(10)
+            )
+    }
+
     val absoluteToken: String get() = "${tokenNo}-${token}"
 }
 

@@ -37,7 +37,7 @@ class DoLoginService(
             ?.takeIf { bCryptService.matches(it.password, cmd.password) }
 
         if (account == null) {
-            loginFailRepository.save(LoginFail(ip = ip, email = cmd.email))
+            loginFailRepository.save(LoginFail.create(ip = ip, email = cmd.email))
             throw FailException("암호가 일치하지 않거나 존재하지 않는 계정입니다.")
         }
 

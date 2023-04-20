@@ -25,7 +25,16 @@ data class LoginFail (
     @Column(nullable = false)
     var failDt: OffsetDateTime = OffsetDateTime.now()
 ) {
-
+    companion object {
+        fun create(
+            ip: String,
+            email: String
+        ): LoginFail =
+            LoginFail(
+                ip = ip,
+                email = email
+            )
+    }
 }
 
 /*

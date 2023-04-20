@@ -41,7 +41,7 @@ class DoTokenLoginService(
 
             }
 
-        loginFailRepository.save(LoginFail(ip = ip, email = "#${cmd.tn}"))
+        loginFailRepository.save(LoginFail.create(ip = ip, email = "#${cmd.tn}"))
 
         throw FailException("기타예외")
     }

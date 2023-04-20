@@ -12,7 +12,6 @@ import anissia.domain.session.core.ports.outbound.LoginTokenRepository
 import anissia.domain.session.infrastructure.JwtService
 import anissia.shared.ResultWrapper
 import me.saro.jwt.core.JwtClaims
-import me.saro.kit.Texts
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
@@ -30,22 +29,17 @@ class GetLoginInfoItemService(
         val session = cmd.session
 
         val token = cmd.takeIf { it.makeLoginToken }
-            ?.let { updateLoginToken(LoginToken(an = session.an)).absoluteToken }
+            ?.let { LoginToken.create(an = session.an).also { loginTokenRepository.save(it) } }
+            ?.absoluteToken
             ?:""
 
         val jwt = toJwt(session)
 
         // clean up and return
         loginFailRepository.deleteByIpAndEmail(session.ip, session.email)
-        loginPassRepository.save(LoginPass(an = session.an, connType = "login", ip = session.ip))
+        loginPassRepository.save(LoginPass.create(an = session.an, connType = "login", ip = session.ip))
 
         return ResultWrapper.ok(LoginInfoItem(jwt, token))
-    }
-
-    fun updateLoginToken(loginToken: LoginToken) = loginToken.run {
-        token = Texts.createRandomBase62String(128, 512)
-        expDt = OffsetDateTime.now().plusDays(10)
-        loginTokenRepository.save(this)
     }
 
     fun toJwt(session: Session): String = try {
