@@ -39,7 +39,28 @@ data class BoardPost (
     @JoinColumn(name = "an", foreignKey = ForeignKey(name = "board_post_fk_account"), nullable = false, insertable = false, updatable = false)
     var account: Account? = null,
 ) {
+    companion object {
+        fun create(topicNo: Long, content: String, an: Long): BoardPost {
+            val boardPost = BoardPost()
+            boardPost.topicNo = topicNo
+            boardPost.content = content
+            boardPost.an = an
+            return boardPost
+        }
 
+        fun createRootPost(topicNo: Long, content: String, an: Long): BoardPost {
+            val boardPost = BoardPost()
+            boardPost.topicNo = topicNo
+            boardPost.root = true
+            boardPost.content = content
+            boardPost.an = an
+            return boardPost
+        }
+    }
+
+    fun edit(content: String) {
+        this.content = content
+    }
 }
 
 /*

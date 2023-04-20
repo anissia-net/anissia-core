@@ -28,7 +28,7 @@ class NewPostService(
             ?.takeIf { permission(it.ticker, session) }
             ?.let {
                 boardPostRepository.saveAndFlush(
-                    BoardPost(
+                    BoardPost.create(
                         topicNo = cmd.topicNo,
                         content = cmd.content,
                         an = session.an,

@@ -40,7 +40,19 @@ data class BoardTopic (
     @JoinColumn(name = "topicNo", foreignKey = ForeignKey(name = "board_topic_fn_boardPost"), nullable = false, insertable = false)
     var posts: MutableList<BoardPost> = mutableListOf()
 ) {
+    companion object {
+        fun create(ticker: String, topic: String, an: Long): BoardTopic {
+            val boardTopic = BoardTopic()
+            boardTopic.ticker = ticker
+            boardTopic.topic = topic
+            boardTopic.an = an
+            return boardTopic
+        }
+    }
 
+    fun edit(topic: String) {
+        this.topic = topic
+    }
 }
 
 /*

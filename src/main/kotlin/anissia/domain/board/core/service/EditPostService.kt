@@ -22,8 +22,7 @@ class EditPostService(
             .findByIdOrNull(cmd.postNo)
             ?.takeIf { !it.root && it.an == session.an }
             ?.let {
-                it.content = cmd.content
-                boardPostRepository.save(it)
+                boardPostRepository.save(it.apply { edit(cmd.content) })
                 ResultWrapper.ok()
             }
             ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")

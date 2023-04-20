@@ -29,16 +29,15 @@ class NewTopicService(
             .takeIf { permission(it, session) }
             ?.let {
                 val topic = boardTopicRepository.saveAndFlush(
-                    BoardTopic(
+                    BoardTopic.create(
                         ticker = cmd.ticker,
                         topic = cmd.topic,
                         an = session.an,
                     )
                 )
                 boardPostRepository.saveAndFlush(
-                    BoardPost(
+                    BoardPost.createRootPost(
                         topicNo = topic.topicNo,
-                        root = true,
                         content = cmd.content,
                         an = session.an,
                     )
