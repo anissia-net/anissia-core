@@ -26,9 +26,11 @@ class EditCaptionService(
             ?: return ResultWrapper.fail("존재하지 않는 자막입니다.")
 
         animeCaptionRepository.save(caption.apply {
-            this.episode = cmd.episode
-            this.updDt = cmd.updLdt.atOffset(ZoneOffset.ofHours(9))
-            this.website = cmd.website
+            edit(
+                episode = cmd.episode,
+                updDt = cmd.updLdt.atOffset(ZoneOffset.ofHours(9)),
+                website = cmd.website
+            )
         })
 
         return ResultWrapper.of("ok", "자막정보가 반영되었습니다.")

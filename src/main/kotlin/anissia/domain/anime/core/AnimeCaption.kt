@@ -37,6 +37,12 @@ data class AnimeCaption (
     var anime: Anime? = null
 ) {
     data class Key(val anime: Long = 0, val an: Long = 0) : Serializable
+
+    fun edit(episode: String, updDt: OffsetDateTime, website: String) {
+        this.episode = episode
+        this.updDt = updDt
+        this.website = website
+    }
 }
 
 /*
