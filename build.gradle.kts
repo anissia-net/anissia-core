@@ -39,26 +39,18 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-	// db
-	implementation("com.zaxxer:HikariCP")
-	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
-	//runtimeOnly(if (env != "local") "org.mariadb.jdbc:mariadb-java-client" else "com.h2database:h2")
-
 	// JPA query dsl
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch:2.3.12.RELEASE")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 
-//	val queryDslVersion = "5.0.0"
-//	implementation("com.querydsl:querydsl-jpa:$queryDslVersion")
-//	implementation("com.querydsl:querydsl-apt:$queryDslVersion")
-//	implementation("com.querydsl:querydsl-sql:$queryDslVersion")
-//	kapt("com.querydsl:querydsl-apt:$queryDslVersion:jpa")
-
 	// DB connector
 	implementation("com.zaxxer:HikariCP")
-	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
-	runtimeOnly("com.h2database:h2")
+	if (env != "local") {
+		runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+	} else {
+		runtimeOnly("com.h2database:h2")
+	}
 
 	// lib
 	implementation("me.saro:kit-ee:0.1.8")
