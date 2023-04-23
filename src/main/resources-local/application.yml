@@ -43,7 +43,7 @@ spring:
       enabled: true
       discovery:
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
-        health-check-critical-timeout: 10s
+        health-check-critical-timeout: 30s
       config:
         import-check:
           enabled: false
