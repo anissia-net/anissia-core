@@ -71,8 +71,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
-	// spring security
-	//implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.cloud:spring-cloud-starter-consul-all:4.0.2")
 
 	// test
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

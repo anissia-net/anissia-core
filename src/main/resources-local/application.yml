@@ -37,4 +37,17 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     open-in-view: true
   data.elasticsearch.repositories.enabled: false
+  application:
+    name: anissia-core
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        health-check-critical-timeout: 10s
+      config:
+        import-check:
+          enabled: false
 
