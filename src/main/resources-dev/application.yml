@@ -4,10 +4,7 @@ google.analytics.id: G-Z38PT7F09M
 
 server:
   port: 8001
-  max-http-header-size: 48000
   forward-headers-strategy: native
-
-server-forward-headers: true
 
 anissia:
   rdb:
