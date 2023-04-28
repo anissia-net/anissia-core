@@ -13,9 +13,10 @@ class AnimeTempController(
     private val updateAnimeDocument: UpdateAnimeDocument
 ) {
 //    @GetMapping("/update-all-anime-document")
-//    fun updateAllAnimeDocument() {
+//    fun updateAllAnimeDocument(): String {
 //        animeRepository.findAll().forEach {
 //            updateAnimeDocument.handle(it)
 //        }
+//        return "OK!!"
 //    }
 }
