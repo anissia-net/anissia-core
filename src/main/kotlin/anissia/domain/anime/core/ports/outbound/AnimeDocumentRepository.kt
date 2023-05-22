@@ -31,7 +31,12 @@ class AnimeDocumentRepositoryCustomImpl(
 
         if (keywords.isNotEmpty()) {
             query.withQuery { q ->
-                q.wildcard { it.field("subject").wildcard(keywords.joinToString("*", "*", "*")) }
+                q.bool { b ->
+                    keywords.forEach { keyword ->
+                        b.must { m ->m.wildcard { w -> w.field("subject").wildcard("*$keyword*") } }
+                    }
+                    b.minimumShouldMatch("100%")
+                }
             }
         }
 
@@ -55,6 +60,8 @@ class AnimeDocumentRepositoryCustomImpl(
                 query.withSort { f -> f.field { fn -> fn.field("endDate").order(SortOrder.Desc) } }
             }
         }
+
+        log.info(query.build().query.toString())
 
         return SearchHitSupport.searchPageFor(operations.search(query.build(), AnimeDocument::class.java), pageable).map { it.content.animeNo }
     }
