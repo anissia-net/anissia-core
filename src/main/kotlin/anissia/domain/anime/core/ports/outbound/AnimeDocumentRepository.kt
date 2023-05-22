@@ -31,12 +31,11 @@ class AnimeDocumentRepositoryCustomImpl(
 
         if (keywords.isNotEmpty()) {
             query.withQuery { q ->
-                q.bool { b ->
+                q.bool { b -> b.also {
                     keywords.forEach { keyword ->
-                        b.must { m ->m.wildcard { w -> w.field("subject").wildcard("*$keyword*") } }
+                        it.must { m -> m.wildcard { w -> w.field("subject").wildcard("*$keyword*") } }
                     }
-                    b.minimumShouldMatch("100%")
-                }
+                }.minimumShouldMatch("100%") }
             }
         }
 
@@ -62,7 +61,8 @@ class AnimeDocumentRepositoryCustomImpl(
         }
 
         val buildQuery = query.build()
-        log.info(buildQuery.query.toString())
+        //log.info(buildQuery.query.toString())
+        //log.info(buildQuery.filter.toString())
 
         return SearchHitSupport.searchPageFor(operations.search(buildQuery, AnimeDocument::class.java), pageable).map { it.content.animeNo }
     }
