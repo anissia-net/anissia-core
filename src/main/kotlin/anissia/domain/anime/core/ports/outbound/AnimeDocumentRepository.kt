@@ -61,8 +61,9 @@ class AnimeDocumentRepositoryCustomImpl(
             }
         }
 
-        log.info(query.build().query.toString())
+        val buildQuery = query.build()
+        log.info(buildQuery.query.toString())
 
-        return SearchHitSupport.searchPageFor(operations.search(query.build(), AnimeDocument::class.java), pageable).map { it.content.animeNo }
+        return SearchHitSupport.searchPageFor(operations.search(buildQuery, AnimeDocument::class.java), pageable).map { it.content.animeNo }
     }
 }
