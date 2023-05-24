@@ -12,6 +12,9 @@ data class AnimeDocument (
     var animeNo: Long = 0,
 
     @Field(index = true)
+    var week: String = "",
+
+    @Field(index = true)
     var subject: String = "",
 
     @Field(index = true)
