@@ -40,7 +40,8 @@ class UpdateAnimeDocumentService(
                 .orElseGet { AnimeDocument(animeNo = anime.animeNo) }
                 .also {
                     it.animeNo = anime.animeNo
-                    it.subject = anime.subject
+                    it.week = anime.week
+                    it.subject = anime.subject + " " + anime.originalSubject
                     it.status = anime.status.name
                     it.genres = anime.genres.split(",".toRegex())
                     it.translators = animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo)
