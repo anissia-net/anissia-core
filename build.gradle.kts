@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // project environment :  ex) prod : -Penv=prod
-val env = project.findProperty("env") ?: "local"
+// val env = project.findProperty("env") ?: "local"
 
 plugins {
 	val kotlinVersion = "1.8.10"
@@ -46,11 +46,11 @@ dependencies {
 
 	// DB connector
 	implementation("com.zaxxer:HikariCP")
-	if (env != "local") {
+	//if (env != "local") {
 		runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
-	} else {
+	//} else {
 		runtimeOnly("com.h2database:h2")
-	}
+	//}
 
 	// lib
 	implementation("me.saro:kit-ee:0.1.8")
@@ -63,9 +63,9 @@ dependencies {
 	// logger
 	implementation("org.slf4j:slf4j-api")
 	implementation("ch.qos.logback:logback-classic")
-	if (env != "prod") {
+	//if (env != "prod") {
 		implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
-	}
+	//}
 
 	// spring
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -94,13 +94,13 @@ configure<JavaPluginExtension> {
 }
 
 
-sourceSets {
-	main {
-		resources {
-			srcDir("src/main/resources-${env}")
-		}
-	}
-}
+//sourceSets {
+//	main {
+//		resources {
+//			srcDir("src/main/resources-${env}")
+//		}
+//	}
+//}
 
 tasks.getByName<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
 	sourceResources(sourceSets["main"])
