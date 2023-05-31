@@ -16,20 +16,17 @@
 
 #### 실행/빌드 명령어
 ```
-# IntelliJ 기준으로 gradle 실행시 run 뒤에 -Penv=<VALUE> 입력
-# ex) bootRun -Penv=dev
-
 # 로컬 실행 (기본값)
 gradlew bootRun
 
 # 개발 실행 (애니시아 개발서버 VPN 필요)
-gradlew bootRun -Penv=dev
+gradlew bootRun -Dspring.profiles.active=dev
 
 # 운영 실행 (운영서버 내에서만 가능)
-gradlew bootRun -Penv=prod
+gradlew bootRun -Dspring.profiles.active=prod
 
-# 마찬가지로 빌드도 아래와 같이한다 (운영빌드 예제)
-gradlew build -Penv=prod
+# 빌드
+gradlew build
 ```
 
 #### 로컬 실행
