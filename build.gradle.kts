@@ -25,6 +25,16 @@ repositories {
 	mavenCentral()
 }
 
+// idea setting
+idea {
+	module {
+		excludeDirs = setOf(
+			File("$projectDir/logs"),
+			File("$projectDir/tmp")
+		)
+	}
+}
+
 // very important
 // 이것이 설정되어 있지않은 경우 Entity 내 모든 조인필드를
 // getter 를 통한 사용여부와 상관없이 강제적으로 모두 get 하여 셀릭트 1 + n 문제를 읽으킨다.
