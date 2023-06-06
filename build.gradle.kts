@@ -4,13 +4,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val env = project.findProperty("env") ?: "local"
 
 plugins {
-	val kotlinVersion = "1.8.10"
+	val kotlinVersion = "1.8.21"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.kapt") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
-	id("org.springframework.boot") version "3.0.5"
+	id("org.springframework.boot") version "3.1.0"
 	id("io.spring.dependency-management") version "1.1.0"
 	id("org.ec4j.editorconfig") version "0.0.3"
 	id("idea")
@@ -64,9 +64,8 @@ dependencies {
 
 	// lib
 	implementation("me.saro:kit-ee:0.1.8")
-	implementation("org.jsoup:jsoup:1.15.4")
+	implementation("org.jsoup:jsoup:1.16.1")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("joda-time:joda-time:2.12.2")
 	implementation("org.mindrot:jbcrypt:0.4")
 	implementation("me.saro:jwt:2.0.1")
 
