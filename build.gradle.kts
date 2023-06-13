@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val env = project.findProperty("env") ?: "local"
 
 plugins {
-	val kotlinVersion = "1.8.21"
+	val kotlinVersion = "1.8.22"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.kapt") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
