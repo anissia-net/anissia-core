@@ -25,4 +25,8 @@ class GetAnimeRankService(
             else -> listOf()
         }
     }
+
+    override fun clearCache() {
+        rankCacheStore.clear()
+    }
 }

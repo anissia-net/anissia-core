@@ -1,5 +1,6 @@
 package anissia.infrastructure.configuration
 
+import anissia.domain.anime.core.ports.inbound.UpdateAnimeRank
 import anissia.domain.session.core.JwtKeyPair
 import anissia.domain.session.core.model.JwtKeyItem
 import anissia.domain.session.core.ports.outbound.JwtKeyPairRepository
@@ -17,7 +18,8 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar
 @EnableScheduling
 class ScheduleConfiguration(
     private val jwtService: JwtService,
-    private val jwtKeyPairRepository: JwtKeyPairRepository
+    private val jwtKeyPairRepository: JwtKeyPairRepository,
+    private val updateAnimeRank: UpdateAnimeRank
 ) : SchedulingConfigurer {
 
     private val log = As.logger<ScheduleConfiguration>()
@@ -26,7 +28,8 @@ class ScheduleConfiguration(
 
 
     // start 1 minute in every hour / anime rank
-    //@Scheduled(cron = "0 1 * * * ?") fun animeRankBatch() = animeRankService.animeRankBatch()
+    @Scheduled(cron = "0 1 * * * ?")
+    fun animeRankBatch() = updateAnimeRank.handle()
 
     @Scheduled(cron = "0 0/10 * * * ?")
     fun registerNewJwtKey() {

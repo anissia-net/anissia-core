@@ -4,4 +4,6 @@ import anissia.domain.anime.core.model.GetAnimeRankCommand
 
 interface GetAnimeRank {
     fun handle(cmd: GetAnimeRankCommand): List<Map<*,*>>
+
+    fun clearCache()
 }
