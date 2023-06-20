@@ -27,6 +27,9 @@ gradlew bootRun -Dspring.profiles.active=prod
 
 # 빌드
 gradlew build
+
+# 실행
+java -jar anissia-core-1.0.jar --spring.profiles.active=prod
 ```
 
 #### 로컬 실행
