@@ -73,7 +73,7 @@ dependencies {
 	implementation("org.slf4j:slf4j-api")
 	implementation("ch.qos.logback:logback-classic")
 	//if (env != "prod") {
-		implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
+	//	implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
 	//}
 
 	// spring
