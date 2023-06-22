@@ -3,17 +3,19 @@ package anissia.domain.anime.core.model
 import anissia.domain.anime.core.Anime
 
 class AnimeScheduleItem (
-    var animeNo: Long = 0,
-    var status: String = "",
-    var time: String = "",
-    var subject: String = "",
-    var genres: String = "",
-    var captionCount: Int = 0,
-    var startDate: String = "",
-    var endDate: String = "",
-    var website: String = "",
+    val week: String,
+    val animeNo: Long,
+    val status: String,
+    val time: String,
+    val subject: String,
+    val genres: String,
+    val captionCount: Int,
+    val startDate: String,
+    val endDate: String,
+    val website: String,
 ) {
     constructor(anime: Anime): this(
+        week = anime.week,
         animeNo = anime.animeNo,
         status = anime.status.toString(),
         time = if (!anime.week.matches("7|8".toRegex())) anime.time else anime.startDate,
