@@ -3,10 +3,10 @@ package anissia.domain.board.core.model
 import anissia.domain.board.core.BoardTicker
 
 class BoardTickerItem (
-    var ticker: String = "",
-    var name: String = "",
-    var writeTopicRoles: List<String> = listOf(),
-    var writePostRoles: List<String> = listOf(),
+    val ticker: String = "",
+    val name: String = "",
+    val writeTopicRoles: List<String> = listOf(),
+    val writePostRoles: List<String> = listOf(),
 ) {
     constructor(boardTicker: BoardTicker): this(
         ticker = boardTicker.ticker,

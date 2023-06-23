@@ -4,12 +4,12 @@ import anissia.domain.anime.core.AnimeCaption
 import anissia.infrastructure.common.As
 
 class CaptionRecentItem (
-    var animeNo: Long = 0,
-    var subject: String = "",
-    var episode: String = "",
-    var updDt: String = "",
-    var website: String = "",
-    var name: String = ""
+    val animeNo: Long = 0,
+    val subject: String = "",
+    val episode: String = "",
+    val updDt: String = "",
+    val website: String = "",
+    val name: String = ""
 ) {
     constructor(animeCaption: AnimeCaption): this(
             animeNo = animeCaption.anime?.animeNo?:0,

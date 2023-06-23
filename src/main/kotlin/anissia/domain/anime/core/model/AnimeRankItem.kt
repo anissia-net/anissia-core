@@ -1,9 +1,9 @@
 package anissia.domain.anime.core.model
 
 class AnimeRankItem (
-    var animeNo: Long = 0,
-    var subject: String = "",
-    var hit: Long = 0,
+    val animeNo: Long = 0,
+    val subject: String = "",
+    val hit: Long = 0,
     var rank: Int = 0,
     var diff: Int? = null
 ) {

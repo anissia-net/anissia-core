@@ -5,14 +5,14 @@ import anissia.domain.board.core.BoardTopic
 import com.fasterxml.jackson.annotation.JsonInclude
 
 class BoardTopicItem (
-    var topicNo: Long = 0,
-    var fixed: Boolean = false,
-    var topic: String = "",
-    var postCount: Int = 0,
+    val topicNo: Long = 0,
+    val fixed: Boolean = false,
+    val topic: String = "",
+    val postCount: Int = 0,
     val regTime: Long = 0L,
-    var name: String = "",
+    val name: String = "",
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    var posts: List<BoardPostItem>? = null
+    val posts: List<BoardPostItem>? = null
 ) {
     constructor(boardTopic: BoardTopic, posts: List<BoardPost>? = null): this(
         topicNo = boardTopic.topicNo,

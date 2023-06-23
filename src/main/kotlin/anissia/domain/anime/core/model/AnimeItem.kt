@@ -4,20 +4,20 @@ package anissia.domain.anime.core.model
 import anissia.domain.anime.core.Anime
 
 class AnimeItem(
-    var animeNo: Long = 0,
-    var status: String = "",
-    var week: String = "",
-    var time: String = "",
-    var subject: String = "",
-    var originalSubject: String = "",
-    var captionCount: Int = 0,
-    var genres: String = "",
-    var startDate: String = "",
-    var endDate: String = "",
-    var website: String = "",
-    var twitter: String = "",
+    val animeNo: Long = 0,
+    val status: String = "",
+    val week: String = "",
+    val time: String = "",
+    val subject: String = "",
+    val originalSubject: String = "",
+    val captionCount: Int = 0,
+    val genres: String = "",
+    val startDate: String = "",
+    val endDate: String = "",
+    val website: String = "",
+    val twitter: String = "",
     var agendaNo: Long = 0,
-    var captions: List<AnimeCaptionItem> = emptyList()
+    val captions: List<AnimeCaptionItem> = emptyList()
 ) {
     constructor(anime: Anime, includeCaption: Boolean = false): this(
         animeNo = anime.animeNo,

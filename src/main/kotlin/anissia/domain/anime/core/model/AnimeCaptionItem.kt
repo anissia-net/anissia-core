@@ -4,15 +4,15 @@ import anissia.domain.anime.core.AnimeCaption
 import anissia.infrastructure.common.As
 
 data class AnimeCaptionItem (
-        var episode: String = "",
-        var updDt: String = "",
-        var website: String = "",
-        var name: String = ""
+    val episode: String = "",
+    val updDt: String = "",
+    val website: String = "",
+    val name: String = ""
 ) {
-        constructor(animeCaption: AnimeCaption): this(
-                episode = animeCaption.episode,
-                updDt = animeCaption.updDt.format(As.DTF_ISO_CAPTION) + ":00",
-                website = animeCaption.website,
-                name = animeCaption.account?.name?:"탈퇴회원"
-        )
+    constructor(animeCaption: AnimeCaption): this(
+            episode = animeCaption.episode,
+            updDt = animeCaption.updDt.format(As.DTF_ISO_CAPTION) + ":00",
+            website = animeCaption.website,
+            name = animeCaption.account?.name?:"탈퇴회원"
+    )
 }

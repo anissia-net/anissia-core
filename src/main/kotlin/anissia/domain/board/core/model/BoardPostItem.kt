@@ -3,11 +3,11 @@ package anissia.domain.board.core.model
 import anissia.domain.board.core.BoardPost
 
 class BoardPostItem (
-    var postNo: Long = 0,
-    var topicNo: Long = 0,
-    var root: Boolean = false,
-    var content: String = "",
-    var name: String = "",
+    val postNo: Long = 0,
+    val topicNo: Long = 0,
+    val root: Boolean = false,
+    val content: String = "",
+    val name: String = "",
     val regTime: Long = 0L,
     val updTime: Long = 0L,
 ) {
