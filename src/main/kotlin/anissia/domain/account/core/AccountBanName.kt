@@ -7,7 +7,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table
-data class AccountBanName (
+class AccountBanName (
     @Id
     @Column(nullable = false, length = 16)
     var name: String = ""

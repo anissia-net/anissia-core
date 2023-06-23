@@ -9,7 +9,7 @@ import java.time.OffsetDateTime
     uniqueConstraints = [UniqueConstraint(name = "login_token_uk__token", columnNames = ["token"])],
     indexes = [Index(name = "login_token_idx__expDt", columnList = "expDt")]
 )
-data class LoginToken (
+class LoginToken (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

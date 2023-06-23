@@ -10,7 +10,7 @@ import java.time.OffsetDateTime
         Index(name = "agenda_idx__code_status_an_agendaNo", columnList = "code,status,an,agendaNo")
     ],
 )
-data class Agenda (
+class Agenda (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

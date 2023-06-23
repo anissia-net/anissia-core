@@ -10,7 +10,7 @@ import java.time.OffsetDateTime
     UniqueConstraint(name = "account_uk__email", columnNames = ["email"]),
     UniqueConstraint(name = "account_uk__name", columnNames = ["name"]),
 ])
-data class Account (
+class Account (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

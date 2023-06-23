@@ -7,7 +7,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table
-data class AnimeGenre (
+class AnimeGenre (
     @Id
     @Column(nullable = false, length = 100)
     var genre: String = ""

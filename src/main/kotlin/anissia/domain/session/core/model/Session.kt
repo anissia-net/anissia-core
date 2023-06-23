@@ -5,7 +5,7 @@ import anissia.domain.account.core.AccountRole
 import com.fasterxml.jackson.annotation.JsonIgnore
 import gs.shared.FailException
 
-data class Session (
+class Session (
         val an: Long = 0,
         val name: String = "",
         val email: String = "",

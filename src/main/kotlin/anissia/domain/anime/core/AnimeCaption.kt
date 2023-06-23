@@ -13,7 +13,7 @@ import java.time.OffsetDateTime
     ]
 )
 @IdClass(AnimeCaption.Key::class)
-data class AnimeCaption (
+class AnimeCaption (
     @Id
     @Column(nullable = false)
     var an: Long = 0,
@@ -36,7 +36,7 @@ data class AnimeCaption (
     @JoinColumn(name = "animeNo", foreignKey = ForeignKey(name = "anime_caption_fk_anime"))
     var anime: Anime? = null
 ) {
-    data class Key(val anime: Long = 0, val an: Long = 0) : Serializable
+    class Key(val anime: Long = 0, val an: Long = 0) : Serializable
 
     fun edit(episode: String, updDt: OffsetDateTime, website: String) {
         this.episode = episode

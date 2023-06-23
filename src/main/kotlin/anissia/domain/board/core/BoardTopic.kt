@@ -8,7 +8,7 @@ import java.time.OffsetDateTime
 @Table(
     indexes = [Index(name = "board_topic_idx__ticker_fixed_topicNo", columnList = "ticker,fixed,topicNo")]
 )
-data class BoardTopic (
+class BoardTopic (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

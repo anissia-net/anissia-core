@@ -3,7 +3,7 @@ package anissia.domain.account.core.model
 import anissia.domain.account.core.Account
 import anissia.domain.account.core.AccountRole
 
-data class AccountUserItem (
+class AccountUserItem (
     val email: String,
     val name: String,
     val regTime: Long,

@@ -10,7 +10,7 @@ import java.time.OffsetDateTime
         Index(name = "login_pass_idx__an", columnList = "an")
     ]
 )
-data class LoginPass (
+class LoginPass (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     var loginPassNo: Long = 0,

@@ -10,7 +10,7 @@ import java.time.OffsetDateTime
     ],
     indexes = [Index(name = "account_register_auth_idx__email_expDt", columnList = "email,expDt")]
 )
-data class AccountRegisterAuth (
+class AccountRegisterAuth (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

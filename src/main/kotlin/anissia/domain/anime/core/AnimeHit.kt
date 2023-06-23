@@ -6,7 +6,7 @@ import jakarta.persistence.*
 @Table(
     indexes = [Index(name = "anime_hit_idx__hour_animeNo_ip", columnList = "hour,animeNo,ip")]
 )
-data class AnimeHit (
+class AnimeHit (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

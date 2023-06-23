@@ -3,7 +3,7 @@ package anissia.domain.activePanel.core.model
 import anissia.domain.activePanel.core.ActivePanel
 import com.fasterxml.jackson.annotation.JsonInclude
 
-data class ActivePanelItem (
+class ActivePanelItem (
     val apNo: Long,
     val published: Boolean,
     val code: String,

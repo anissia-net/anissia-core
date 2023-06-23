@@ -8,7 +8,7 @@ import java.time.OffsetDateTime
     uniqueConstraints = [UniqueConstraint(name = "account_recover_auth_uk__token", columnNames = ["token"])],
     indexes = [Index(name = "account_recover_auth_idx__an_expDt", columnList = "an,expDt")]
 )
-data class AccountRecoverAuth (
+class AccountRecoverAuth (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

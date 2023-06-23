@@ -3,7 +3,7 @@ package anissia.domain.anime.core.model
 import anissia.domain.anime.core.AnimeCaption
 import anissia.infrastructure.common.As
 
-data class AnimeCaptionItem (
+class AnimeCaptionItem (
     val episode: String = "",
     val updDt: String = "",
     val website: String = "",

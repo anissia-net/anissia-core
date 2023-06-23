@@ -7,7 +7,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table
-data class BoardTicker (
+class BoardTicker (
     @Id
     @Column(nullable = false, length = 10)
     var ticker: String = "",

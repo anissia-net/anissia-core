@@ -4,7 +4,7 @@ import anissia.domain.anime.core.AnimeCaption
 import anissia.infrastructure.common.As
 import java.time.OffsetDateTime
 
-data class MyCaptionItem (
+class MyCaptionItem (
     val animeNo: Long = 0,
     val subject: String = "",
     val episode: String = "0",

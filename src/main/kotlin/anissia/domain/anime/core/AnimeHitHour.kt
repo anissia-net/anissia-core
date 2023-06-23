@@ -8,7 +8,7 @@ import java.io.Serializable
     indexes = [Index(name = "anime_hit_hour_idx__animeNo_hour", columnList = "animeNo,hour")]
 )
 @IdClass(AnimeHitHour.Key::class)
-data class AnimeHitHour (
+class AnimeHitHour (
     @Id
     @Column(nullable = false, length = 10)
     var hour: Long = 0,
@@ -22,7 +22,7 @@ data class AnimeHitHour (
 ) {
     val key get() = Key(hour, animeNo)
 
-    data class Key(var hour: Long = 0, var animeNo: Long = 0) : Serializable
+    class Key(var hour: Long = 0, var animeNo: Long = 0) : Serializable
 }
 
 /*

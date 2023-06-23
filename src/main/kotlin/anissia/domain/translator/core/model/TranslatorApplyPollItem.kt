@@ -2,7 +2,7 @@ package anissia.domain.translator.core.model
 
 import anissia.domain.agenda.core.AgendaPoll
 
-data class TranslatorApplyPollItem (
+class TranslatorApplyPollItem (
     val no: Long = 0,
     val vote: Int = 0,
     val name: String? = null,

@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table
-data class AnimeStore (
+class AnimeStore (
     @Id
     @Column(nullable = false, length = 64)
     var code: String = "", // code

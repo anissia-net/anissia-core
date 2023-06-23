@@ -9,7 +9,7 @@ import java.time.OffsetDateTime
 @Table(
     indexes = [Index(name = "board_post_idx__topicNo_postNo", columnList = "topicNo,postNo")]
 )
-data class BoardPost (
+class BoardPost (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

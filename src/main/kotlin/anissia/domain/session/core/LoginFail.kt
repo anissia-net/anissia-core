@@ -10,7 +10,7 @@ import java.time.OffsetDateTime
         Index(name = "login_fail_idx__ip_email_failDt", columnList = "ip,email,failDt")
     ]
 )
-data class LoginFail (
+class LoginFail (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

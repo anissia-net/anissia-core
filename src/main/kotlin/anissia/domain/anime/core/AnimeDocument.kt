@@ -6,7 +6,7 @@ import org.springframework.data.elasticsearch.annotations.Field
 
 
 @Document(indexName = "anissia_anime")
-data class AnimeDocument (
+class AnimeDocument (
     @Id
     @Field(store = true)
     var animeNo: Long = 0,

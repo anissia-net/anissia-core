@@ -15,7 +15,7 @@ import java.time.OffsetDateTime
         Index(name = "anime_idx__autocorrect", columnList = "autocorrect"),
     ],
 )
-data class Anime (
+class Anime (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

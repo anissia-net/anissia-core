@@ -5,7 +5,7 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table
-data class ActivePanel (
+class ActivePanel (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
