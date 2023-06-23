@@ -4,13 +4,13 @@ package anissia.domain.translator.core.model
 import anissia.domain.agenda.core.Agenda
 
 class TranslatorApplyItem(
-    var applyNo: Long = 0,
-    var status: String? = "",
-    var result: String? = "",
-    var name: String? = null,
-    var website: String? = null,
+    val applyNo: Long = 0,
+    val status: String? = "",
+    val result: String? = "",
+    val name: String? = null,
+    val website: String? = null,
     val regTime: Long = 0L,
-    var polls: List<TranslatorApplyPollItem> = listOf()
+    val polls: List<TranslatorApplyPollItem> = listOf()
 ) {
     constructor(agenda: Agenda, includePolls: Boolean = false): this(
         applyNo = agenda.agendaNo,

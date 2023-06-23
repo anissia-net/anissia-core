@@ -4,26 +4,26 @@ import anissia.domain.activePanel.core.ActivePanel
 import com.fasterxml.jackson.annotation.JsonInclude
 
 data class ActivePanelItem (
-        var apNo: Long = 0,
-        var published: Boolean = false,
-        var code: String = "",
-        var status: String = "",
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        var data1: String? = null,
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        var data2: String? = null,
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        var data3: String? = null,
-        val regTime: Long = 0L
+    val apNo: Long,
+    val published: Boolean,
+    val code: String,
+    val status: String,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val data1: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val data2: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val data3: String?,
+    val regTime: Long,
 ) {
-        constructor(activePanel: ActivePanel): this(
-                apNo = activePanel.apNo,
-                published = activePanel.published,
-                code = activePanel.code,
-                status = activePanel.status,
-                data1 = activePanel.data1,
-                data2 = activePanel.data2,
-                data3 = activePanel.data3,
-                regTime = activePanel.regDt.toEpochSecond()
-        )
+    constructor(activePanel: ActivePanel): this(
+        apNo = activePanel.apNo,
+        published = activePanel.published,
+        code = activePanel.code,
+        status = activePanel.status,
+        data1 = activePanel.data1,
+        data2 = activePanel.data2,
+        data3 = activePanel.data3,
+        regTime = activePanel.regDt.toEpochSecond()
+    )
 }

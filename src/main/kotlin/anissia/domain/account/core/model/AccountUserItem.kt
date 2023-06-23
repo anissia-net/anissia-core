@@ -4,10 +4,10 @@ import anissia.domain.account.core.Account
 import anissia.domain.account.core.AccountRole
 
 data class AccountUserItem (
-    var email: String = "",
-    var name: String = "",
-    val regTime: Long = 0L,
-    var roles: Set<AccountRole> = setOf(),
+    val email: String,
+    val name: String,
+    val regTime: Long,
+    val roles: Set<AccountRole>,
 ) {
     companion object {
         fun cast(account: Account) = AccountUserItem(
