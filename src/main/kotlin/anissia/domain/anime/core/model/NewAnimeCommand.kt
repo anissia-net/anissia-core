@@ -4,23 +4,20 @@ import anissia.domain.anime.core.AnimeStatus
 import anissia.infrastructure.common.As
 
 class NewAnimeCommand(
-    var status: String = "",
-    var week: String = "",
-    var time: String = "",
-    var subject: String = "",
-    var originalSubject: String = "",
-    var genres: String = "",
-    var startDate: String = "",
-    var endDate: String = "",
-    var website: String = "",
-    var twitter: String = "",
+    val status: String = "",
+    val week: String = "",
+    val time: String = "",
+    val subject: String = "",
+    val originalSubject: String = "",
+    val genres: String = "",
+    val startDate: String = "",
+    val endDate: String = "",
+    val website: String = "",
+    val twitter: String = "",
 ) {
     val genresList get() = genres.split(",".toRegex())
     val statusEnum get() = AnimeStatus.valueOf(status)
     fun validate() {
-        subject = subject.trim()
-        originalSubject = originalSubject.trim()
-
         if (!Regex("\\d{2}:\\d{2}").matches(time)) {
             throw IllegalArgumentException("잘못된 시간입니다.")
         }
@@ -28,6 +25,8 @@ class NewAnimeCommand(
             throw IllegalArgumentException("잘못된 요일입니다.")
         }
         As.throwHttp400If("애니메이션 제목을 입력해주세요.", subject.isBlank())
+        As.throwHttp400If("애니메이션 제목에 공백을 제거해 주세요.", subject != subject.trim())
+        As.throwHttp400If("애니메이션 원제에 공백을 제거해 주세요.", originalSubject != originalSubject.trim())
         As.throwHttp400Exception("존재하지 않는 상태입니다.") { statusEnum }
         As.throwHttp400If("장르가 입력되지 않았습니다.", genres.isBlank())
         As.throwHttp400If("장르는 3개까지만 입력가능합니다.", genresList.size > 3)
