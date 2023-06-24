@@ -4,7 +4,7 @@ import anissia.domain.anime.core.AnimeStatus
 import anissia.infrastructure.common.As
 
 class EditAnimeCommand(
-    val animeNo: Long = 0,
+    var animeNo: Long = 0,
     val status: String = "",
     val week: String = "",
     val time: String = "",
