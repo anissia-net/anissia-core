@@ -28,6 +28,7 @@ spring:
     properties.hibernate:
       jdbc.batch_size: 4
       dialect: org.hibernate.dialect.MariaDBDialect
+      timezone.default_storage: NORMALIZE
     hibernate:
       ddl-auto: none
       naming:
