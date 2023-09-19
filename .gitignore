@@ -7,7 +7,7 @@ build/
 
 ### anissia ###
 email.json
-anissia-local.**
+tmp/anissia-local.**
 logs
 
 ### STS ###

@@ -44,26 +44,26 @@ java -jar anissia-core-1.0.jar --spring.profiles.active=prod
       |사용자|user@test.com|asdfasdf|
     
 - 데이터를 초기화하려면 프로젝트 폴더 내 다음 파일을 삭제한다.
-    - anissia-local.lock.db
-    - anissia-local.mv.db
+    - /tmp/anissia-local.lock.db
+    - /tmp/anissia-local.mv.db
 
 
 #### 로컬 DB 접근 정보
    - H2를 탑재하여 별도의 DB세팅 없이 사용 가능합니다.
    - 별도의 SQL 클라이언트 사용시 아래의 연결정보를 입력합니다.\
-     (최초 bootRun 실행, anissia-local.mv.db 파일 생성 후 접속 가능)
+     (최초 bootRun 실행, tmp/anissia-local.mv.db 파일 생성 후 접속 가능)
       
-      |jdbc url| jdbc:h2:<프로젝트 경로>/anissia-local;AUTO_SERVER=TRUE |
-      |--------------------------------------------------|---|
-      |user| sa                                               |
-      |password| anissia                                          |
+      |jdbc url| jdbc:h2:<프로젝트 경로>/tmp/anissia-local;AUTO_SERVER=TRUE |
+      |--------------------------------------------------|------------------------------------------------------|
+      |user| sa                                                   |
+      |password| anissia                                              |
       
       jdbc url example
       
-      |OS|jdbc url example|
-      |---|---|
-      |windows|jdbc:h2:file:C:/Users/username/anissia-core/anissia-local;AUTO_SERVER=TRUE|
-      |mac|jdbc:h2:/Users/username/anissia-core/anissia-local;AUTO_SERVER=TRUE|
+      |OS| jdbc url example                                                               |
+      |---|--------------------------------------------------------------------------------|
+      |windows| jdbc:h2:file:C:/Users/username/anissia-core/tmp/anissia-local;AUTO_SERVER=TRUE |
+      |mac| jdbc:h2:/Users/username/anissia-core/tmp/anissia-local;AUTO_SERVER=TRUE        |
 
 
 ## 참고 
