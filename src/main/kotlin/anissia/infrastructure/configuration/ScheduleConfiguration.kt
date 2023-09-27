@@ -1,5 +1,6 @@
 package anissia.infrastructure.configuration
 
+import anissia.domain.agenda.core.ports.inbound.DeletePaddingDeleteAnime
 import anissia.domain.anime.core.ports.inbound.UpdateAnimeRank
 import anissia.domain.session.core.JwtKeyPair
 import anissia.domain.session.core.model.JwtKeyItem
@@ -19,7 +20,8 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar
 class ScheduleConfiguration(
     private val jwtService: JwtService,
     private val jwtKeyPairRepository: JwtKeyPairRepository,
-    private val updateAnimeRank: UpdateAnimeRank
+    private val updateAnimeRank: UpdateAnimeRank,
+    private val deletePaddingDeleteAnime: DeletePaddingDeleteAnime
 ) : SchedulingConfigurer {
 
     private val log = As.logger<ScheduleConfiguration>()
@@ -27,20 +29,27 @@ class ScheduleConfiguration(
     private val timeMillis get() = System.currentTimeMillis().toString()
 
 
-    // start 1 minute in every hour / anime rank
+    // 애니메이션 순위 업데이트
+    // 매일 1:00 에 실행
     @Scheduled(cron = "0 1 * * * ?")
     fun animeRankBatch() = updateAnimeRank.handle()
 
+    // jwt 키 갱신
+    // 매 10분마다 실행
     @Scheduled(cron = "0 0/10 * * * ?")
     fun registerNewJwtKey() {
         val item = JwtKeyItem(timeMillis, alg.newRandomJwtKey())
         jwtKeyPairRepository.save(JwtKeyPair(item.kid.toLong(), item.key.stringify()))
     }
 
+    // jwt 키 싱크
+    // 매 10분 10초마다 실행
     @PostConstruct
     @Scheduled(cron = "10 0/10 * * * ?")
     fun syncJwtKeyList() =
         jwtService.updateKeyStore()
+
+
 
     /** batch configuration */
     fun dev(taskRegistrar: ScheduledTaskRegistrar) = taskRegistrar.apply {
