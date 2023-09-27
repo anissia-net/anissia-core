@@ -36,6 +36,7 @@ class ScheduleConfiguration(
 
     // jwt 키 갱신
     // 매 10분마다 실행
+    @PostConstruct
     @Scheduled(cron = "0 0/10 * * * ?")
     fun registerNewJwtKey() {
         val item = JwtKeyItem(timeMillis, alg.newRandomJwtKey())

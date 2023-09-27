@@ -33,11 +33,11 @@ class JwtService(
 
         keyStore.removeIf { !list.contains(it) }
 
-        log.info("jwt key updated: total(${list.size}) new(${sumSize - initSize}) remove(${keyStore.size - sumSize})")
+        //log.info("jwt key updated: total(${list.size}) new(${sumSize - initSize}) remove(${keyStore.size - sumSize})")
     }
 
     fun getKeyItem(): JwtKeyItem =
-        keyStore.elementAt(2)
+        keyStore.elementAt(1)
 
     fun findKey(kid: String): JwtKey? =
         keyStore.find { it.kid == kid }?.key

@@ -6,6 +6,8 @@ import anissia.domain.session.core.model.Session
 import anissia.domain.session.infrastructure.JwtService
 import com.fasterxml.jackson.databind.ObjectMapper
 import gs.shared.ErrorException
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
@@ -14,6 +16,7 @@ import reactor.core.publisher.Mono
 
 // it will change to jwt, now it is not jwt
 @Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 class JwtDecoderFilter(
     private val jwtService: JwtService
 ): WebFilter {
