@@ -50,6 +50,11 @@ class ScheduleConfiguration(
         jwtService.updateKeyStore()
 
 
+    // 삭제 예정 애니메이션 삭제
+    // 매일 20시에 실행
+    @Scheduled(cron = "0 0 20 * * ?")
+    fun deletePaddingDeleteAnime() =
+        deletePaddingDeleteAnime.handle()
 
     /** batch configuration */
     fun dev(taskRegistrar: ScheduledTaskRegistrar) = taskRegistrar.apply {
