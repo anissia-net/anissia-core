@@ -4,14 +4,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val env = project.findProperty("env") ?: "local"
 
 plugins {
-	val kotlinVersion = "1.8.22"
+	val kotlinVersion = "1.9.10"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.kapt") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
-	id("org.springframework.boot") version "3.1.0"
-	id("io.spring.dependency-management") version "1.1.0"
+	id("org.springframework.boot") version "3.1.3"
+	id("io.spring.dependency-management") version "1.1.3"
 	id("org.ec4j.editorconfig") version "0.0.3"
 	id("idea")
 }
@@ -30,7 +30,7 @@ idea {
 	module {
 		excludeDirs = setOf(
 			File("$projectDir/logs"),
-			File("$projectDir/tmp")
+			File("$projectDir/tmp"),
 		)
 	}
 }
@@ -51,7 +51,7 @@ dependencies {
 
 	// JPA query dsl
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch:2.3.12.RELEASE")
+	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 
 	// DB connector
