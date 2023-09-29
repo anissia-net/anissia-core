@@ -4,6 +4,7 @@ package anissia.infrastructure.configuration
 import anissia.domain.account.core.Account
 import anissia.domain.session.core.model.Session
 import anissia.domain.session.infrastructure.JwtService
+import anissia.infrastructure.common.As
 import com.fasterxml.jackson.databind.ObjectMapper
 import gs.shared.ErrorException
 import org.springframework.core.Ordered
@@ -13,6 +14,7 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
+import kotlin.io.encoding.Base64
 
 // it will change to jwt, now it is not jwt
 @Component
@@ -54,7 +56,7 @@ class JwtDecoderFilter(
             Session.cast(Account(), ip)
         }
 
-        val jud = objectMapper.writeValueAsString(session)
+        val jud = As.encodeBase64Url(objectMapper.writeValueAsString(session))
 
         return chain.filter(
             exchange.mutate().request(exchange.request.mutate().header("jud", jud).build()).build());

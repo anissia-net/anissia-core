@@ -14,8 +14,10 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.util.HtmlUtils
 import java.net.URL
 import java.net.URLEncoder
+import java.nio.charset.Charset
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Base64
 
 
 /**
@@ -33,6 +35,8 @@ class As {
         val DTF_ISO_CAPTION = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
         val DTF_RANK_HOUR = DateTimeFormatter.ofPattern("yyyyMMddHH")
         val DTF_USER_YMDHMS = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss일")
+        val EN_BASE64_URL = Base64.getUrlEncoder()
+        val DE_BASE64_URL = Base64.getUrlDecoder()
 
 
         private val typeRefSession = object: TypeReference<Session>() {}
@@ -41,7 +45,7 @@ class As {
             LoggerFactory.getLogger(T::class.java)
 
         fun toSession(exchange: ServerWebExchange): Session {
-            val jud = exchange.request.headers.getFirst("jud")
+            val jud = As.decodeBase64Url(exchange.request.headers.getFirst("jud")!!)
             return OBJECT_MAPPER.readValue(jud, typeRefSession)
         }
 
@@ -94,5 +98,9 @@ class As {
             }
             return false
         }
+
+        fun encodeBase64Url(value: String): String = EN_BASE64_URL.encodeToString(value.toByteArray(Charsets.UTF_8))
+
+        fun decodeBase64Url(value: String): String = DE_BASE64_URL.decode(value).toString(Charsets.UTF_8)
     }
 }
