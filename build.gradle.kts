@@ -19,8 +19,6 @@ plugins {
 group = "anissia"
 version = "1.0"
 
-java.sourceCompatibility = JavaVersion.VERSION_17
-
 repositories {
 	mavenCentral()
 }
@@ -89,7 +87,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "17"
+		jvmTarget = "20"
 	}
 }
 
@@ -98,8 +96,8 @@ tasks.withType<Test> {
 }
 
 configure<JavaPluginExtension> {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_20
+	targetCompatibility = JavaVersion.VERSION_20
 }
 
 
