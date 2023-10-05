@@ -34,7 +34,7 @@ class DeleteCaptionService(
                 animeCaptionRepository.delete(this)
                 animeRepository.updateCaptionCount(animeNo)
                 updateAnimeDocument.handle(UpdateAnimeDocumentCommand(animeNo))
-                newActivePanelText.handle(NewActivePanelTextCommand("[${session.name}]님이 [${anime?.subject}] 자막을 종료하였습니다."), null)
+                newActivePanelText.handle(NewActivePanelTextCommand("[${session.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
                 ResultWrapper.ok()
             }
             ?: ResultWrapper.fail("이미 삭제되었습니다.")

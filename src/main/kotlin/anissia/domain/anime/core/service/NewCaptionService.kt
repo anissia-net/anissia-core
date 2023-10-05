@@ -38,7 +38,7 @@ class NewCaptionService(
         animeCaptionRepository.save(AnimeCaption(anime = anime, an = session.an))
         animeRepository.updateCaptionCount(animeNo)
         updateAnimeDocument.handle(anime)
-        newActivePanelText.handle(NewActivePanelTextCommand("[${session.name}]님이 [${anime.subject}] 자막을 시작하였습니다."), null)
+        newActivePanelText.handle(NewActivePanelTextCommand("[${session.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
 
         return ResultWrapper.of("ok", "자막을 추가하였습니다.\n자막메뉴에서 확인해주세요.")
     }
