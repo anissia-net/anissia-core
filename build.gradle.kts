@@ -1,8 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-// project environment :  ex) prod : -Penv=prod
-// val env = project.findProperty("env") ?: "local"
-
 plugins {
 	val kotlinVersion = "1.9.10"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
@@ -87,7 +84,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "20"
+		//jvmTarget = "21"
 	}
 }
 
@@ -96,18 +93,9 @@ tasks.withType<Test> {
 }
 
 configure<JavaPluginExtension> {
-	sourceCompatibility = JavaVersion.VERSION_20
-	targetCompatibility = JavaVersion.VERSION_20
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
-
-
-//sourceSets {
-//	main {
-//		resources {
-//			srcDir("src/main/resources-${env}")
-//		}
-//	}
-//}
 
 tasks.getByName<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
 	sourceResources(sourceSets["main"])
