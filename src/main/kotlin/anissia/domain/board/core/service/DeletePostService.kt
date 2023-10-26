@@ -1,5 +1,7 @@
 package anissia.domain.board.core.service
 
+import anissia.domain.activePanel.core.ActivePanel
+import anissia.domain.activePanel.core.ports.outbound.ActivePanelRepository
 import anissia.domain.board.core.model.DeletePostCommand
 import anissia.domain.board.core.ports.inbound.DeletePost
 import anissia.domain.board.core.ports.outbound.BoardPostRepository
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class DeletePostService(
     private val boardPostRepository: BoardPostRepository,
     private val boardTopicRepository: BoardTopicRepository,
+    private val activePanelRepository: ActivePanelRepository,
 ): DeletePost {
     @Transactional
     override fun handle(cmd: DeletePostCommand, session: Session): ResultWrapper<Unit> {
@@ -22,8 +25,20 @@ class DeletePostService(
 
         return boardPostRepository
             .findByIdOrNull(cmd.postNo)
-            ?.takeIf { !it.root && (it.an == session.an || session.isRoot) }
+            ?.takeIf { !it.root && (it.an == session.an || session.isAdmin) }
             ?.let {
+                if (it.an != session.an) {
+                    activePanelRepository.save(
+                        ActivePanel(
+                            published = false,
+                            code = "DEL",
+                            an = session.an,
+                            data1 = "[${session.name}]님이 댓글을 삭제했습니다.",
+                            data2 = "작성자/회원번호: ${it.account?.name}/${it.an}",
+                            data3 = it.content,
+                        )
+                    )
+                }
                 boardPostRepository.delete(it)
                 boardTopicRepository.updatePostCount(it.topicNo)
                 ResultWrapper.ok()
