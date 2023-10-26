@@ -2,6 +2,9 @@ package anissia.domain.account.core.ports.outbound
 
 import anissia.domain.account.core.AccountRecoverAuth
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
+import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
 
 interface AccountRecoverAuthRepository : JpaRepository<AccountRecoverAuth, Long> { //, QuerydslPredicateExecutor<AccountRecoverAuth> {
@@ -9,4 +12,9 @@ interface AccountRecoverAuthRepository : JpaRepository<AccountRecoverAuth, Long>
     fun existsByAnAndExpDtAfter(an: Long, expDt: OffsetDateTime): Boolean
 
     fun findByNoAndTokenAndExpDtAfterAndUsedDtNull(no: Long, token: String, expDt: OffsetDateTime): AccountRecoverAuth?
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM AccountRecoverAuth WHERE expDt < :expDt")
+    fun deleteAllByExpDtBefore(expDt: OffsetDateTime = OffsetDateTime.now().minusDays(30))
 }
