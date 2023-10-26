@@ -1,13 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	val kotlinVersion = "1.9.10"
+	val kotlinVersion = "1.9.20-RC2"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.kapt") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
-	id("org.springframework.boot") version "3.1.3"
+	id("org.springframework.boot") version "3.1.5"
 	id("io.spring.dependency-management") version "1.1.3"
 	id("org.ec4j.editorconfig") version "0.0.3"
 	id("idea")
@@ -59,7 +59,7 @@ dependencies {
 
 	// lib
 	implementation("me.saro:kit-ee:0.1.8")
-	implementation("org.jsoup:jsoup:1.16.1")
+	implementation("org.jsoup:jsoup:1.16.2")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.mindrot:jbcrypt:0.4")
 	implementation("me.saro:jwt:2.0.1")
@@ -84,7 +84,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		//jvmTarget = "21"
+		jvmTarget = "21"
 	}
 }
 
