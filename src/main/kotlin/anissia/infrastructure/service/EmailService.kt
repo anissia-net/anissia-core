@@ -41,8 +41,8 @@ import java.util.*
 class EmailService (
     @Value("\${env}") private val env: String
 ) {
-    private val enable: Boolean
-    private val props: Map<String, String>
+    private val enable: Boolean = TODO()
+    private val props: Map<String, String> = TODO()
     private val sender: JavaMailSenderImpl = JavaMailSenderImpl()
     private val log: Logger = As.logger<EmailService>()
 
