@@ -15,8 +15,6 @@ interface AccountRepository : JpaRepository<Account, Long> { //, QuerydslPredica
     @EntityGraph(attributePaths = ["roles"])
     fun findWithRolesByEmail(email: String): Account?
 
-    fun findByOldAccount(oldAccount: String): Account?
-
     fun findByEmailAndName(email: String, name: String): Account?
 
     fun findByName(name: String): Account?

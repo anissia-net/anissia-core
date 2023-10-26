@@ -29,7 +29,7 @@ class Account (
     var regDt: OffsetDateTime = OffsetDateTime.now(),
 
     @UpdateTimestamp
-        @Column(nullable = false)
+    @Column(nullable = false)
     var lastLoginDt: OffsetDateTime = OffsetDateTime.now(),
 
     @Column(nullable = true)
@@ -40,10 +40,6 @@ class Account (
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 10)
     val roles: MutableSet<AccountRole> = mutableSetOf(),
-
-    // deprecated
-    @Column(nullable = false, length = 64)
-    var oldAccount: String = ""
 ) {
     val isBan: Boolean get() = lastLoginDt.isAfter(OffsetDateTime.now())
     val isAdmin: Boolean get() = roles.any { it == AccountRole.TRANSLATOR || it == AccountRole.ROOT }
@@ -59,7 +55,6 @@ CREATE TABLE `account` (
 `reg_dt` datetime NOT NULL,
 `last_login_dt` datetime NOT NULL,
 `ban_expire_dt` datetime DEFAULT NULL,
-`old_account` varchar(64) NOT NULL,
 PRIMARY KEY (`an`),
 UNIQUE KEY `account_pk2` (`email`),
 UNIQUE KEY `account_pk3` (`name`),
