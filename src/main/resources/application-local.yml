@@ -8,9 +8,9 @@ server:
 
 anissia:
   rdb:
-    driverClassName: org.h2.Driver
-    jdbcUrl: "jdbc:h2:file:./tmp/anissia-local;AUTO_SERVER=TRUE"
-    username: sa
+    driverClassName: org.mariadb.jdbc.Driver
+    jdbcUrl: jdbc:mariadb://localhost:3306/anissia
+    username: anissia
     password: anissia
   ndb:
     host: localhost
@@ -29,17 +29,3 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     open-in-view: true
   data.elasticsearch.repositories.enabled: false
-  application:
-    name: anissia-core
-  cloud:
-    consul:
-      host: localhost
-      port: 8500
-      enabled: true
-      discovery:
-        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
-        health-check-critical-timeout: 30s
-      config:
-        import-check:
-          enabled: false
-
