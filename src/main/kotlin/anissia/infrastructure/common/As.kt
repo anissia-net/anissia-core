@@ -2,7 +2,7 @@ package anissia.infrastructure.common
 
 import anissia.domain.session.core.model.Session
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.MethodParameter
@@ -14,10 +14,9 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.util.HtmlUtils
 import java.net.URL
 import java.net.URLEncoder
-import java.nio.charset.Charset
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Base64
+import java.util.*
 
 
 /**
@@ -26,7 +25,7 @@ import java.util.Base64
  */
 class As {
     companion object {
-        val OBJECT_MAPPER = jacksonObjectMapper()
+        val OBJECT_MAPPER = ObjectMapper()
         const val IS_NAME = "[0-9A-Za-z가-힣㐀-䶵一-龻ぁ-ゖゝ-ヿ々_]{2,16}"
         const val IS_MAIL = "[_a-z0-9\\-]+(\\.[_a-z0-9\\-]+)*@([_a-z0-9\\-]+\\.)+[a-z]{2,}";
         val IS_MAIL_REGEX = Regex(IS_MAIL)

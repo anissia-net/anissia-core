@@ -2,8 +2,8 @@ package anissia.infrastructure.service
 
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.mail.Message
 import jakarta.mail.internet.InternetAddress
 import org.slf4j.Logger
@@ -49,7 +49,7 @@ class EmailService (
     init {
         File("./email.json").also {
             enable = it.exists()
-            props = if (enable) ObjectMapper().readValue(it) else mapOf()
+            props = if (enable) ObjectMapper().readValue(it, object: TypeReference<Map<String, String>>(){}) else mapOf()
         }
 
         if (enable) {

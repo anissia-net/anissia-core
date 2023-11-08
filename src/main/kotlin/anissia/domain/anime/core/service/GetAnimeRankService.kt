@@ -4,7 +4,7 @@ import anissia.domain.anime.core.model.GetAnimeRankCommand
 import anissia.domain.anime.core.ports.inbound.GetAnimeRank
 import anissia.domain.anime.core.ports.outbound.AnimeStoreRepository
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import me.saro.kit.CacheStore
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -15,7 +15,7 @@ class GetAnimeRankService(
 ): GetAnimeRank {
 
     private val rankCacheStore = CacheStore<String, List<Map<*,*>>>((5 * 60000).toLong())
-    private val objectMapper = jacksonObjectMapper()
+    private val objectMapper = ObjectMapper()
     private val tr = object: TypeReference<List<Map<*, *>>>() {}
 
     override fun handle(cmd: GetAnimeRankCommand): List<Map<*,*>> = rankCacheStore.find(cmd.type) { type ->

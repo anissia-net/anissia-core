@@ -16,12 +16,6 @@ anissia:
     host: localhost
     port: 9200
 
-decorator.datasource.p6spy:
-  enable-logging: true
-  multiline: true
-  logging: slf4j
-  log-format: "%(category) | %(executionTime)ms | %(sql)"
-
 spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect

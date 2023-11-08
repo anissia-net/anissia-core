@@ -28,7 +28,7 @@ class DBConfiguration (
         private val password: String
 
 ) {
-    @Bean("rdbDataSource")
+    @Bean
     fun dataSource(): DataSource
             = HikariConfig()
             .let {
