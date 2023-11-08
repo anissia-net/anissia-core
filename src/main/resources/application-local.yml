@@ -18,10 +18,10 @@ anissia:
 
 spring:
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MariaDBDialect
     properties.hibernate:
       jdbc.batch_size: 4
-      dialect: org.hibernate.dialect.H2Dialect
+      dialect: org.hibernate.dialect.MariaDBDialect
       timezone.default_storage: NORMALIZE
     hibernate:
       ddl-auto: update

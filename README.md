@@ -3,26 +3,37 @@
 - 주소 : [anissia.net](https://anissia.net)
 
 ## 개발환경
-* language : kotlin jdk 17
-* **[Elastic Search](https://www.elastic.co) (필수)**
+* Kotlin (JDK 21)
+* **[Elastic Search](https://www.elastic.co)** (설치필요)
+  <br/>도커 설치시 예시
   ```
-  # 도커 예시
   docker run --name elasticsearch -p 9200:9200 -p 9300:9300 --restart=always -e "xpack.security.enabled=false" -e "discovery.type=single-node"  docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+  ```
+* **[Maria DB](https://mariadb.org)** (설치필요)
+  <br/>도커 설치시 예시
+  ```
+  docker run --name mariadb -d -p 3306:3306 --restart=always -e MYSQL_ROOT_PASSWORD=root mariadb
+  ```
+  공통 (anissia db 생성 후 anissia / anissia 계정 생성 필요)
+  ```
+  CREATE DATABASE anissia;
+  CREATE USER 'anissia'@'%' IDENTIFIED BY 'anissia';
+  GRANT ALL PRIVILEGES ON * . * TO 'anissia'@'%';
+  FLUSH PRIVILEGES;
   ```
 
 ## 실행
 각 IDE에서 실행하거나 직접 gradle wrapper를 이용하여 실행
 
-
-#### 실행/빌드 명령어
+### 실행/빌드 명령어
 ```
-# 로컬 실행 (기본값)
-gradlew bootRun
+# 로컬 실행
+gradlew bootRun -Dspring.profiles.active=local
 
-# 개발 실행 (애니시아 개발서버 VPN 필요)
+# 개발 실행
 gradlew bootRun -Dspring.profiles.active=dev
 
-# 운영 실행 (운영서버 내에서만 가능)
+# 운영 실행
 gradlew bootRun -Dspring.profiles.active=prod
 
 # 빌드
@@ -32,38 +43,8 @@ gradlew build
 java -jar anissia-core-1.0.jar --spring.profiles.active=prod
 ```
 
-#### 로컬 실행
-- Elastic Search 를 설치한다 (위 개발환경 참고)
-- 기본데이터 생성 ~~http://localhost:8001/data/test/basic~~
-    - 현재 지원하지 않음 (다시 지원할 예정)
-    - 기본데이터 (계정)
-      
-      |구분|계정|암호|
-      |---|---|---|
-      |관리자|admin@test.com|asdfasdf|
-      |사용자|user@test.com|asdfasdf|
-    
-- 데이터를 초기화하려면 프로젝트 폴더 내 다음 파일을 삭제한다.
-    - /tmp/anissia-local.lock.db
-    - /tmp/anissia-local.mv.db
-
-
-#### 로컬 DB 접근 정보
-   - H2를 탑재하여 별도의 DB세팅 없이 사용 가능합니다.
-   - 별도의 SQL 클라이언트 사용시 아래의 연결정보를 입력합니다.\
-     (최초 bootRun 실행, tmp/anissia-local.mv.db 파일 생성 후 접속 가능)
-      
-      |jdbc url| jdbc:h2:<프로젝트 경로>/tmp/anissia-local;AUTO_SERVER=TRUE |
-      |--------------------------------------------------|------------------------------------------------------|
-      |user| sa                                                   |
-      |password| anissia                                              |
-      
-      jdbc url example
-      
-      |OS| jdbc url example                                                               |
-      |---|--------------------------------------------------------------------------------|
-      |windows| jdbc:h2:file:C:/Users/username/anissia-core/tmp/anissia-local;AUTO_SERVER=TRUE |
-      |mac| jdbc:h2:/Users/username/anissia-core/tmp/anissia-local;AUTO_SERVER=TRUE        |
+### 로컬 기본 데이터 생성
+- 현재 테이블만 생성되며 기본데이터 생성 기능을 만들 예정입니다.
 
 
 ## 참고 
