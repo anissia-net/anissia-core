@@ -34,7 +34,7 @@
 	<logger name="org.springframework.data.convert.CustomConversions" level="INFO" additivity="false" />
 	<springProfile name="dev">
 		<logger name="org.hibernate.SQL" level="DEBUG" />
-		<logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" />
+		<logger name="org.hibernate.orm.jdbc.bind" level="TRACE" />
 	</springProfile>
 
 </configuration>
