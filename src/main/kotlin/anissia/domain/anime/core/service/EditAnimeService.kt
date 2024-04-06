@@ -64,7 +64,7 @@ class EditAnimeService(
                     return ResultWrapper.fail("변경사항이 없습니다.", -1)
                 }
             }
-            ?.also { activePanel.data2 = As.toJsonString(AnimeItem(it, false)) }
+            ?.also { activePanel.data2 = As.toJsonString(AnimeItem(it, false), mapOf("note" to "")) }
             ?.apply {
                 status = cmd.statusEnum
                 week = cmd.week
@@ -78,7 +78,7 @@ class EditAnimeService(
                 website = cmd.website
                 twitter = cmd.twitter
             }
-            ?.also { activePanel.data3 = As.toJsonString(AnimeItem(it, false)) }
+            ?.also { activePanel.data3 = As.toJsonString(AnimeItem(it, false), mapOf("note" to cmd.note)) }
             ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.", -1)
 
         animeRepository.save(anime)

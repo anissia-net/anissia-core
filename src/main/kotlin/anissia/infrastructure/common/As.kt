@@ -12,6 +12,7 @@ import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.util.HtmlUtils
+import sun.jvm.hotspot.oops.CellTypeState.value
 import java.net.URL
 import java.net.URLEncoder
 import java.time.LocalDate
@@ -51,6 +52,12 @@ class As {
         fun getResource(path: String): URL = As::class.java.getResource(path)!!
 
         fun toJsonString(value: Any): String = OBJECT_MAPPER.writeValueAsString(value)!!
+
+        fun toJsonString(vararg value: Any): String {
+            val map = mutableMapOf<Any, Any>()
+            value.forEach { map.putAll(OBJECT_MAPPER.convertValue(it, object: TypeReference<Map<String, Any>>() {})) }
+            return OBJECT_MAPPER.writeValueAsString(map)!!
+        }
 
         //fun <T> toClass(json: String): T = OBJECT_MAPPER.readValue(json, object: TypeReference<T>(){})
 
