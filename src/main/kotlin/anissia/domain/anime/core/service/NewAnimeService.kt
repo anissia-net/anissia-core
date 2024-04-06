@@ -9,23 +9,29 @@ import anissia.domain.anime.core.ports.inbound.UpdateAnimeDocument
 import anissia.domain.anime.core.ports.outbound.AnimeGenreRepository
 import anissia.domain.anime.core.ports.outbound.AnimeRepository
 import anissia.domain.session.core.model.Session
+import anissia.domain.translator.core.ports.inbound.GetPassedDate
 import anissia.shared.ResultWrapper
 import me.saro.kit.lang.Koreans
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.OffsetDateTime
 
 @Service
 class NewAnimeService(
     private val animeRepository: AnimeRepository,
     private val updateAnimeDocument: UpdateAnimeDocument,
     private val animeGenreRepository: AnimeGenreRepository,
-    private val activePanelRepository: ActivePanelRepository
+    private val activePanelRepository: ActivePanelRepository,
+    private val getPassedDate: GetPassedDate,
 ): NewAnime {
 
     @Transactional
     override fun handle(cmd: NewAnimeCommand, session: Session): ResultWrapper<Long> {
         cmd.validate()
         session.validateAdmin()
+        getPassedDate.handle(session.an)
+            ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
+            ?: return ResultWrapper.fail("애니메이션 등록은 권한 취득일로부터 90일 후에 가능합니다.", -1)
 
         if (animeGenreRepository.countByGenreIn(cmd.genresList).toInt() != cmd.genresList.size) {
             return ResultWrapper.fail("장르 입력이 잘못되었습니다.", -1)

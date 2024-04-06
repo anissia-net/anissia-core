@@ -11,10 +11,12 @@ import anissia.domain.anime.core.ports.inbound.UpdateAnimeDocument
 import anissia.domain.anime.core.ports.outbound.AnimeCaptionRepository
 import anissia.domain.anime.core.ports.outbound.AnimeRepository
 import anissia.domain.session.core.model.Session
+import anissia.domain.translator.core.ports.inbound.GetPassedDate
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.OffsetDateTime
 
 @Service
 class DeleteAnimeService(
@@ -23,12 +25,16 @@ class DeleteAnimeService(
     private val updateAnimeDocument: UpdateAnimeDocument,
     private val newActivePanelText: NewActivePanelText,
     private val agendaRepository: AgendaRepository,
+    private val getPassedDate: GetPassedDate,
 ): DeleteAnime {
 
     @Transactional
     override fun handle(cmd: DeleteAnimeCommand, session: Session): ResultWrapper<Unit> {
         cmd.validate()
         session.validateAdmin()
+        getPassedDate.handle(session.an)
+            ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
+            ?: return ResultWrapper.fail("애니메이션 삭제는 권한 취득일로부터 90일 후에 가능합니다.")
 
         val animeNo = cmd.animeNo
         val agenda = Agenda(code = "ANIME-DEL", status = "wait", an = session.an)

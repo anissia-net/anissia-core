@@ -28,4 +28,7 @@ interface AgendaRepository : JpaRepository<Agenda, Long> { //, QuerydslPredicate
 
     @EntityGraph(attributePaths = ["polls"])
     fun findWithPollsByAgendaNoAndCode(agendaNo: Long, code: String): Agenda?
+
+    @Query("SELECT a FROM Agenda a WHERE a.an = :an AND a.code = 'TRANSLATOR-APPLY' and a.status = 'DONE' ORDER BY a.agendaNo DESC")
+    fun findPassedTranslatorApply(an: Long): List<Agenda>
 }
