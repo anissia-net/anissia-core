@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- 콘솔출력 -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
+		</encoder>
+	</appender>
+
+	<!-- 파일출력 -->
+	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>logs/logfile.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/logfile.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>10</maxHistory>
+			<totalSizeCap>2GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{35} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 루트 -->
+	<root level="INFO">
+		<appender-ref ref="file" />
+		<appender-ref ref="console" />
+	</root>
+
+	<!-- 스프링 -->
+	<logger name="org.springframework" level="INFO" additivity="true"/>
+	<logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="INFO"/>
+	<logger name="org.springframework.data.convert.CustomConversions" level="INFO" additivity="false" />
+	<springProfile name="dev">
+		<logger name="org.hibernate.SQL" level="DEBUG" />
+		<logger name="org.hibernate.orm.jdbc.bind" level="TRACE" />
+	</springProfile>
+
+</configuration>
