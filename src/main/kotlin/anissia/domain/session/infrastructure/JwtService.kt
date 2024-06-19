@@ -5,7 +5,6 @@ import anissia.domain.session.core.ports.outbound.JwtKeyPairRepository
 import me.saro.jwt.alg.es.JwtEs256
 import me.saro.jwt.core.JwtAlgorithm
 import me.saro.jwt.core.JwtKey
-import org.hibernate.query.sqm.tree.SqmNode.log
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedDeque

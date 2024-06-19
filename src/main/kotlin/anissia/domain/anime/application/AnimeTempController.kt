@@ -1,10 +1,10 @@
 package anissia.domain.anime.application
 
 
-import anissia.domain.anime.core.model.*
-import anissia.domain.anime.core.ports.inbound.*
+import anissia.domain.anime.core.ports.inbound.UpdateAnimeDocument
 import anissia.domain.anime.core.ports.outbound.AnimeRepository
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/anime/temp")

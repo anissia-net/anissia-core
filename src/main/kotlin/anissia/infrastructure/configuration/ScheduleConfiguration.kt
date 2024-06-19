@@ -6,7 +6,6 @@ import anissia.domain.activePanel.core.ports.outbound.ActivePanelRepository
 import anissia.domain.agenda.core.ports.inbound.DeletePaddingDeleteAnime
 import anissia.domain.anime.core.ports.inbound.UpdateAnimeRank
 import anissia.domain.session.core.JwtKeyPair
-import anissia.domain.session.core.LoginToken
 import anissia.domain.session.core.model.JwtKeyItem
 import anissia.domain.session.core.ports.outbound.JwtKeyPairRepository
 import anissia.domain.session.core.ports.outbound.LoginFailRepository

@@ -14,7 +14,6 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import kotlin.io.encoding.Base64
 
 // it will change to jwt, now it is not jwt
 @Component

@@ -1,10 +1,15 @@
 package anissia.domain.anime.application
 
 
-import anissia.domain.anime.core.model.*
-import anissia.domain.anime.core.ports.inbound.*
+import anissia.domain.anime.core.model.AnimeScheduleItem
+import anissia.domain.anime.core.model.GetScheduleCommand
+import anissia.domain.anime.core.model.GetScheduleSvgCommand
+import anissia.domain.anime.core.ports.inbound.GetSchedule
+import anissia.domain.anime.core.ports.inbound.GetScheduleSvg
 import anissia.shared.ResultWrapper
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 
 @RestController

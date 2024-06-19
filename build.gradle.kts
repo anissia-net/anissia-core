@@ -1,10 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
 	val kotlinVersion = "2.0.0"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
-	id("org.jetbrains.kotlin.kapt") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
@@ -54,17 +50,6 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.graphql:spring-graphql-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
-}
-
-kotlin {
-	compilerOptions {
-		//compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
-		//apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
-	}
-}
-
-tasks.withType<Test> {
-	useJUnitPlatform()
 }
 
 configure<JavaPluginExtension> {
