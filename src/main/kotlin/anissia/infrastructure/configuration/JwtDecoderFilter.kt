@@ -38,10 +38,10 @@ class JwtDecoderFilter(
             if (jwt.isBlank()) {
                 Session.cast(Account(), ip)
             } else {
-                val key = jwtService.findKey(jwtService.algorithm.toJwtHeader(jwt).kid!!)
-                val claims = jwtService.algorithm.toJwtClaims(jwt, key)
+                val key = jwtService.findKey(jwtService.es256.toJwtHeader(jwt).kid!!)
+                val claims = jwtService.es256.toJwtClaims(jwt, key)
                 val id = (claims.id!!).toLong()
-                val roles = claims.claim("roles").toString().takeIf { it.isNotBlank() }?.split(",") ?: listOf()
+                val roles = claims.claim<String>("roles")?.takeIf { it.isNotBlank() }?.split(",") ?: listOf()
                 claims.assert()
                 Session(
                     an = id,

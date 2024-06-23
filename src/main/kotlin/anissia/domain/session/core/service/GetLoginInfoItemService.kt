@@ -50,7 +50,7 @@ class GetLoginInfoItemService(
             .audience(session.name)
             .claim("roles", session.roles.joinToString(","))
             .expire(OffsetDateTime.now().plusMinutes(180))
-        jwtService.algorithm.toJwt(keyItem.key, claims, keyItem.kid)
+        jwtService.es256.toJwt(keyItem.key, claims, keyItem.kid)
     } catch (e: Exception) {
         throw SecurityException(e.message)
     }

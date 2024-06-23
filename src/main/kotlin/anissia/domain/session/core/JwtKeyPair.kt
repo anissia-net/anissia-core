@@ -15,21 +15,6 @@ class JwtKeyPair (
     var data: String
 ) {
     companion object {
-        fun create(
-            kid: Long,
-            jwtKey: JwtKey
-        ): JwtKeyPair =
-            JwtKeyPair(
-                kid,
-                jwtKey.stringify()
-            )
+        fun create(kid: Long, jwtKey: JwtKey): JwtKeyPair = JwtKeyPair(kid, jwtKey.stringify)
     }
 }
-
-/*
-create table jwt_key_pair
-(
-    kid  bigint   not null primary key,
-    data varchar(1024) not null
-);
- */

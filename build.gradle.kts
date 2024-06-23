@@ -36,7 +36,7 @@ dependencies {
 	// lib
 	implementation("me.saro:kit-ee:0.1.8")
 	implementation("org.mindrot:jbcrypt:0.4")
-	implementation("me.saro:jwt:2.1.0")
+	implementation("me.saro:jwt:3.0.0")
 
 	// logger
 	implementation("org.slf4j:slf4j-api")

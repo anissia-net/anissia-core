@@ -38,7 +38,7 @@ class ScheduleConfiguration(
 ) : SchedulingConfigurer {
 
     private val log = As.logger<ScheduleConfiguration>()
-    private val alg get() = jwtService.algorithm
+    private val alg get() = jwtService.es256
     private val timeMillis get() = System.currentTimeMillis().toString()
 
 
@@ -53,7 +53,7 @@ class ScheduleConfiguration(
     @Scheduled(cron = "0 0/10 * * * ?")
     fun registerNewJwtKey() {
         val item = JwtKeyItem(timeMillis, alg.newRandomJwtKey())
-        jwtKeyPairRepository.save(JwtKeyPair(item.kid.toLong(), item.key.stringify()))
+        jwtKeyPairRepository.save(JwtKeyPair(item.kid.toLong(), item.key.stringify))
     }
 
     // jwt 키 싱크
