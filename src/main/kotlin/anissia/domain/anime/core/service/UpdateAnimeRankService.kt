@@ -39,12 +39,21 @@ class UpdateAnimeRankService(
 
     private fun extractAllRank() {
         val dt = LocalDateTime.now()
+
+        // year rank (364 days, diff 392 days)
         val day392List = extractRank(dt.minusDays(392).format(As.DTF_RANK_HOUR))
-        val day364List = extractRank(dt.minusDays(364).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day392List) }
+        val day364List = extractRank(dt.minusDays(364).format(As.DTF_RANK_HOUR))
+            .apply { calculateRankDiff(this, day392List) }
+
+        // quarter rank (84 days, diff 112 days)
         val day112List = extractRank(dt.minusDays(112).format(As.DTF_RANK_HOUR))
-        val day84List = extractRank(dt.minusDays(84).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day112List) }
+        val day84List = extractRank(dt.minusDays(84).format(As.DTF_RANK_HOUR))
+            .apply { calculateRankDiff(this, day112List) }
+
+        // week rank (week 7 days, diff 14 days)
         val day14List = extractRank(dt.minusDays(14).format(As.DTF_RANK_HOUR))
-        val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR)).apply { calculateRankDiff(this, day14List) }
+        val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR))
+            .apply { calculateRankDiff(this, day14List) }
 
         animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
         animeStoreRepository.save(AnimeStore("rank.quarter", "", toString(day84List)))
