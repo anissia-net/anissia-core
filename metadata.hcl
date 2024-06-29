@@ -1,10 +1,16 @@
+app {
+  url    = "https://github.com/anissia-net/anissia-core"
+  author = "anissia"
+}
+
+pack {
+  name        = "anissia-core"
+  description = "anissia-core"
+  url         = "https://github.com/anissia-net/anissia-core"
+  version     = "1.0.0"
+}
+
 integration {
-  name = "anissia-core"
-  description = "anissia"
   identifier = "anissia-core"
-  flags = [ "archived" ]
-  license {
-    type = "MPL-2.0"
-    url = "https://github.com/hashicorp/integration-template/blob/main/LICENSE.md"
-  }
+  name       = "anissia-core"
 }
