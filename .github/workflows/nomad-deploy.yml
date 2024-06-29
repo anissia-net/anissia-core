@@ -19,6 +19,12 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Setup `nomad-pack`
+        uses: hashicorp/setup-nomad-pack@main
+        id: setup
+        with:
+          version: 1.8.1
+
       - name: Build and package Spring Boot application with Gradle
         run: |
           ./gradlew clean build
