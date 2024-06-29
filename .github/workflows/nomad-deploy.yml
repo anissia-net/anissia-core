@@ -29,7 +29,7 @@ jobs:
 
       - name: Run `nomad-pack`
         id: run
-        run: "nomad-pack run ./anissia-core.nomad"
+        run: "nomad-pack run ."
         env:
           NOMAD_ADDR: "${{ secrets.NOMAD_ADDR }}"
           NOMAD_TOKEN: "${{ secrets.NOMAD_TOKEN }}"
