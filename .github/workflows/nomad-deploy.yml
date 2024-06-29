@@ -19,17 +19,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Setup nomad-pack
-        uses: hashicorp/setup-nomad-pack@main
-        id: setup
-
       - name: Build and package Spring Boot application with Gradle
         run: |
           ./gradlew clean build
 
-      - name: Deploy to Nomad
+      - name: Setup nomad-pack
+        uses: hashicorp/setup-nomad-pack@main
+        id: setup
+
+      - name: Run `nomad-pack`
+        id: run
+        run: "nomad-pack run ./anissia-core.nomad"
         env:
-          NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
-          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
-        run: |
-          nomad job run anissia-core.nomad
+          NOMAD_ADDR: "${{ secrets.NOMAD_ADDR }}"
+          NOMAD_TOKEN: "${{ secrets.NOMAD_TOKEN }}"
+        continue-on-error: true
