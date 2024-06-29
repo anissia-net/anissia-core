@@ -3,7 +3,7 @@ host: https://anissia.net
 google.analytics.id: G-Z38PT7F09M
 
 server:
-  port: 8001
+  port: 8080
   forward-headers-strategy: native
 
 anissia:
