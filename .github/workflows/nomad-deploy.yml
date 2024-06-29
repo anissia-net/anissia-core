@@ -16,6 +16,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
+          distribution: 'temurin'
           java-version: '21'
 
       - name: Build and package Spring Boot application with Gradle
