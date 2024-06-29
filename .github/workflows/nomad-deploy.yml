@@ -23,14 +23,13 @@ jobs:
         run: |
           ./gradlew clean build
 
-      - name: Setup nomad-pack
-        uses: hashicorp/setup-nomad-pack@main
+      - name: Setup `nomad`
+        uses: hashicorp/setup-nomad@main
         id: setup
 
-      - name: Run `nomad-pack`
-        id: run
-        run: "nomad-pack run ."
+      - name: Deploy to Nomad
         env:
-          NOMAD_ADDR: "${{ secrets.NOMAD_ADDR }}"
-          NOMAD_TOKEN: "${{ secrets.NOMAD_TOKEN }}"
-        continue-on-error: true
+          NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
+        run: |
+          nomad job run anissia-core.nomad
