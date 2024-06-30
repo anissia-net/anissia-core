@@ -30,11 +30,20 @@ class UpdateAnimeRankService(
     }
 
     private fun mergeAnimeHit() {
+        // merge by hour
         val hour = LocalDateTime.now().format(As.DTF_RANK_HOUR)
         animeHitRepository.extractAllAnimeHitHour(hour.toLong())
             .map { r -> animeHitHourRepository.findById(r.key).map { it.hit += r.hit; it }.orElse(r) }
             .also { animeHitHourRepository.saveAll(it) }
             .also { animeHitRepository.deleteByHourLessThan(hour.toLong()) }
+
+        // merge by day
+        animeHitHourRepository.mergeByDay(60)
+        animeHitHourRepository.deleteMergedByDay(60)
+
+        // merge by month
+        animeHitHourRepository.mergeByMonth(400)
+        animeHitHourRepository.deleteMergedByMonth(400)
     }
 
     private fun extractAllRank() {
