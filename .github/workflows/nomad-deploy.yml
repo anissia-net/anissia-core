@@ -3,7 +3,7 @@ name: Anissia Core Nomad Deploy
 on:
   push:
     branches:
-      - master
+      - public
 
 jobs:
   build:
