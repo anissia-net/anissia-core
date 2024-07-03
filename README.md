@@ -44,7 +44,7 @@ java -jar anissia-core-1.0.jar --spring.profiles.active=prod
 ```
 
 ### 로컬 기본 데이터 생성
-- 현재 테이블만 생성되며 기본데이터 생성 기능을 만들 예정입니다.
+- http://localhost:8080/install
 
 
 ## 참고 
