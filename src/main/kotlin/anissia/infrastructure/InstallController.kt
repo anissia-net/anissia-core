@@ -1,10 +1,13 @@
 package anissia.infrastructure
 
+import anissia.domain.account.core.Account
+import anissia.domain.account.core.AccountRole
 import anissia.domain.account.core.ports.outbound.AccountRepository
 import anissia.domain.anime.core.AnimeGenre
 import anissia.domain.anime.core.ports.outbound.AnimeGenreRepository
 import anissia.domain.board.core.BoardTicker
 import anissia.domain.board.core.ports.outbound.BoardTickerRepository
+import anissia.infrastructure.service.BCryptService
 import org.springframework.context.annotation.Profile
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,6 +24,7 @@ class InstallController(
     private val accountRepository: AccountRepository,
     private val animeGenreRepository: AnimeGenreRepository,
     private val boardTickerRepository: BoardTickerRepository,
+    private val bCryptService: BCryptService,
 ) {
     @Transactional
     @GetMapping("/install", produces = ["text/plain"])
@@ -31,7 +35,19 @@ class InstallController(
         sb.append("설치를 시작합니다. (개발중)\n")
 
         if (accountRepository.count() == 0L) {
+            accountRepository.save(Account(email = "admin@anissia.net", password = bCryptService.encode("admin"), name = "admin", roles = mutableSetOf(AccountRole.ROOT)))
+            accountRepository.save(Account(email = "user1@anissia.net", password = bCryptService.encode("user"), name = "user1"))
+            accountRepository.save(Account(email = "user2@anissia.net", password = bCryptService.encode("user"), name = "user2"))
+            accountRepository.save(Account(email = "user3@anissia.net", password = bCryptService.encode("user"), name = "user3"))
+            accountRepository.save(Account(email = "user4@anissia.net", password = bCryptService.encode("user"), name = "user4"))
+            accountRepository.save(Account(email = "user5@anissia.net", password = bCryptService.encode("user"), name = "user5"))
             sb.append("계정을 생성합니다.\n")
+            sb.append("운영자: admin@anissia.net / admin")
+            sb.append("유저: user1@anissia.net / user")
+            sb.append("유저: user2@anissia.net / user")
+            sb.append("유저: user3@anissia.net / user")
+            sb.append("유저: user4@anissia.net / user")
+            sb.append("유저: user5@anissia.net / user")
         } else {
             sb.append("이미 계정이 생성되어 있습니다.\n")
         }
