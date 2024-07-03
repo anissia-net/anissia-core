@@ -65,9 +65,14 @@ class InstallController(
             boardTickerRepository.save(BoardTicker("inquiry", "문의 게시판", "", "", "본 게시판은 애니시아 사이트에 대한 문의를 올리는 장소입니다."))
             boardTickerRepository.save(BoardTicker("notice", "공지사항", "ROOT,TRANSLATOR", "", "내용"))
             sb.append("게시판을 생성 했습니다.\n")
+
+            // 예시 게시물 필요. [공지]
+            // 예시 게시물 필요. [질문답변]
         } else {
             sb.append("이미 게시판이 생성되어 있습니다.\n")
         }
+
+        // 예시 애니메이션 필요. [편성표 요일별 3개씩]
 
         return sb.toString()
     }
