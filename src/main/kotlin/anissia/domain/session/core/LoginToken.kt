@@ -29,7 +29,7 @@ class LoginToken (
             an: Long,
         ): LoginToken =
             LoginToken(
-                token = Texts.createRandomBase62String(128, 512),
+                token = TextKit.generateBase62(128, 512),
                 an = an,
                 expDt = OffsetDateTime.now().plusDays(10)
             )

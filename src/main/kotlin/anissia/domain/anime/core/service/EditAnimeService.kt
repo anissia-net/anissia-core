@@ -12,7 +12,7 @@ import anissia.domain.session.core.model.Session
 import anissia.domain.translator.core.ports.inbound.GetPassedDate
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
-import me.saro.kit.lang.Koreans
+import me.saro.kit.lang.KoreanKit
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -77,7 +77,7 @@ class EditAnimeService(
                 time = cmd.time
                 subject = cmd.subject
                 originalSubject = cmd.originalSubject
-                autocorrect = Koreans.toJasoAtom(cmd.subject)
+                autocorrect = KoreanKit.toJasoAtom(cmd.subject)
                 genres = cmd.genres
                 startDate = cmd.startDate
                 endDate = cmd.endDate

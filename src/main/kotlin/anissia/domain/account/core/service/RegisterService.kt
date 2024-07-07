@@ -12,7 +12,7 @@ import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.BCryptService
 import anissia.infrastructure.service.EmailService
 import anissia.shared.ResultWrapper
-import me.saro.kit.Texts
+import me.saro.kit.TextKit
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -61,7 +61,7 @@ class RegisterService(
         val ip = session.ip
         val auth = accountRegisterAuthRepository.save(
             AccountRegisterAuth(
-                token = Texts.createRandomBase62String(128, 256),
+                token = TextKit.generateBase62(128, 256),
                 email = cmd.email,
                 ip = ip,
                 data = As.toJsonString(cmd.apply { password = bCryptService.encode(password) }),
