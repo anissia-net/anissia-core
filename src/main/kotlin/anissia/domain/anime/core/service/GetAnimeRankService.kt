@@ -5,7 +5,7 @@ import anissia.domain.anime.core.ports.inbound.GetAnimeRank
 import anissia.domain.anime.core.ports.outbound.AnimeStoreRepository
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import me.saro.kit.CacheStore
+import me.saro.kit.service.CacheStore
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 

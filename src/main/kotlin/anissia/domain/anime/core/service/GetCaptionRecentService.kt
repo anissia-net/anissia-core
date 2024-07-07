@@ -4,7 +4,7 @@ import anissia.domain.anime.core.model.CaptionRecentItem
 import anissia.domain.anime.core.model.GetCaptionRecentCommand
 import anissia.domain.anime.core.ports.inbound.GetCaptionRecent
 import anissia.domain.anime.core.ports.outbound.AnimeCaptionRepository
-import me.saro.kit.CacheStore
+import me.saro.kit.service.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service

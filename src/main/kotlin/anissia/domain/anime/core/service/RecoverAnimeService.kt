@@ -17,7 +17,7 @@ import anissia.domain.session.core.model.Session
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import com.fasterxml.jackson.core.type.TypeReference
-import me.saro.kit.lang.Koreans
+import me.saro.kit.lang.KoreanKit
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -58,7 +58,7 @@ class RecoverAnimeService(
                 time = animeItem.time,
                 subject = animeItem.subject,
                 originalSubject = animeItem.originalSubject,
-                autocorrect = Koreans.toJasoAtom(animeItem.subject),
+                autocorrect = KoreanKit.toJasoAtom(animeItem.subject),
                 genres = animeItem.genres,
                 startDate = animeItem.startDate,
                 endDate = animeItem.endDate,

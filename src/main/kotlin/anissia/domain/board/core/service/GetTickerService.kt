@@ -4,7 +4,7 @@ import anissia.domain.board.core.model.BoardTickerItem
 import anissia.domain.board.core.model.GetTickerCommand
 import anissia.domain.board.core.ports.inbound.GetTicker
 import anissia.domain.board.core.ports.outbound.BoardTickerRepository
-import me.saro.kit.CacheStore
+import me.saro.kit.service.CacheStore
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 

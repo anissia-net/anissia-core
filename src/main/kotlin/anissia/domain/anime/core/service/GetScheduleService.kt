@@ -6,7 +6,7 @@ import anissia.domain.anime.core.ports.inbound.GetSchedule
 import anissia.domain.anime.core.ports.outbound.AnimeRepository
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.GoogleAnalyticsProxyService
-import me.saro.kit.CacheStore
+import me.saro.kit.service.CacheStore
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebExchange
 

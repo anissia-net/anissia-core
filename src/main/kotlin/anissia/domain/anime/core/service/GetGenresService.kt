@@ -2,7 +2,7 @@ package anissia.domain.anime.core.service
 
 import anissia.domain.anime.core.ports.inbound.GetGenres
 import anissia.domain.anime.core.ports.outbound.AnimeGenreRepository
-import me.saro.kit.CacheStore
+import me.saro.kit.service.CacheStore
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,7 +1,7 @@
 package anissia.domain.session.core
 
 import jakarta.persistence.*
-import me.saro.kit.Texts
+import me.saro.kit.TextKit
 import java.time.OffsetDateTime
 
 @Entity
