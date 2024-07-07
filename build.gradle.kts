@@ -34,7 +34,7 @@ dependencies {
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 	// lib
-	implementation("me.saro:kit-ee:0.1.8")
+	implementation("me.saro:kit:0.2.0")
 	implementation("org.mindrot:jbcrypt:0.4")
 	implementation("me.saro:jwt:3.0.0")
 
