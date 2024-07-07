@@ -35,9 +35,8 @@ dependencies {
 
 	// elasticsearch
 	// - https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/getting-started-java.html
-	// - 일반 킷으로 결정
-	implementation("co.elastic.clients:elasticsearch-java:8.14.1") // 일반
-	//implementation("org.elasticsearch.client:elasticsearch-rest-client:8.14.1") // 로우레벨
+	//implementation("co.elastic.clients:elasticsearch-java:8.14.1") // 일반
+	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.14.1") // 로우레벨 (결정)
 
 	// lib
 	implementation("me.saro:kit:0.2.0")
