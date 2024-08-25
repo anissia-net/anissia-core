@@ -50,8 +50,8 @@ class GetAnimeListService(
                         if (keywords.isNotEmpty()) {
                             putArray("must").apply {
                                 keywords.forEach {
-                                    putObject("wildcard").apply {
-                                        put("subject", "*$it*")
+                                    addObject().apply {
+                                        putObject("wildcard").apply { put("subject", "*$it*") }
                                     }
                                 }
                             }
@@ -62,22 +62,28 @@ class GetAnimeListService(
                                 putObject("bool").apply {
 
                                     if (genres.isNotEmpty()) {
-                                        putObject("genres").apply {
-                                            put("genres", genres.joinToString(" "))
-                                            put("minimum_should_match", "100%")
+
+                                        //filter
+
+
+                                        addObject().apply {
+                                            putObject("genres").apply {
+                                                put("genres", genres.joinToString(" "))
+                                                put("minimum_should_match", "100%")
+                                            }
                                         }
                                     }
 
                                     if (translators.isNotEmpty()) {
-                                        putObject("translators").apply {
+                                        add(As.OBJECT_MAPPER.createObjectNode().putObject("translators").apply {
                                             put("translators", translators.joinToString(" "))
-                                        }
+                                        })
                                     }
 
                                     if (end) {
-                                        putObject("match").apply {
+                                        add(As.OBJECT_MAPPER.createObjectNode().putObject("match").apply {
                                             put("status", "END")
-                                        }
+                                        })
                                     }
                                 }
                             }
