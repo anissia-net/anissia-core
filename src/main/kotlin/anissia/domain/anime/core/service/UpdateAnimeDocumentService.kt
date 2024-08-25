@@ -19,6 +19,8 @@ class UpdateAnimeDocumentService(
     private val elasticsearch: ElasticsearchService,
     private val objectMapper: ObjectMapper,
 ): UpdateAnimeDocument {
+    private val index = "anissia_anime"
+
     @Transactional
     override fun handle(cmd: UpdateAnimeDocumentCommand) {
         if (cmd.isDelete) {
@@ -34,12 +36,12 @@ class UpdateAnimeDocumentService(
     override fun handle(anime: Anime, isDelete: Boolean) {
         if (isDelete) {
             elasticsearch.open().use {
-                it.performRequest(Request("DELETE", "/anissia_anime/_doc/${anime.animeNo}"))
+                it.performRequest(Request("DELETE", "/$index/_doc/${anime.animeNo}"))
             }
         } else {
             elasticsearch.open().use {
                 it.performRequest(
-                    Request("PUT", "/anissia_anime/_doc/${anime.animeNo}")
+                    Request("PUT", "/$index/_doc/${anime.animeNo}")
                         .apply { setJsonEntity(objectMapper.writeValueAsString(mapOf(
                             "animeNo" to anime.animeNo,
                             "week" to anime.week,
@@ -55,19 +57,19 @@ class UpdateAnimeDocumentService(
     }
 
     @Transactional
-    override fun createIndex() {
-        elasticsearch.open().use {
-            val req = Request("PUT", "/anissia_anime")
-            req.setJsonEntity("""{"mappings":{"properties": {
-                "animeNo": {"type": "long","store": true},
-                "week": {"type": "keyword"},
-                "subject": {"type": "text"},
-                "genres": {"type": "keyword"},
-                "status": {"type": "keyword"},
-                "translators": {"type": "keyword"},
-                "endDate": {"type": "long"}
-            }}}""")
-            it.performRequest(req)
+    override fun reset() {
+        if (elasticsearch.existsIndex(index)) {
+            elasticsearch.deleteIndex(index)
         }
+        elasticsearch.createIndex(index, """{"mappings":{"properties": {
+            "animeNo": {"type": "long","store": true},
+            "week": {"type": "keyword"},
+            "subject": {"type": "text"},
+            "genres": {"type": "keyword"},
+            "status": {"type": "keyword"},
+            "translators": {"type": "keyword"},
+            "endDate": {"type": "long"}
+        }}}""")
+        animeRepository.findAll().forEach { handle(it) }
     }
 }

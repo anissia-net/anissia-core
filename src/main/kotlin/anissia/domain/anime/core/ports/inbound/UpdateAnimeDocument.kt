@@ -6,5 +6,5 @@ import anissia.domain.anime.core.model.UpdateAnimeDocumentCommand
 interface UpdateAnimeDocument{
     fun handle(cmd: UpdateAnimeDocumentCommand)
     fun handle(anime: Anime, isDelete: Boolean = false)
-    fun createIndex()
+    fun reset()
 }
