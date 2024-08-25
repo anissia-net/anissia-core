@@ -41,7 +41,7 @@ class GetAnimeListService(
                 }
 
             val req = As.toJsonString(As.OBJECT_MAPPER.createObjectNode().apply {
-
+                put("_source", false)
                 putObject("query").apply {
                     putObject("bool").apply {
                         put("minimum_should_match", "100%")
@@ -63,23 +63,31 @@ class GetAnimeListService(
                             }
                         }
 
-                        if (translators.isNotEmpty()) {
-                            putArray("should").apply {
-                                translators.forEach {
+                        if (translators.isNotEmpty() || end) {
+                            putArray("filter").apply {
+
+                                if (translators.isNotEmpty()) {
                                     addObject().apply {
-                                        putObject("match").apply {
-                                            put("translators", it)
+                                        putObject("bool").apply {
+                                            putArray("should").apply {
+                                                translators.forEach {
+                                                    addObject().apply {
+                                                        putObject("match").apply {
+                                                            put("translators", it)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            put("minimum_should_match", "1")
                                         }
                                     }
                                 }
-                            }
-                        }
 
-                        if (end) {
-                            putArray("filter").apply {
-                                addObject().apply {
-                                    putObject("match").apply {
-                                        put("status", "END")
+                                if (end) {
+                                    addObject().apply {
+                                        putObject("match").apply {
+                                            put("status", "END")
+                                        }
                                     }
                                 }
                             }
