@@ -1,10 +1,9 @@
 package anissia.domain.anime.core.service
 
-import anissia.domain.account.core.model.SearchAnimeDocumentCommand
+//import anissia.domain.anime.core.ports.outbound.AnimeDocumentRepository
 import anissia.domain.anime.core.model.AnimeItem
 import anissia.domain.anime.core.model.GetAnimeListCommand
 import anissia.domain.anime.core.ports.inbound.GetAnimeList
-//import anissia.domain.anime.core.ports.outbound.AnimeDocumentRepository
 import anissia.domain.anime.core.ports.outbound.AnimeRepository
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.ElasticsearchService
@@ -46,48 +45,41 @@ class GetAnimeListService(
 
                 putObject("query").apply {
                     putObject("bool").apply {
-                        put("minimum_should_match", "100%")
+                        //put("minimum_should_match", "100%")
+                        putArray("must").apply {
+                            keywords.forEach {
+                                addObject().apply {
+                                    putObject("wildcard").apply { put("subject", "*$it*") }
+                                }
+                            }
 
-                        if (keywords.isNotEmpty()) {
-                            putArray("must").apply {
-                                keywords.forEach {
-                                    addObject().apply {
-                                        putObject("wildcard").apply { put("subject", "*$it*") }
+                            genres.forEach {
+                                addObject().apply {
+                                    putObject("match").apply {
+                                        put("genres", it)
                                     }
                                 }
                             }
                         }
 
-                        if (genres.isNotEmpty() || translators.isNotEmpty() || end) {
-                            putObject("filter").apply {
-                                putObject("bool").apply {
-                                    putArray("filter").apply {
-                                        if (genres.isNotEmpty()) {
-                                            addObject().apply {
-                                                putObject("match").apply {
-                                                    putObject("genres").apply {
-                                                        put("genres", genres.joinToString(" "))
-                                                        put("minimum_should_match", "100%")
-                                                    }
-                                                }
-                                            }
+                        if (translators.isNotEmpty()) {
+                            putArray("should").apply {
+                                translators.forEach {
+                                    addObject().apply {
+                                        putObject("match").apply {
+                                            put("translators", it)
                                         }
-                                        if (translators.isNotEmpty()) {
-                                            addObject().apply {
-                                                putObject("match").apply {
-                                                    putObject("translators").apply {
-                                                        put("translators", translators.joinToString(" "))
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        if (end) {
-                                            addObject().apply {
-                                                putObject("match").apply {
-                                                    put("status", "END")
-                                                }
-                                            }
-                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+                        if (end) {
+                            putArray("filter").apply {
+                                addObject().apply {
+                                    putObject("match").apply {
+                                        put("status", "END")
                                     }
                                 }
                             }
