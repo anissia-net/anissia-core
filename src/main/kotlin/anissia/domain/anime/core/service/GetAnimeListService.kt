@@ -1,6 +1,5 @@
 package anissia.domain.anime.core.service
 
-//import anissia.domain.anime.core.ports.outbound.AnimeDocumentRepository
 import anissia.domain.anime.core.model.AnimeItem
 import anissia.domain.anime.core.model.GetAnimeListCommand
 import anissia.domain.anime.core.ports.inbound.GetAnimeList
@@ -45,18 +44,20 @@ class GetAnimeListService(
 
                 putObject("query").apply {
                     putObject("bool").apply {
-                        //put("minimum_should_match", "100%")
-                        putArray("must").apply {
-                            keywords.forEach {
-                                addObject().apply {
-                                    putObject("wildcard").apply { put("subject", "*$it*") }
-                                }
-                            }
+                        put("minimum_should_match", "100%")
 
-                            genres.forEach {
-                                addObject().apply {
-                                    putObject("match").apply {
-                                        put("genres", it)
+                        if (keywords.isNotEmpty() || genres.isNotEmpty()) {
+                            putArray("must").apply {
+                                keywords.forEach {
+                                    addObject().apply {
+                                        putObject("wildcard").apply { put("subject", "*$it*") }
+                                    }
+                                }
+                                genres.forEach {
+                                    addObject().apply {
+                                        putObject("match").apply {
+                                            put("genres", it)
+                                        }
                                     }
                                 }
                             }
@@ -73,7 +74,6 @@ class GetAnimeListService(
                                 }
                             }
                         }
-
 
                         if (end) {
                             putArray("filter").apply {
