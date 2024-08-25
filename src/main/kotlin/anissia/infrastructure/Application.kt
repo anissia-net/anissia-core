@@ -11,7 +11,6 @@ import org.springframework.web.reactive.config.EnableWebFlux
 @SpringBootApplication
 @EnableWebFlux
 @ComponentScan("anissia", "anissia.*")
-//@EnableDiscoveryClient
 class Application: CommandLineRunner {
 
 	var log = As.logger<Application>()
