@@ -9,6 +9,7 @@ import anissia.domain.anime.core.ports.outbound.AnimeRepository
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.ElasticsearchService
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.util.*
@@ -58,32 +59,35 @@ class GetAnimeListService(
                         }
 
                         if (genres.isNotEmpty() || translators.isNotEmpty() || end) {
-                            putArray("filter").apply {
+                            putObject("filter").apply {
                                 putObject("bool").apply {
-
-                                    if (genres.isNotEmpty()) {
-
-                                        //filter
-
-
-                                        addObject().apply {
-                                            putObject("genres").apply {
-                                                put("genres", genres.joinToString(" "))
-                                                put("minimum_should_match", "100%")
+                                    putArray("filter").apply {
+                                        if (genres.isNotEmpty()) {
+                                            addObject().apply {
+                                                putObject("match").apply {
+                                                    putObject("genres").apply {
+                                                        put("genres", genres.joinToString(" "))
+                                                        put("minimum_should_match", "100%")
+                                                    }
+                                                }
                                             }
                                         }
-                                    }
-
-                                    if (translators.isNotEmpty()) {
-                                        add(As.OBJECT_MAPPER.createObjectNode().putObject("translators").apply {
-                                            put("translators", translators.joinToString(" "))
-                                        })
-                                    }
-
-                                    if (end) {
-                                        add(As.OBJECT_MAPPER.createObjectNode().putObject("match").apply {
-                                            put("status", "END")
-                                        })
+                                        if (translators.isNotEmpty()) {
+                                            addObject().apply {
+                                                putObject("match").apply {
+                                                    putObject("translators").apply {
+                                                        put("translators", translators.joinToString(" "))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (end) {
+                                            addObject().apply {
+                                                putObject("match").apply {
+                                                    put("status", "END")
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -107,15 +111,12 @@ class GetAnimeListService(
             log.info(req)
 
             val res = elasticsearch.request("POST", "/anissia_anime/_search", req)
+            val hits = res.entity.content.bufferedReader().use { As.OBJECT_MAPPER.readTree(it) }["hits"]
+            val result = PageImpl<Long>(hits["hits"].map { it["_id"].asLong() }, PageRequest.of(page, 30), hits["total"]["value"].asLong())
 
-            val responseBody = res.entity.content.bufferedReader().use { it.readText() }
-            println("Response: $responseBody")
+            log.info("anime search $keywords $genres $translators $end ${result.totalElements}")
 
-            log.info("anime search $keywords $genres $translators $end")
-
-            //log.info("anime search $keywords $genres $translators $end ${res.totalElements}")
-
-            return animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 30)).map { AnimeItem(it) }
+            return As.replacePage(result, animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(result.content).map { AnimeItem(it) })
         } else {
             return animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 30)).map { AnimeItem(it) }
         }
