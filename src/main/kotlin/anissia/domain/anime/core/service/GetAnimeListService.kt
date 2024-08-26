@@ -6,6 +6,7 @@ import anissia.domain.anime.core.ports.inbound.GetAnimeList
 import anissia.domain.anime.core.ports.outbound.AnimeRepository
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.ElasticsearchService
+import com.fasterxml.jackson.core.io.JsonStringEncoder
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -18,6 +19,8 @@ class GetAnimeListService(
     private val elasticsearch: ElasticsearchService,
 ): GetAnimeList {
     private val log = As.logger<GetAnimeList>()
+    private val jsonStringEncoder = JsonStringEncoder.getInstance()
+    private val mapper = As.OBJECT_MAPPER
 
     override fun handle(cmd: GetAnimeListCommand): Page<AnimeItem> {
         val q = cmd.q
@@ -40,7 +43,7 @@ class GetAnimeListService(
                     else keywords.add(word)
                 }
 
-            val req = As.toJsonString(As.OBJECT_MAPPER.createObjectNode().apply {
+            val req = As.toJsonString(mapper.createObjectNode().apply {
                 put("_source", false)
                 putObject("query").apply {
                     putObject("bool").apply {
@@ -49,16 +52,10 @@ class GetAnimeListService(
                         if (keywords.isNotEmpty() || genres.isNotEmpty()) {
                             putArray("must").apply {
                                 keywords.forEach {
-                                    addObject().apply {
-                                        putObject("wildcard").apply { put("subject", "*$it*") }
-                                    }
+                                    addObject().apply { putObject("wildcard").apply { put("subject", "*$it*") } }
                                 }
                                 genres.forEach {
-                                    addObject().apply {
-                                        putObject("match").apply {
-                                            put("genres", it)
-                                        }
-                                    }
+                                    addObject().apply { putObject("match").apply { put("genres", it) } }
                                 }
                             }
                         }
@@ -67,28 +64,18 @@ class GetAnimeListService(
                             putArray("filter").apply {
 
                                 if (translators.isNotEmpty()) {
-                                    addObject().apply {
-                                        putObject("bool").apply {
-                                            putArray("should").apply {
-                                                translators.forEach {
-                                                    addObject().apply {
-                                                        putObject("match").apply {
-                                                            put("translators", it)
-                                                        }
-                                                    }
-                                                }
+                                    addObject().apply { putObject("bool").apply {
+                                        putArray("should").apply {
+                                            translators.forEach {
+                                                addObject().apply { putObject("match").apply { put("translators", it) } }
                                             }
-                                            put("minimum_should_match", "1")
                                         }
-                                    }
+                                        put("minimum_should_match", "1")
+                                    } }
                                 }
 
                                 if (end) {
-                                    addObject().apply {
-                                        putObject("match").apply {
-                                            put("status", "END")
-                                        }
-                                    }
+                                    addObject().apply { putObject("match").apply { put("status", "END") } }
                                 }
                             }
                         }
@@ -96,22 +83,36 @@ class GetAnimeListService(
                 }
                 // 종료된 애니만 검색
                 if (end) {
-                    putArray("sort").apply {
-                        addObject().apply {
-                            putObject("endDate").apply {
-                                put("order", "desc")
-                            }
-                        }
-                    }
+                    putArray("sort").apply { addObject().apply { putObject("endDate").apply { put("order", "desc") } } }
                 }
                 put("from", page * 30)
                 put("size", 30)
             })
 
+//            """{
+//                "_source": false,
+//                "query": {
+//                    "bool": {
+//                        "minimum_should_match": "100%",
+//                        "must": [
+//                            ${keywords.joinToString(",") { """{"wildcard": {"subject": "*${it.es}*"}}""" }},
+//                            ${genres.joinToString(",") { """{"match": {"genres": "${it.es}"}}""" }}
+//                        ],
+//                        "filter": [
+//                            ${translators.joinToString(",") { """{"bool": {"should": [${"""{"match": {"translators": "${it.es}"}}"""}], "minimum_should_match": "1"}}""" }},
+//                            ${if (end) """{"match": {"status": "END"}}""" else ""}
+//                        ]
+//                    }
+//                },
+//                ${if (end) """{"sort": [{"endDate": {"order": "desc"}}]}""" else ""}
+//                "from": ${page * 30},
+//                "size": 30
+//            }"""
+
             log.info(req)
 
             val res = elasticsearch.request("POST", "/anissia_anime/_search", req)
-            val hits = res.entity.content.bufferedReader().use { As.OBJECT_MAPPER.readTree(it) }["hits"]
+            val hits = res.entity.content.bufferedReader().use { mapper.readTree(it) }["hits"]
             val result = PageImpl<Long>(hits["hits"].map { it["_id"].asLong() }, PageRequest.of(page, 30), hits["total"]["value"].asLong())
 
             log.info("anime search $keywords $genres $translators $end ${result.totalElements}")
@@ -121,5 +122,8 @@ class GetAnimeListService(
             return animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 30)).map { AnimeItem(it) }
         }
     }
+
+    // encoding string
+    //private val String.es: CharArray get() = jsonStringEncoder.quoteAsString(this)
 
 }
