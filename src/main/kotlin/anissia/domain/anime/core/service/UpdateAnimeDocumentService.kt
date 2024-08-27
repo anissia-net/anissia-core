@@ -5,9 +5,8 @@ import anissia.domain.anime.core.model.UpdateAnimeDocumentCommand
 import anissia.domain.anime.core.ports.inbound.UpdateAnimeDocument
 import anissia.domain.anime.core.ports.outbound.AnimeCaptionRepository
 import anissia.domain.anime.core.ports.outbound.AnimeRepository
-import anissia.infrastructure.service.ElasticsearchService
+import anissia.domain.anime.core.ports.outbound.AnimeDocumentRepository
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.elasticsearch.client.Request
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -16,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateAnimeDocumentService(
     private val animeRepository: AnimeRepository,
     private val animeCaptionRepository: AnimeCaptionRepository,
-    private val elasticsearch: ElasticsearchService,
+    private val animeDocumentRepository: AnimeDocumentRepository,
     private val objectMapper: ObjectMapper,
 ): UpdateAnimeDocument {
     private val index = "anissia_anime"
@@ -35,41 +34,15 @@ class UpdateAnimeDocumentService(
     @Transactional
     override fun handle(anime: Anime, isDelete: Boolean) {
         if (isDelete) {
-            elasticsearch.open().use {
-                it.performRequest(Request("DELETE", "/$index/_doc/${anime.animeNo}"))
-            }
+            animeDocumentRepository.deleteByAnimeNo(anime.animeNo)
         } else {
-            elasticsearch.open().use {
-                it.performRequest(
-                    Request("PUT", "/$index/_doc/${anime.animeNo}")
-                        .apply { setJsonEntity(objectMapper.writeValueAsString(mapOf(
-                            "animeNo" to anime.animeNo,
-                            "week" to anime.week,
-                            "subject" to anime.subject + " " + anime.originalSubject,
-                            "status" to anime.status.name,
-                            "genres" to anime.genres.split(",".toRegex()),
-                            "translators" to animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo),
-                            "endDate" to anime.endDate.replace("-", "").run { if (isEmpty()) 0L else toLong() }
-                        ))) }
-                )
-            }
+            animeDocumentRepository.update(anime, animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo))
         }
     }
 
     @Transactional
     override fun reset() {
-        if (elasticsearch.existsIndex(index)) {
-            elasticsearch.deleteIndex(index)
-        }
-        elasticsearch.createIndex(index, """{"mappings":{"properties": {
-            "animeNo": {"type": "long","store": true},
-            "week": {"type": "keyword"},
-            "subject": {"type": "text"},
-            "genres": {"type": "keyword"},
-            "status": {"type": "keyword"},
-            "translators": {"type": "keyword"},
-            "endDate": {"type": "long"}
-        }}}""")
+        animeDocumentRepository.dropAndCreateIndex()
         animeRepository.findAll().forEach { handle(it) }
     }
 }

@@ -43,6 +43,9 @@ class ElasticsearchService(
     fun deleteIndex(index: String): Boolean =
         request("DELETE", "/$index").statusLine.statusCode == 200
 
+    fun deleteIndexIfExists(index: String): Boolean =
+        if (existsIndex(index)) deleteIndex(index) else false
+
     fun createIndex(index: String, body: String): Boolean =
         request("PUT", "/$index", body).statusLine.statusCode == 200
 
