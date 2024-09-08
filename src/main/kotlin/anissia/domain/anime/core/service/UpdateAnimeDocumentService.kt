@@ -4,8 +4,8 @@ import anissia.domain.anime.core.Anime
 import anissia.domain.anime.core.model.UpdateAnimeDocumentCommand
 import anissia.domain.anime.core.ports.inbound.UpdateAnimeDocument
 import anissia.domain.anime.core.ports.outbound.AnimeCaptionRepository
-import anissia.domain.anime.core.ports.outbound.AnimeRepository
 import anissia.domain.anime.core.ports.outbound.AnimeDocumentRepository
+import anissia.domain.anime.core.ports.outbound.AnimeRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
