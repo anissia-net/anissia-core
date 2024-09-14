@@ -38,7 +38,7 @@ dependencies {
 	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.15.0") // 로우레벨 (결정)
 
 	// lib
-	implementation("me.saro:kit:0.2.0")
+	implementation("me.saro:kit:0.2.2")
 	implementation("org.mindrot:jbcrypt:0.4")
 	implementation("me.saro:jwt:3.0.0")
 
@@ -54,6 +54,12 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.graphql:spring-graphql-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+}
+
+java {
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(22))
+	}
 }
 
 configure<JavaPluginExtension> {
