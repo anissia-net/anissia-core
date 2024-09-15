@@ -33,9 +33,7 @@ dependencies {
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 	// elasticsearch
-	// - https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/getting-started-java.html
-	//implementation("co.elastic.clients:elasticsearch-java:8.14.1") // 일반
-	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.15.0") // 로우레벨 (결정)
+	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.15.0")
 
 	// lib
 	implementation("me.saro:kit:0.2.2")
