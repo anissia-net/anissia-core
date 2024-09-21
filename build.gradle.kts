@@ -1,5 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-	val kotlinVersion = "2.0.20"
+	val kotlinVersion = "2.1.0-Beta1"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
@@ -33,7 +35,7 @@ dependencies {
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 	// elasticsearch
-	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.15.0")
+	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.15.1")
 
 	// lib
 	implementation("me.saro:kit:0.2.2")
@@ -57,6 +59,12 @@ dependencies {
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(22))
+	}
+}
+
+kotlin {
+	compilerOptions {
+		jvmTarget.set(JvmTarget.JVM_22)
 	}
 }
 

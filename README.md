@@ -43,6 +43,12 @@ gradlew build
 java -jar anissia-core-1.0.jar --spring.profiles.active=prod
 ```
 
+### 기타
+- gradlew update
+```
+./gradlew wrapper --gradle-version latest --distribution-type all
+```
+
 ### 로컬 기본 데이터 생성
 - http://localhost:8080/install
 
