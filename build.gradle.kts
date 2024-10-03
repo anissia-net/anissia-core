@@ -38,7 +38,7 @@ dependencies {
 	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.15.1")
 
 	// lib
-	implementation("me.saro:kit:0.2.2")
+	implementation("me.saro:kit:0.2.3")
 	implementation("org.mindrot:jbcrypt:0.4")
 	implementation("me.saro:jwt:3.0.0")
 
