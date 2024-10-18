@@ -9,7 +9,11 @@ class EditCaptionCommand(
     val updDt: String = LocalDateTime.now().format(As.DTF_ISO_CAPTION),
     val website: String = ""
 ) {
-    val updLdt get() = LocalDateTime.parse(updDt, As.DTF_ISO_CAPTION)
+    val updLdt: LocalDateTime get() =
+        LocalDateTime.parse(updDt, As.DTF_ISO_CAPTION)
+            // 미래의 시간으로 들어온 경우에는 현재 시간으로 변경.
+            .takeIf { it.isBefore(LocalDateTime.now()) } ?: LocalDateTime.now()
+
     fun validate() {
         require(animeNo > 0) { "animeNo 는 0 이상이어야 합니다." }
         require(As.isWebSite(website, true)) { "사이트주소는 공백이거나 http:// https:// 로시작해야합니다." }
