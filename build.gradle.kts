@@ -1,15 +1,16 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-	val kotlinVersion = "2.1.0-Beta1"
+	val kotlinVersion = "2.1.0-Beta2"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
-	id("org.springframework.boot") version "3.3.3"
+	id("org.springframework.boot") version "3.3.4"
 	id("io.spring.dependency-management") version "1.1.6"
 	id("org.ec4j.editorconfig") version "0.1.0"
 	id("idea")
+	java
 }
 
 group = "anissia"
@@ -64,11 +65,11 @@ java {
 
 kotlin {
 	compilerOptions {
-		jvmTarget.set(JvmTarget.JVM_22)
+		jvmTarget.set(JvmTarget.JVM_23)
 	}
 }
 
 configure<JavaPluginExtension> {
-	sourceCompatibility = JavaVersion.VERSION_22
-	targetCompatibility = JavaVersion.VERSION_22
+	sourceCompatibility = JavaVersion.VERSION_23
+	targetCompatibility = JavaVersion.VERSION_23
 }
