@@ -8,8 +8,8 @@ import anissia.domain.activePanel.service.NewActivePanelText
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.model.UpdateAnimeDocumentCommand
-import anissia.domain.anime.service.UpdateAnimeDocument
 import anissia.domain.anime.repository.AnimeCaptionRepository
+import anissia.domain.anime.service.UpdateAnimeDocument
 import anissia.domain.session.model.Session
 import anissia.domain.translator.core.service.IsApplying
 import anissia.infrastructure.service.BCryptService

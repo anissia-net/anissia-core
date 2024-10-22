@@ -1,7 +1,7 @@
 package anissia.domain.session.model
 
 import anissia.domain.account.Account
-import anissia.domain.account.model.AccountRole
+import anissia.domain.account.AccountRole
 import com.fasterxml.jackson.annotation.JsonIgnore
 import gs.shared.FailException
 

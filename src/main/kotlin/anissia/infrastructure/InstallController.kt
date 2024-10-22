@@ -1,7 +1,7 @@
 package anissia.infrastructure
 
 import anissia.domain.account.Account
-import anissia.domain.account.model.AccountRole
+import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.anime.AnimeGenre
 import anissia.domain.anime.repository.AnimeGenreRepository

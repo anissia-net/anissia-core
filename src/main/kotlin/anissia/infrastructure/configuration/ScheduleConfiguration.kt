@@ -6,12 +6,12 @@ import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.agenda.service.DeletePaddingDeleteAnime
 import anissia.domain.anime.service.UpdateAnimeRank
 import anissia.domain.session.JwtKeyPair
+import anissia.domain.session.infrastructure.JwtService
 import anissia.domain.session.model.JwtKeyItem
 import anissia.domain.session.repository.JwtKeyPairRepository
 import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginPassRepository
 import anissia.domain.session.repository.LoginTokenRepository
-import anissia.domain.session.infrastructure.JwtService
 import anissia.infrastructure.common.As
 import jakarta.annotation.PostConstruct
 import org.springframework.context.annotation.Configuration

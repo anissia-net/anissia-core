@@ -1,7 +1,6 @@
 package anissia.domain.account
 
 
-import anissia.domain.account.model.AccountRole
 import jakarta.persistence.*
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.OffsetDateTime

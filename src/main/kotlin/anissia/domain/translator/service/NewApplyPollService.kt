@@ -1,6 +1,6 @@
 package anissia.domain.translator.service
 
-import anissia.domain.account.model.AccountRole
+import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.model.NewActivePanelTextCommand
 import anissia.domain.activePanel.service.NewActivePanelText

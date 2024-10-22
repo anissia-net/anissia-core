@@ -1,6 +1,7 @@
 package anissia.domain.account.model
 
 import anissia.domain.account.Account
+import anissia.domain.account.AccountRole
 
 class AccountUserItem (
     val email: String,
