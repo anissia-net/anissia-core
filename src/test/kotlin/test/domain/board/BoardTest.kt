@@ -1,14 +1,14 @@
 package test.domain.board
 
-import anissia.domain.board.core.service.*
+import anissia.domain.board.service.*
 
 class BoardTest(
     private val deletePost: DeletePost,
-    private val deleteTopic: anissia.domain.board.service.DeleteTopic,
+    private val deleteTopic: DeleteTopic,
     private val editPost: EditPost,
     private val editTopic: EditTopic,
     private val getTicker: GetTicker,
-    private val getTopicList: anissia.domain.board.service.GetTopicList,
+    private val getTopicList: GetTopicList,
     private val getTopicRecentForHome: GetTopicRecentForHome,
     private val getTopic: GetTopic,
     private val newPost: NewPost,

@@ -7,7 +7,7 @@ import anissia.domain.anime.model.NewAnimeCommand
 import anissia.domain.anime.repository.AnimeGenreRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.Session
-import anissia.domain.translator.core.service.GetPassedDate
+import anissia.domain.translator.service.GetPassedDate
 import anissia.shared.ResultWrapper
 import me.saro.kit.lang.KoreanKit
 import org.springframework.stereotype.Service

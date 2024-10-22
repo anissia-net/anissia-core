@@ -1,6 +1,6 @@
 package test.domain.translator
 
-import anissia.domain.translator.core.service.*
+import anissia.domain.translator.service.*
 
 class TranslatorTest(
     private val getApply: GetApply,

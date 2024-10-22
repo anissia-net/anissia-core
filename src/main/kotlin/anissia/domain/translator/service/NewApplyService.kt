@@ -3,8 +3,8 @@ package anissia.domain.translator.service
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.session.model.Session
-import anissia.domain.translator.core.model.NewApplyCommand
 import anissia.domain.translator.infrastructure.ApplyValue
+import anissia.domain.translator.model.NewApplyCommand
 import anissia.shared.ResultWrapper
 import gs.shared.FailException
 import org.springframework.stereotype.Service

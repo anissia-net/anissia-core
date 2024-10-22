@@ -1,6 +1,6 @@
 package anissia.domain.board.service
 
-import anissia.domain.board.core.model.EditTopicCommand
+import anissia.domain.board.model.EditTopicCommand
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 import org.springframework.transaction.annotation.Transactional

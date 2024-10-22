@@ -1,7 +1,7 @@
 package anissia.domain.board.controller
 
-import anissia.domain.board.core.model.*
-import anissia.domain.board.core.service.*
+import anissia.domain.board.model.*
+import anissia.domain.board.service.*
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page
@@ -12,11 +12,11 @@ import org.springframework.web.server.ServerWebExchange
 @RequestMapping("/board")
 class BoardController(
     private val deletePost: DeletePost,
-    private val deleteTopic: anissia.domain.board.service.DeleteTopic,
+    private val deleteTopic: DeleteTopic,
     private val editPost: EditPost,
     private val editTopic: EditTopic,
     private val getTicker: GetTicker,
-    private val getTopicList: anissia.domain.board.service.GetTopicList,
+    private val getTopicList: GetTopicList,
     private val getTopicRecentForHome: GetTopicRecentForHome,
     private val getTopic: GetTopic,
     private val newPost: NewPost,

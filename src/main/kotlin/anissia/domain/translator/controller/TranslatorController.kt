@@ -1,7 +1,7 @@
 package anissia.domain.translator.controller
 
-import anissia.domain.translator.core.model.*
-import anissia.domain.translator.core.service.*
+import anissia.domain.translator.model.*
+import anissia.domain.translator.service.*
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page

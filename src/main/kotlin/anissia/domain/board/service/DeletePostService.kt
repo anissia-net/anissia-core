@@ -2,9 +2,9 @@ package anissia.domain.board.service
 
 import anissia.domain.activePanel.ActivePanel
 import anissia.domain.activePanel.repository.ActivePanelRepository
-import anissia.domain.board.core.model.DeletePostCommand
-import anissia.domain.board.core.repository.BoardPostRepository
-import anissia.domain.board.core.repository.BoardTopicRepository
+import anissia.domain.board.model.DeletePostCommand
+import anissia.domain.board.repository.BoardPostRepository
+import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 import org.springframework.data.repository.findByIdOrNull

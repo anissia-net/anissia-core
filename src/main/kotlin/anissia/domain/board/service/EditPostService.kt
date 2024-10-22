@@ -1,7 +1,7 @@
 package anissia.domain.board.service
 
-import anissia.domain.board.core.model.EditPostCommand
-import anissia.domain.board.core.repository.BoardPostRepository
+import anissia.domain.board.model.EditPostCommand
+import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 import org.springframework.data.repository.findByIdOrNull

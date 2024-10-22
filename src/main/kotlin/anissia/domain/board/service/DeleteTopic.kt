@@ -1,6 +1,6 @@
 package anissia.domain.board.service
 
-import anissia.domain.board.core.model.DeleteTopicCommand
+import anissia.domain.board.model.DeleteTopicCommand
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 

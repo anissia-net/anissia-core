@@ -16,7 +16,7 @@ interface AnimeHitHourRepository : JpaRepository<AnimeHitHour, AnimeHitHour.Key>
 
     @Query("""
         SELECT
-            new anissia.domain.anime.core.model.AnimeRankItem(a.animeNo, (SELECT b.subject FROM Anime b WHERE b.animeNo = a.animeNo), sum(a.hit))
+            new anissia.domain.anime.model.AnimeRankItem(a.animeNo, (SELECT b.subject FROM Anime b WHERE b.animeNo = a.animeNo), sum(a.hit))
         FROM AnimeHitHour a
         WHERE a.hour >= :startHour
         GROUP BY a.animeNo ORDER BY sum(a.hit) DESC

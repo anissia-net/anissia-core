@@ -1,8 +1,8 @@
 package anissia.domain.board.service
 
-import anissia.domain.board.core.model.BoardTickerItem
-import anissia.domain.board.core.model.GetTickerCommand
-import anissia.domain.board.core.repository.BoardTickerRepository
+import anissia.domain.board.model.BoardTickerItem
+import anissia.domain.board.model.GetTickerCommand
+import anissia.domain.board.repository.BoardTickerRepository
 import me.saro.kit.service.CacheStore
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

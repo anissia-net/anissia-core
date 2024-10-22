@@ -11,7 +11,7 @@ import anissia.domain.anime.model.UpdateAnimeDocumentCommand
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.service.UpdateAnimeDocument
 import anissia.domain.session.model.Session
-import anissia.domain.translator.core.service.IsApplying
+import anissia.domain.translator.service.IsApplying
 import anissia.infrastructure.service.BCryptService
 import anissia.shared.ResultWrapper
 import gs.shared.FailException

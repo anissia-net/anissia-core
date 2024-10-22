@@ -1,9 +1,9 @@
 package anissia.domain.board.service
 
-import anissia.domain.board.core.model.BoardTopicItem
-import anissia.domain.board.core.model.GetTopicCommand
-import anissia.domain.board.core.repository.BoardPostRepository
-import anissia.domain.board.core.repository.BoardTopicRepository
+import anissia.domain.board.model.BoardTopicItem
+import anissia.domain.board.model.GetTopicCommand
+import anissia.domain.board.repository.BoardPostRepository
+import anissia.domain.board.repository.BoardTopicRepository
 import org.springframework.stereotype.Service
 
 @Service

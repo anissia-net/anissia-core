@@ -1,10 +1,10 @@
 package anissia.domain.board.service
 
 import anissia.domain.board.BoardPost
-import anissia.domain.board.core.model.NewPostCommand
-import anissia.domain.board.core.repository.BoardPostRepository
-import anissia.domain.board.core.repository.BoardTickerRepository
-import anissia.domain.board.core.repository.BoardTopicRepository
+import anissia.domain.board.model.NewPostCommand
+import anissia.domain.board.repository.BoardPostRepository
+import anissia.domain.board.repository.BoardTickerRepository
+import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 import org.springframework.data.repository.findByIdOrNull
@@ -16,7 +16,7 @@ class NewPostService(
     private val boardPostRepository: BoardPostRepository,
     private val boardTickerRepository: BoardTickerRepository,
     private val boardTopicRepository: BoardTopicRepository,
-): anissia.domain.board.service.NewPost {
+): NewPost {
     @Transactional
     override fun handle(cmd: NewPostCommand, session: Session): ResultWrapper<Unit> {
         cmd.validate()

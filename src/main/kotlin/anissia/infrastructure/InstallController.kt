@@ -6,7 +6,7 @@ import anissia.domain.account.repository.AccountRepository
 import anissia.domain.anime.AnimeGenre
 import anissia.domain.anime.repository.AnimeGenreRepository
 import anissia.domain.board.BoardTicker
-import anissia.domain.board.core.repository.BoardTickerRepository
+import anissia.domain.board.repository.BoardTickerRepository
 import anissia.infrastructure.service.BCryptService
 import org.springframework.context.annotation.Profile
 import org.springframework.transaction.annotation.Transactional

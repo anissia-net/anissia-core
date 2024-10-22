@@ -1,6 +1,6 @@
 package anissia.domain.board.service
 
-import anissia.domain.board.core.repository.BoardTopicRepository
+import anissia.domain.board.repository.BoardTopicRepository
 import org.springframework.stereotype.Service
 
 @Service

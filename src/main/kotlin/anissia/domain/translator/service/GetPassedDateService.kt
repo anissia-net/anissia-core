@@ -7,7 +7,7 @@ import java.time.OffsetDateTime
 @Service
 class GetPassedDateService(
     private val agendaRepository: AgendaRepository
-): anissia.domain.translator.service.GetPassedDate {
+): GetPassedDate {
     override fun handle(an: Long): OffsetDateTime? =
         agendaRepository.findPassedTranslatorApply(an).firstOrNull()?.updDt
 }

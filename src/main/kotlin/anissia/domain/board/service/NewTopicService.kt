@@ -2,10 +2,10 @@ package anissia.domain.board.service
 
 import anissia.domain.board.BoardPost
 import anissia.domain.board.BoardTopic
-import anissia.domain.board.core.model.NewTopicCommand
-import anissia.domain.board.core.repository.BoardPostRepository
-import anissia.domain.board.core.repository.BoardTickerRepository
-import anissia.domain.board.core.repository.BoardTopicRepository
+import anissia.domain.board.model.NewTopicCommand
+import anissia.domain.board.repository.BoardPostRepository
+import anissia.domain.board.repository.BoardTickerRepository
+import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 import org.springframework.data.repository.findByIdOrNull
