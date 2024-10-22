@@ -1,8 +1,8 @@
 package anissia.domain.activePanel.core.service
 
 
-import anissia.domain.account.core.model.AccountRole
-import anissia.domain.account.core.repository.AccountRepository
+import anissia.domain.account.model.AccountRole
+import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.core.ActivePanel
 import anissia.domain.activePanel.core.model.NewActivePanelNoticeCommand
 import anissia.domain.activePanel.core.model.NewActivePanelTextCommand

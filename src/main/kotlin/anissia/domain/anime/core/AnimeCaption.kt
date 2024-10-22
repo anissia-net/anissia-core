@@ -1,6 +1,6 @@
 package anissia.domain.anime.core
 
-import anissia.domain.account.core.Account
+import anissia.domain.account.Account
 import jakarta.persistence.*
 import java.io.Serializable
 import java.time.OffsetDateTime

@@ -1,7 +1,7 @@
 package anissia.domain.translator.core.service
 
-import anissia.domain.account.core.model.AccountRole
-import anissia.domain.account.core.repository.AccountRepository
+import anissia.domain.account.model.AccountRole
+import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.core.model.NewActivePanelTextCommand
 import anissia.domain.activePanel.core.ports.inbound.NewActivePanelText
 import anissia.domain.agenda.core.Agenda

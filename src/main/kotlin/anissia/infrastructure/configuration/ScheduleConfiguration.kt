@@ -1,7 +1,7 @@
 package anissia.infrastructure.configuration
 
-import anissia.domain.account.core.repository.AccountRecoverAuthRepository
-import anissia.domain.account.core.repository.AccountRegisterAuthRepository
+import anissia.domain.account.repository.AccountRecoverAuthRepository
+import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.activePanel.core.ports.outbound.ActivePanelRepository
 import anissia.domain.agenda.core.ports.inbound.DeletePaddingDeleteAnime
 import anissia.domain.anime.core.ports.inbound.UpdateAnimeRank

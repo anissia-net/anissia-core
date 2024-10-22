@@ -1,7 +1,7 @@
 package anissia.infrastructure.configuration
 
 
-import anissia.domain.account.core.Account
+import anissia.domain.account.Account
 import anissia.domain.session.core.model.Session
 import anissia.domain.session.infrastructure.JwtService
 import anissia.infrastructure.common.As

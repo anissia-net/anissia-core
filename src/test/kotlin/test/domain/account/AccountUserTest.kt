@@ -1,9 +1,9 @@
 package test.domain.account
 
 
-import anissia.domain.account.core.service.EditUserName
-import anissia.domain.account.core.service.EditUserPassword
-import anissia.domain.account.core.service.GetUser
+import anissia.domain.account.service.EditUserName
+import anissia.domain.account.service.EditUserPassword
+import anissia.domain.account.service.GetUser
 
 class AccountUserTest(
     private val editUserName: EditUserName,
