@@ -3,9 +3,9 @@ package anissia.domain.account.application
 
 import anissia.domain.account.core.model.EditUserNameCommand
 import anissia.domain.account.core.model.EditUserPasswordCommand
-import anissia.domain.account.core.ports.inbound.EditUserName
-import anissia.domain.account.core.ports.inbound.EditUserPassword
-import anissia.domain.account.core.ports.inbound.GetUser
+import anissia.domain.account.core.service.EditUserName
+import anissia.domain.account.core.service.EditUserPassword
+import anissia.domain.account.core.service.GetUser
 import anissia.infrastructure.common.As
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange

@@ -1,6 +1,6 @@
 package anissia.domain.activePanel.core.service
 
-import anissia.domain.account.core.ports.outbound.AccountRepository
+import anissia.domain.account.core.repository.AccountRepository
 import anissia.domain.activePanel.core.ActivePanel
 import anissia.domain.activePanel.core.model.NewActivePanelTextCommand
 import anissia.domain.activePanel.core.ports.inbound.NewActivePanelText

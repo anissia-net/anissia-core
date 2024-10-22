@@ -1,6 +1,6 @@
 package anissia.domain.session.core.service
 
-import anissia.domain.account.core.ports.outbound.AccountRepository
+import anissia.domain.account.core.repository.AccountRepository
 import anissia.domain.session.core.LoginFail
 import anissia.domain.session.core.model.DoLoginCommand
 import anissia.domain.session.core.model.GetLoginInfoItemCommand

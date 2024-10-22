@@ -3,9 +3,8 @@ package anissia.domain.account.core.service
 import anissia.domain.account.core.Account
 import anissia.domain.account.core.AccountRecoverAuth
 import anissia.domain.account.core.model.RecoverCommand
-import anissia.domain.account.core.ports.inbound.Recover
-import anissia.domain.account.core.ports.outbound.AccountRecoverAuthRepository
-import anissia.domain.account.core.ports.outbound.AccountRepository
+import anissia.domain.account.core.repository.AccountRecoverAuthRepository
+import anissia.domain.account.core.repository.AccountRepository
 import anissia.domain.session.core.model.Session
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService

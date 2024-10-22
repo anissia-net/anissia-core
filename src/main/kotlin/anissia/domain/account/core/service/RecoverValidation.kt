@@ -1,4 +1,4 @@
-package anissia.domain.account.core.ports.inbound
+package anissia.domain.account.core.service
 
 import anissia.domain.account.core.model.RecoverValidationCommand
 import anissia.shared.ResultWrapper

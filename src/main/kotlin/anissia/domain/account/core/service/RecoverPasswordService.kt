@@ -1,9 +1,8 @@
 package anissia.domain.account.core.service
 
 import anissia.domain.account.core.model.RecoverPasswordCommand
-import anissia.domain.account.core.ports.inbound.RecoverPassword
-import anissia.domain.account.core.ports.outbound.AccountRecoverAuthRepository
-import anissia.domain.account.core.ports.outbound.AccountRepository
+import anissia.domain.account.core.repository.AccountRecoverAuthRepository
+import anissia.domain.account.core.repository.AccountRepository
 import anissia.infrastructure.service.BCryptService
 import anissia.shared.ResultWrapper
 import org.springframework.stereotype.Service

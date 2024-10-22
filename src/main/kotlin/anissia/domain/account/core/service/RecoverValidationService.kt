@@ -1,8 +1,7 @@
 package anissia.domain.account.core.service
 
 import anissia.domain.account.core.model.RecoverValidationCommand
-import anissia.domain.account.core.ports.inbound.RecoverValidation
-import anissia.domain.account.core.ports.outbound.AccountRecoverAuthRepository
+import anissia.domain.account.core.repository.AccountRecoverAuthRepository
 import anissia.shared.ResultWrapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

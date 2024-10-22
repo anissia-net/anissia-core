@@ -1,8 +1,8 @@
 package anissia.infrastructure
 
 import anissia.domain.account.core.Account
-import anissia.domain.account.core.AccountRole
-import anissia.domain.account.core.ports.outbound.AccountRepository
+import anissia.domain.account.core.model.AccountRole
+import anissia.domain.account.core.repository.AccountRepository
 import anissia.domain.anime.core.AnimeGenre
 import anissia.domain.anime.core.ports.outbound.AnimeGenreRepository
 import anissia.domain.board.core.BoardTicker
@@ -35,7 +35,8 @@ class InstallController(
         sb.append("설치를 시작합니다. (개발중)\n")
 
         if (accountRepository.count() == 0L) {
-            accountRepository.save(Account(email = "admin@anissia.net", password = bCryptService.encode("admin"), name = "admin", roles = mutableSetOf(AccountRole.ROOT)))
+            accountRepository.save(Account(email = "admin@anissia.net", password = bCryptService.encode("admin"), name = "admin", roles = mutableSetOf(
+                AccountRole.ROOT)))
             accountRepository.save(Account(email = "user1@anissia.net", password = bCryptService.encode("user"), name = "user1"))
             accountRepository.save(Account(email = "user2@anissia.net", password = bCryptService.encode("user"), name = "user2"))
             accountRepository.save(Account(email = "user3@anissia.net", password = bCryptService.encode("user"), name = "user3"))

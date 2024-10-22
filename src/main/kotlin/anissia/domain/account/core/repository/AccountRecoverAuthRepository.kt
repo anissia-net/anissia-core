@@ -1,4 +1,4 @@
-package anissia.domain.account.core.ports.outbound
+package anissia.domain.account.core.repository
 
 import anissia.domain.account.core.AccountRecoverAuth
 import org.springframework.data.jpa.repository.JpaRepository

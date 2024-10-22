@@ -1,8 +1,7 @@
 package anissia.domain.account.core.service
 
 import anissia.domain.account.core.model.EditUserPasswordCommand
-import anissia.domain.account.core.ports.inbound.EditUserPassword
-import anissia.domain.account.core.ports.outbound.AccountRepository
+import anissia.domain.account.core.repository.AccountRepository
 import anissia.domain.session.core.model.Session
 import anissia.infrastructure.service.BCryptService
 import anissia.shared.ResultWrapper

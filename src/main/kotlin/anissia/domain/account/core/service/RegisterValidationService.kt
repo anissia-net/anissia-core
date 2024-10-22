@@ -4,9 +4,8 @@ import anissia.domain.account.core.Account
 import anissia.domain.account.core.AccountRegisterAuth
 import anissia.domain.account.core.model.RegisterCommand
 import anissia.domain.account.core.model.RegisterValidationCommand
-import anissia.domain.account.core.ports.inbound.RegisterValidation
-import anissia.domain.account.core.ports.outbound.AccountRegisterAuthRepository
-import anissia.domain.account.core.ports.outbound.AccountRepository
+import anissia.domain.account.core.repository.AccountRegisterAuthRepository
+import anissia.domain.account.core.repository.AccountRepository
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import com.fasterxml.jackson.core.type.TypeReference

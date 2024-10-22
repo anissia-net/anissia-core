@@ -1,9 +1,8 @@
 package anissia.domain.account.core.service
 
 import anissia.domain.account.core.model.EditUserNameCommand
-import anissia.domain.account.core.ports.inbound.EditUserName
-import anissia.domain.account.core.ports.outbound.AccountBanNameRepository
-import anissia.domain.account.core.ports.outbound.AccountRepository
+import anissia.domain.account.core.repository.AccountBanNameRepository
+import anissia.domain.account.core.repository.AccountRepository
 import anissia.domain.activePanel.core.model.NewActivePanelTextCommand
 import anissia.domain.activePanel.core.ports.inbound.NewActivePanelText
 import anissia.domain.agenda.core.Agenda
