@@ -5,7 +5,7 @@ import anissia.domain.account.AccountRecoverAuth
 import anissia.domain.account.model.RecoverCommand
 import anissia.domain.account.repository.AccountRecoverAuthRepository
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.session.core.model.Session
+import anissia.domain.session.model.Session
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.EmailService

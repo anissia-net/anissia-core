@@ -2,15 +2,15 @@ package anissia.infrastructure.configuration
 
 import anissia.domain.account.repository.AccountRecoverAuthRepository
 import anissia.domain.account.repository.AccountRegisterAuthRepository
-import anissia.domain.activePanel.core.ports.outbound.ActivePanelRepository
-import anissia.domain.agenda.core.ports.inbound.DeletePaddingDeleteAnime
-import anissia.domain.anime.core.ports.inbound.UpdateAnimeRank
-import anissia.domain.session.core.JwtKeyPair
-import anissia.domain.session.core.model.JwtKeyItem
-import anissia.domain.session.core.ports.outbound.JwtKeyPairRepository
-import anissia.domain.session.core.ports.outbound.LoginFailRepository
-import anissia.domain.session.core.ports.outbound.LoginPassRepository
-import anissia.domain.session.core.ports.outbound.LoginTokenRepository
+import anissia.domain.activePanel.repository.ActivePanelRepository
+import anissia.domain.agenda.service.DeletePaddingDeleteAnime
+import anissia.domain.anime.service.UpdateAnimeRank
+import anissia.domain.session.JwtKeyPair
+import anissia.domain.session.model.JwtKeyItem
+import anissia.domain.session.repository.JwtKeyPairRepository
+import anissia.domain.session.repository.LoginFailRepository
+import anissia.domain.session.repository.LoginPassRepository
+import anissia.domain.session.repository.LoginTokenRepository
 import anissia.domain.session.infrastructure.JwtService
 import anissia.infrastructure.common.As
 import jakarta.annotation.PostConstruct

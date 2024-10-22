@@ -1,6 +1,6 @@
 package test.domain.translator
 
-import anissia.domain.translator.core.ports.inbound.*
+import anissia.domain.translator.core.service.*
 
 class TranslatorTest(
     private val getApply: GetApply,

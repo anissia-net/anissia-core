@@ -2,7 +2,7 @@ package anissia.domain.account.service
 
 import anissia.domain.account.model.EditUserPasswordCommand
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.session.core.model.Session
+import anissia.domain.session.model.Session
 import anissia.infrastructure.service.BCryptService
 import anissia.shared.ResultWrapper
 import org.springframework.data.repository.findByIdOrNull

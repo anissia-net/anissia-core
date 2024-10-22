@@ -1,7 +1,7 @@
 package test.domain.activePanel
 
-import anissia.domain.activePanel.core.ports.inbound.GetActivePanelList
-import anissia.domain.activePanel.core.ports.inbound.NewActivePanelNotice
+import anissia.domain.activePanel.service.GetActivePanelList
+import anissia.domain.activePanel.service.NewActivePanelNotice
 
 class ActivePanelTest(
     private val getActivePanelList: GetActivePanelList,

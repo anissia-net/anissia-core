@@ -5,7 +5,7 @@ import anissia.domain.account.model.RegisterCommand
 import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.session.core.model.Session
+import anissia.domain.session.model.Session
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.BCryptService

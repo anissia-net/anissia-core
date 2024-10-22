@@ -1,6 +1,6 @@
 package anissia.infrastructure.common
 
-import anissia.domain.session.core.model.Session
+import anissia.domain.session.model.Session
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger

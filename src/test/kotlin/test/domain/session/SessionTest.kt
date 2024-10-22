@@ -1,8 +1,8 @@
 package test.domain.session
 
-import anissia.domain.session.core.ports.inbound.DoLogin
-import anissia.domain.session.core.ports.inbound.DoTokenLogin
-import anissia.domain.session.core.ports.inbound.UpdateJwt
+import anissia.domain.session.service.DoLogin
+import anissia.domain.session.service.DoTokenLogin
+import anissia.domain.session.service.UpdateJwt
 
 class SessionTest(
     private val doLogin: DoLogin,

@@ -1,7 +1,7 @@
 package anissia.domain.session.infrastructure
 
-import anissia.domain.session.core.model.JwtKeyItem
-import anissia.domain.session.core.ports.outbound.JwtKeyPairRepository
+import anissia.domain.session.model.JwtKeyItem
+import anissia.domain.session.repository.JwtKeyPairRepository
 import me.saro.jwt.alg.es.JwtEs256
 import me.saro.jwt.core.Jwt
 import me.saro.jwt.core.JwtKey

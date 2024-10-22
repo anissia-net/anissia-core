@@ -1,8 +1,8 @@
 package test.domain.anime
 
 
-import anissia.domain.anime.core.ports.inbound.GetSchedule
-import anissia.domain.anime.core.ports.inbound.GetScheduleSvg
+import anissia.domain.anime.service.GetSchedule
+import anissia.domain.anime.service.GetScheduleSvg
 
 class AnimeScheduleTest(
     private val getSchedule: GetSchedule,

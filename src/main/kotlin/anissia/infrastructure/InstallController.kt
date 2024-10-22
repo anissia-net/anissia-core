@@ -3,10 +3,10 @@ package anissia.infrastructure
 import anissia.domain.account.Account
 import anissia.domain.account.model.AccountRole
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.anime.core.AnimeGenre
-import anissia.domain.anime.core.ports.outbound.AnimeGenreRepository
-import anissia.domain.board.core.BoardTicker
-import anissia.domain.board.core.ports.outbound.BoardTickerRepository
+import anissia.domain.anime.AnimeGenre
+import anissia.domain.anime.repository.AnimeGenreRepository
+import anissia.domain.board.BoardTicker
+import anissia.domain.board.core.repository.BoardTickerRepository
 import anissia.infrastructure.service.BCryptService
 import org.springframework.context.annotation.Profile
 import org.springframework.transaction.annotation.Transactional

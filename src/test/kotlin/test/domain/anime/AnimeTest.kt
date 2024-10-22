@@ -1,7 +1,7 @@
 package test.domain.anime
 
 
-import anissia.domain.anime.core.ports.inbound.*
+import anissia.domain.anime.service.*
 
 class AnimeTest(
     private val getAnime: GetAnime,
