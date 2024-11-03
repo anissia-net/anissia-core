@@ -3,10 +3,10 @@ package anissia.domain.activePanel.service
 import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.ActivePanel
-import anissia.domain.activePanel.model.ActivePanelItem
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.command.DoCommandActivePanelCommand
 import anissia.domain.activePanel.command.GetListActivePanelCommand
+import anissia.domain.activePanel.model.ActivePanelItem
 import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.anime.service.CaptionService

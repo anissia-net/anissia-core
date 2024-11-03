@@ -1,11 +1,11 @@
 package anissia.domain.translator.controller
 
+import anissia.domain.translator.command.AddApplyCommand
 import anissia.domain.translator.command.GetApplyCommand
 import anissia.domain.translator.command.GetApplyListCommand
-import anissia.domain.translator.command.NewApplyCommand
 import anissia.domain.translator.command.NewApplyPollCommand
-import anissia.domain.translator.model.*
-import anissia.domain.translator.service.*
+import anissia.domain.translator.model.TranslatorApplyItem
+import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page
@@ -15,29 +15,25 @@ import org.springframework.web.server.ServerWebExchange
 @RestController
 @RequestMapping("/translator")
 class TranslatorController(
-    private val getApply: GetApply,
-    private val getApplyList: GetApplyList,
-    private val newApply: NewApply,
-    private val newApplyPoll: NewApplyPoll,
-    private val getNewTranslatorApplyCount: GetNewTranslatorApplyCount,
+    private val translatorApplyService: TranslatorApplyService,
 ) {
     @GetMapping("/apply/list/{page:\\d+}")
     fun getApplyList(cmd: GetApplyListCommand, exchange: ServerWebExchange): ResultWrapper<Page<TranslatorApplyItem>> =
-        ResultWrapper.ok(getApplyList.handle(cmd))
+        ResultWrapper.ok(translatorApplyService.getList(cmd))
 
     @GetMapping("/apply/{applyNo:\\d+}")
     fun getApply(cmd: GetApplyCommand, exchange: ServerWebExchange): ResultWrapper<TranslatorApplyItem> =
-        ResultWrapper.ok(getApply.handle(cmd))
+        ResultWrapper.ok(translatorApplyService.get(cmd))
 
     @GetMapping("/apply/count")
     fun getNewTranslatorApplyCount(exchange: ServerWebExchange): ResultWrapper<Int> =
-        ResultWrapper.ok(getNewTranslatorApplyCount.handle())
+        ResultWrapper.ok(translatorApplyService.getApplyingCount())
 
     @PostMapping("/apply")
-    fun newApply(@RequestBody cmd: NewApplyCommand, exchange: ServerWebExchange): ResultWrapper<Long> =
-        newApply.handle(cmd, As.toSession(exchange))
+    fun newApply(@RequestBody cmd: AddApplyCommand, exchange: ServerWebExchange): ResultWrapper<Long> =
+        translatorApplyService.add(cmd, As.toSession(exchange))
 
     @PostMapping("/apply/{applyNo:\\d+}/poll")
     fun newApplyPoll(@RequestBody cmd: NewApplyPollCommand, @PathVariable applyNo: Long, exchange: ServerWebExchange): ResultWrapper<Unit> =
-        newApplyPoll.handle(cmd.apply { this.applyNo = applyNo }, As.toSession(exchange))
+        translatorApplyService.addPoll(cmd.apply { this.applyNo = applyNo }, As.toSession(exchange))
 }

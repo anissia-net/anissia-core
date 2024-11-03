@@ -5,7 +5,9 @@ import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.anime.AnimeCaption
 import anissia.domain.anime.command.*
-import anissia.domain.anime.model.*
+import anissia.domain.anime.model.CaptionItem
+import anissia.domain.anime.model.CaptionRecentItem
+import anissia.domain.anime.model.MyCaptionItem
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.SessionItem

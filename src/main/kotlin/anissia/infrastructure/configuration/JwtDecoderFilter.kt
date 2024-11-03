@@ -2,8 +2,8 @@ package anissia.infrastructure.configuration
 
 
 import anissia.domain.account.Account
-import anissia.domain.session.service.JwtService
 import anissia.domain.session.model.SessionItem
+import anissia.domain.session.service.JwtService
 import anissia.infrastructure.common.As
 import com.fasterxml.jackson.databind.ObjectMapper
 import gs.shared.ErrorException

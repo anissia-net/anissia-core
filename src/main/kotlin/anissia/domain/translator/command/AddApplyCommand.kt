@@ -2,7 +2,7 @@ package anissia.domain.translator.command
 
 import anissia.infrastructure.common.As
 
-class NewApplyCommand(
+class AddApplyCommand(
     var website: String = ""
 ) {
     fun validate() {

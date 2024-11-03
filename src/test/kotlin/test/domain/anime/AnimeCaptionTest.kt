@@ -1,7 +1,7 @@
 package test.domain.anime
 
 
-import anissia.domain.anime.service.*
+import anissia.domain.anime.service.CaptionService
 
 class AnimeCaptionTest(
     private val captionService: CaptionService,

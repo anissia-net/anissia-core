@@ -9,23 +9,81 @@ import anissia.domain.agenda.AgendaPoll
 import anissia.domain.agenda.repository.AgendaPollRepository
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.session.model.SessionItem
-import anissia.domain.translator.infrastructure.ApplyValue
+import anissia.domain.translator.command.AddApplyCommand
+import anissia.domain.translator.command.GetApplyCommand
+import anissia.domain.translator.command.GetApplyListCommand
 import anissia.domain.translator.command.NewApplyPollCommand
+import anissia.domain.translator.infrastructure.ApplyValue
+import anissia.domain.translator.model.TranslatorApplyItem
 import anissia.shared.ResultWrapper
+import gs.shared.FailException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
 
 @Service
-class NewApplyPollService(
+class TranslatorApplyServiceImpl(
     private val agendaRepository: AgendaRepository,
     private val agendaPollRepository: AgendaPollRepository,
     private val accountRepository: AccountRepository,
     private val activePanelService: ActivePanelService,
-): NewApplyPoll {
+): TranslatorApplyService {
+    override fun get(cmd: GetApplyCommand): TranslatorApplyItem {
+        cmd.validate()
+        return agendaRepository.findWithPollsByAgendaNoAndCode(cmd.applyNo, ApplyValue.CODE)
+            ?.let { TranslatorApplyItem(it, true) }
+            ?: TranslatorApplyItem()
+    }
+
+    override fun getList(cmd: GetApplyListCommand): Page<TranslatorApplyItem> {
+        cmd.validate()
+        return agendaRepository.findAllByCodeOrderByStatusAscAgendaNoDesc(ApplyValue.CODE, PageRequest.of(cmd.page, 30)).map { TranslatorApplyItem(it) }
+    }
+
+    override fun getApplyingCount(): Int =
+        agendaRepository.countByCodeAndStatus(ApplyValue.CODE, "ACT")
+
+    override fun getGrantedTime(an: Long): OffsetDateTime? =
+        agendaRepository.findPassedTranslatorApply(an).firstOrNull()?.updDt
+
+    override fun isApplying(sessionItem: SessionItem): Boolean {
+        return agendaRepository.existsByCodeAndStatusAndAn(ApplyValue.CODE, "ACT", sessionItem.an)
+    }
+
     @Transactional
-    override fun handle(cmd: NewApplyPollCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun add(cmd: AddApplyCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+        cmd.validate()
+        sessionItem.validateLogin()
+
+        if (sessionItem.isAdmin) {
+            throw FailException("이미 권한이 있습니다.")
+        }
+
+        if (isApplying(sessionItem)) {
+            throw FailException("신청중인 진행사항이 있습니다.")
+        }
+
+        if (agendaRepository.existsByCodeAndStatusAndAnAndUpdDtAfter(ApplyValue.CODE, "DONE", sessionItem.an, OffsetDateTime.now().minusDays(7))) {
+            throw FailException("심사완료 일주일 후부터 재심사를 요청할 수 있습니다.")
+        }
+
+        agendaRepository.saveAndFlush(
+            Agenda(
+                code = ApplyValue.CODE,
+                status = "ACT",
+                an = sessionItem.an,
+                data1 = "ACT",
+                data2 = sessionItem.name,
+                data3 = cmd.website,
+            )
+        ).run { return ResultWrapper.ok(agendaNo) }
+    }
+
+    @Transactional
+    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -78,9 +136,9 @@ class NewApplyPollService(
     }
 
     private fun toApplySystemPoll(agenda: Agenda, comment: String) = AgendaPoll(
-            agenda = agenda,
-            name = "",
-            an = 0,
-            comment = comment,
+        agenda = agenda,
+        name = "",
+        an = 0,
+        comment = comment,
     )
 }

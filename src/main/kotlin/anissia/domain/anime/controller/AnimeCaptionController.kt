@@ -2,7 +2,9 @@ package anissia.domain.anime.controller
 
 
 import anissia.domain.anime.command.*
-import anissia.domain.anime.model.*
+import anissia.domain.anime.model.CaptionItem
+import anissia.domain.anime.model.CaptionRecentItem
+import anissia.domain.anime.model.MyCaptionItem
 import anissia.domain.anime.service.CaptionService
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper

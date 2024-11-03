@@ -1,13 +1,9 @@
 package test.domain.translator
 
-import anissia.domain.translator.service.*
+import anissia.domain.translator.service.TranslatorApplyService
 
 class TranslatorTest(
-    private val getApply: GetApply,
-    private val getApplyList: GetApplyList,
-    private val newApply: NewApply,
-    private val newApplyPoll: NewApplyPoll,
-    private val getNewTranslatorApplyCount: GetNewTranslatorApplyCount,
+    private val translatorApplyService: TranslatorApplyService,
 ) {
 //    @GetMapping("/apply/list/{page:\\d+}")
 //    fun getApplyList(cmd: GetApplyListCommand, exchange: ServerWebExchange): ResultWrapper<Page<TranslatorApplyItem>> =

@@ -1,6 +1,8 @@
 package test.domain.board
 
-import anissia.domain.board.service.*
+import anissia.domain.board.service.BoardService
+import anissia.domain.board.service.PostService
+import anissia.domain.board.service.TopicService
 
 class BoardTest(
     private val postService: PostService,

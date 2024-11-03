@@ -1,7 +1,9 @@
 package test.domain.anime
 
 
-import anissia.domain.anime.service.*
+import anissia.domain.anime.service.AnimeGenreGenres
+import anissia.domain.anime.service.AnimeRankService
+import anissia.domain.anime.service.AnimeService
 
 class AnimeTest(
     private val animeService: AnimeService,

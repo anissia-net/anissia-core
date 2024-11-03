@@ -2,7 +2,7 @@ package anissia.domain.anime.controller
 
 
 import anissia.domain.anime.command.*
-import anissia.domain.anime.model.*
+import anissia.domain.anime.model.AnimeItem
 import anissia.domain.anime.service.AnimeGenreGenres
 import anissia.domain.anime.service.AnimeRankService
 import anissia.domain.anime.service.AnimeService

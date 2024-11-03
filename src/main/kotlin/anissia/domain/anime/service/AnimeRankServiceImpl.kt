@@ -2,9 +2,9 @@ package anissia.domain.anime.service
 
 import anissia.domain.anime.AnimeHit
 import anissia.domain.anime.AnimeStore
-import anissia.domain.anime.model.AnimeRankItem
 import anissia.domain.anime.command.GetAnimeRankCommand
 import anissia.domain.anime.command.HitAnimeCommand
+import anissia.domain.anime.model.AnimeRankItem
 import anissia.domain.anime.repository.AnimeHitHourRepository
 import anissia.domain.anime.repository.AnimeHitRepository
 import anissia.domain.anime.repository.AnimeStoreRepository

@@ -1,8 +1,11 @@
 package anissia.domain.board.controller
 
 import anissia.domain.board.command.*
-import anissia.domain.board.model.*
-import anissia.domain.board.service.*
+import anissia.domain.board.model.BoardTickerItem
+import anissia.domain.board.model.BoardTopicItem
+import anissia.domain.board.service.BoardService
+import anissia.domain.board.service.PostService
+import anissia.domain.board.service.TopicService
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page

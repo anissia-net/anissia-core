@@ -11,12 +11,12 @@ import anissia.domain.anime.Anime
 import anissia.domain.anime.AnimeCaption
 import anissia.domain.anime.AnimeStatus
 import anissia.domain.anime.command.*
-import anissia.domain.anime.model.*
+import anissia.domain.anime.model.AnimeItem
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeGenreRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.SessionItem
-import anissia.domain.translator.service.GetPassedDate
+import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.ElasticsearchService
 import anissia.shared.ResultWrapper
@@ -40,7 +40,7 @@ class AnimeServiceImpl(
     private val animeRankService: AnimeRankService,
     private val activePanelService: ActivePanelService,
     private val agendaRepository: AgendaRepository,
-    private val getPassedDate: GetPassedDate,
+    private val translatorApplyService: TranslatorApplyService,
     private val animeGenreRepository: AnimeGenreRepository,
     private val activePanelRepository: ActivePanelRepository,
     private val elasticsearch: ElasticsearchService,
@@ -181,7 +181,7 @@ class AnimeServiceImpl(
     override fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
         cmd.validate()
         sessionItem.validateAdmin()
-        getPassedDate.handle(sessionItem.an)
+        translatorApplyService.getGrantedTime(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
             ?: return ResultWrapper.fail("애니메이션 등록은 권한 취득일로부터 90일 후에 가능합니다.", -1)
 
@@ -226,7 +226,7 @@ class AnimeServiceImpl(
     override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
         cmd.validate()
         sessionItem.validateAdmin()
-        getPassedDate.handle(sessionItem.an)
+        translatorApplyService.getGrantedTime(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
             ?: return ResultWrapper.fail("애니메이션 편집은 권한 취득일로부터 90일 후에 가능합니다.", -1)
 
@@ -293,7 +293,7 @@ class AnimeServiceImpl(
     override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
         sessionItem.validateAdmin()
-        getPassedDate.handle(sessionItem.an)
+        translatorApplyService.getGrantedTime(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
             ?: return ResultWrapper.fail("애니메이션 삭제는 권한 취득일로부터 90일 후에 가능합니다.")
 

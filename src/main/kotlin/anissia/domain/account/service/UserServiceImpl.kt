@@ -1,8 +1,8 @@
 package anissia.domain.account.service
 
-import anissia.domain.account.model.AccountUserItem
 import anissia.domain.account.command.EditUserNameCommand
 import anissia.domain.account.command.EditUserPasswordCommand
+import anissia.domain.account.model.AccountUserItem
 import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
@@ -13,7 +13,7 @@ import anissia.domain.anime.command.UpdateAnimeDocumentCommand
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.session.model.SessionItem
-import anissia.domain.translator.service.IsApplying
+import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.service.BCryptService
 import anissia.shared.ResultWrapper
 import gs.shared.FailException
@@ -27,7 +27,7 @@ class UserServiceImpl(
     private val bCryptService: BCryptService,
     private val accountRepository: AccountRepository,
     private val accountBanNameRepository: AccountBanNameRepository,
-    private val isApplying: IsApplying,
+    private val translatorApplyService: TranslatorApplyService,
     private val agendaRepository: AgendaRepository,
     private val activePanelService: ActivePanelService,
     private val animeDocumentService: AnimeDocumentService,
@@ -68,7 +68,7 @@ class UserServiceImpl(
             return ResultWrapper.fail("기존 이름과 같습니다.")
         }
 
-        if (isApplying.handle(sessionItem)) {
+        if (translatorApplyService.isApplying(sessionItem)) {
             throw FailException("자막제작자 신청중에는 이름을 바꿀 수 없습니다.")
         }
 
