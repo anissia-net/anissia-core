@@ -8,9 +8,9 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class GetTickerService(
+class BoardServiceImpl(
     private val boardTickerRepository: BoardTickerRepository,
-): GetTicker {
+): BoardService {
     private val tickerCacheStore = CacheStore<String, BoardTickerItem>((24 * 60 * 60000).toLong())
     override fun handle(cmd: GetTickerCommand): BoardTickerItem {
         cmd.validate()

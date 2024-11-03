@@ -3,16 +3,9 @@ package test.domain.board
 import anissia.domain.board.service.*
 
 class BoardTest(
-    private val deletePost: DeletePost,
-    private val deleteTopic: DeleteTopic,
-    private val editPost: EditPost,
-    private val editTopic: EditTopic,
-    private val getTicker: GetTicker,
-    private val getTopicList: GetTopicList,
-    private val getTopicRecentForHome: GetTopicRecentForHome,
-    private val getTopic: GetTopic,
-    private val newPost: NewPost,
-    private val newTopic: NewTopic,
+    private val postService: PostService,
+    private val boardService: BoardService,
+    private val topicService: TopicService,
 ) {
 //    @GetMapping("/ticker/{ticker}")
 //    fun getTicker(cmd: GetTickerCommand, exchange: ServerWebExchange): ResultWrapper<BoardTickerItem> =
