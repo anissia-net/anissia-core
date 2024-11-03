@@ -1,25 +1,55 @@
 package anissia.domain.anime.service
 
+import anissia.domain.anime.AnimeHit
 import anissia.domain.anime.AnimeStore
 import anissia.domain.anime.model.AnimeRankItem
+import anissia.domain.anime.model.GetAnimeRankCommand
+import anissia.domain.anime.model.HitAnimeCommand
 import anissia.domain.anime.repository.AnimeHitHourRepository
 import anissia.domain.anime.repository.AnimeHitRepository
 import anissia.domain.anime.repository.AnimeStoreRepository
+import anissia.domain.session.model.Session
 import anissia.infrastructure.common.As
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import me.saro.kit.service.CacheStore
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Service
-class UpdateAnimeRankService(
+class AnimeRankServiceImpl(
+    private val animeStoreRepository: AnimeStoreRepository,
     private val animeHitRepository: AnimeHitRepository,
     private val animeHitHourRepository: AnimeHitHourRepository,
-    private val animeStoreRepository: AnimeStoreRepository,
-    private val animeRankService: GetAnimeRankService
-): UpdateAnimeRank {
+): AnimeRankService {
+
+    private val rankCacheStore = CacheStore<String, List<Map<*,*>>>((5 * 60000).toLong())
+    private val objectMapper = ObjectMapper()
+    private val tr = object: TypeReference<List<Map<*, *>>>() {}
+
+    override fun get(cmd: GetAnimeRankCommand): List<Map<*,*>> = rankCacheStore.find(cmd.type) { type ->
+        when (type) {
+            "week", "quarter", "year" ->
+                objectMapper.readValue(animeStoreRepository.findByIdOrNull("rank.$type")?.data ?: "[]", tr)
+            else -> listOf()
+        }
+    }
+
+    @Async
+    override fun hit(cmd: HitAnimeCommand, session: Session) {
+        animeHitRepository.save(AnimeHit(animeNo = cmd.animeNo, ip = session.ip, hour = OffsetDateTime.now().format(As.DTF_RANK_HOUR).toLong()))
+    }
+
+    private fun clearCache() {
+        rankCacheStore.clear()
+    }
 
     @Transactional
-    override fun handle() {
+    override fun renew() {
         // step 1. remove hit history older then 1000 days
         animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(1000).format(As.DTF_RANK_HOUR).toLong())
         // step 2. merge anime hits
@@ -66,36 +96,34 @@ class UpdateAnimeRankService(
         animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
         animeStoreRepository.save(AnimeStore("rank.quarter", "", toString(day84List)))
         animeStoreRepository.save(AnimeStore("rank.year", "", toString(day364List)))
-        animeRankService.clearCache()
+        clearCache()
     }
 
     private fun toString(list: List<AnimeRankItem>): String = list.run { As.toJsonString(if (size > 30) list.subList(0, 30) else list) }
 
     private fun extractRank(startHour: String): List<AnimeRankItem> =
         animeHitHourRepository
-                .extractAllAnimeRank(startHour.toLong())
-                .filter { it.exist }
-                .apply { calculateRank(this) }
+            .extractAllAnimeRank(startHour.toLong())
+            .filter { it.exist }
+            .apply { calculateRank(this) }
 
     private fun calculateRank(animeRank: List<AnimeRankItem>): List<AnimeRankItem> =
-            animeRank.apply {
-                var rank = 0
-                var hit = -1L
-                forEachIndexed { index, node ->
-                    if (node.hit != hit) {
-                        hit = node.hit
-                        rank = index + 1
-                    }
-                    node.rank = rank
+        animeRank.apply {
+            var rank = 0
+            var hit = -1L
+            forEachIndexed { index, node ->
+                if (node.hit != hit) {
+                    hit = node.hit
+                    rank = index + 1
                 }
+                node.rank = rank
             }
+        }
 
     private fun calculateRankDiff(rankList: List<AnimeRankItem>, prevRankList: List<AnimeRankItem>) =
         rankList.forEach { now ->
             prevRankList
-                    .find { prev -> prev.animeNo == now.animeNo }
-                    ?.also { prev -> now.diff = -(now.rank - prev.rank) }
+                .find { prev -> prev.animeNo == now.animeNo }
+                ?.also { prev -> now.diff = -(now.rank - prev.rank) }
         }
-
-
 }

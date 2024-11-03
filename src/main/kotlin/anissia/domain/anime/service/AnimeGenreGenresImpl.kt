@@ -5,11 +5,11 @@ import me.saro.kit.service.CacheStore
 import org.springframework.stereotype.Service
 
 @Service
-class GetGenresService(
+class AnimeGenreGenresImpl(
     private val animeGenreRepository: AnimeGenreRepository,
-): GetGenres {
+): AnimeGenreGenres {
     private val genresCacheStore = CacheStore<String, List<String>>(60 * 60000)
-    override fun handle(): List<String> =
+    override fun get(): List<String> =
         genresCacheStore.find("genre") {
             animeGenreRepository.findAll()
                 .map { it.genre }

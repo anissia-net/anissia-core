@@ -20,9 +20,9 @@ import java.time.ZoneOffset
 class CaptionServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeRepository: AnimeRepository,
-    private val updateAnimeDocument: UpdateAnimeDocument,
+    private val animeDocumentService: AnimeDocumentService,
     private val activePanelService: ActivePanelService,
-    private val hitAnime: HitAnime
+    private val animeRankService: AnimeRankService,
 ): CaptionService {
 
     private val recentListStore = CacheStore<Int, Page<CaptionRecentItem>>(5 * 60000)
@@ -30,7 +30,7 @@ class CaptionServiceImpl(
     override fun getList(cmd: GetListCaptionByAnimeNoCommand, session: Session): List<CaptionItem> {
         cmd.validate()
         return animeCaptionRepository.findAllWithAccountByAnimeNoOrderByUpdDtDesc(cmd.animeNo).map { CaptionItem(it) }
-            .also { hitAnime.handle(HitAnimeCommand(cmd.animeNo), session) }
+            .also { animeRankService.hit(HitAnimeCommand(cmd.animeNo), session) }
     }
 
     override fun getList(cmd: GetMyListCaptionCommand, session: Session): Page<MyCaptionItem> {
@@ -74,7 +74,7 @@ class CaptionServiceImpl(
 
         animeCaptionRepository.save(AnimeCaption(anime = anime, an = session.an))
         animeRepository.updateCaptionCount(animeNo)
-        updateAnimeDocument.handle(anime)
+        animeDocumentService.update(anime)
         activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
 
         return ResultWrapper.of("ok", "자막을 추가하였습니다.\n자막메뉴에서 확인해주세요.")
@@ -112,7 +112,7 @@ class CaptionServiceImpl(
             ?.run {
                 animeCaptionRepository.delete(this)
                 animeRepository.updateCaptionCount(animeNo)
-                updateAnimeDocument.handle(UpdateAnimeDocumentCommand(animeNo))
+                animeDocumentService.update(UpdateAnimeDocumentCommand(animeNo))
                 activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
                 ResultWrapper.ok()
             }

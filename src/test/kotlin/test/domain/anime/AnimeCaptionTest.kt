@@ -4,12 +4,7 @@ package test.domain.anime
 import anissia.domain.anime.service.*
 
 class AnimeCaptionTest(
-    private val getCaptionListByAnimeNo: GetCaptionListByAnimeNo,
-    private val getMyCaptionList: GetMyCaptionList,
-    private val getCaptionRecent: GetCaptionRecent,
-    private val newCaption: NewCaption,
     private val captionService: CaptionService,
-    private val editCaption: EditCaption
 ) {
 //    @GetMapping("/caption/animeNo/{animeNo:\\d+}")
 //    fun getCaptionListByAnimeNo(cmd: GetCaptionListByAnimeNoCommand, exchange: ServerWebExchange): ResultWrapper<List<CaptionItem>> =

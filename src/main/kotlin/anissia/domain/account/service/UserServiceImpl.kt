@@ -11,7 +11,7 @@ import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.model.UpdateAnimeDocumentCommand
 import anissia.domain.anime.repository.AnimeCaptionRepository
-import anissia.domain.anime.service.UpdateAnimeDocument
+import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.session.model.Session
 import anissia.domain.translator.service.IsApplying
 import anissia.infrastructure.service.BCryptService
@@ -30,7 +30,7 @@ class UserServiceImpl(
     private val isApplying: IsApplying,
     private val agendaRepository: AgendaRepository,
     private val activePanelService: ActivePanelService,
-    private val updateAnimeDocument: UpdateAnimeDocument,
+    private val animeDocumentService: AnimeDocumentService,
     private val animeCaptionRepository: AnimeCaptionRepository,
 ): UserService {
 
@@ -96,7 +96,7 @@ class UserServiceImpl(
         // 운영진
         if (account.roles.isNotEmpty()) {
             animeCaptionRepository.findAllByAn(session.an).mapNotNull { it.anime?.animeNo }.forEach{
-                updateAnimeDocument.handle(UpdateAnimeDocumentCommand(it))
+                animeDocumentService.update(UpdateAnimeDocumentCommand(it))
             }
             activePanelService.addText(AddTextActivePanelCommand("운영진 [$oldName]님의 닉네임이 [$newName]님으로 변경되었습니다."), null)
         }

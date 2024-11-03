@@ -8,6 +8,7 @@ import anissia.domain.activePanel.model.GetListActivePanelCommand
 import anissia.domain.activePanel.model.DoCommandActivePanelCommand
 import anissia.domain.activePanel.model.AddTextActivePanelCommand
 import anissia.domain.activePanel.repository.ActivePanelRepository
+import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.session.model.Session
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 class ActivePanelServiceImpl(
     private val activePanelRepository: ActivePanelRepository,
     private val accountRepository: AccountRepository,
+    private val animeDocumentService: AnimeDocumentService,
 ): ActivePanelService {
     override fun getList(cmd: GetListActivePanelCommand, session: Session): Page<ActivePanelItem> {
         cmd.validate()
@@ -52,6 +54,11 @@ class ActivePanelServiceImpl(
                     } else {
                         return ResultWrapper.fail("${user.name}님은 자막제작자 권한을 가지고 있지 않습니다.")
                     }
+                }
+                cmd.query == "/검색엔진 전체갱신" -> {
+                    addText(AddTextActivePanelCommand("[${session.name}]님이 검색엔진 reindex 작업을 시작했습니다."), session)
+                    animeDocumentService.reset()
+                    addText(AddTextActivePanelCommand("검색엔진 reindex 작업이 완료되었습니다."), session)
                 }
                 else -> return ResultWrapper.fail("존재하지 않는 명령입니다.")
             }

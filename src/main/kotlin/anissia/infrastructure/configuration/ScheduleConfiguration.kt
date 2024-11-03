@@ -4,7 +4,7 @@ import anissia.domain.account.repository.AccountRecoverAuthRepository
 import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.agenda.service.AgendaService
-import anissia.domain.anime.service.UpdateAnimeRank
+import anissia.domain.anime.service.AnimeRankService
 import anissia.domain.session.JwtKeyPair
 import anissia.domain.session.infrastructure.JwtService
 import anissia.domain.session.model.JwtKeyItem
@@ -23,7 +23,7 @@ import org.springframework.scheduling.annotation.Scheduled
 @EnableScheduling
 class ScheduleConfiguration(
     private val jwtService: JwtService,
-    private val updateAnimeRank: UpdateAnimeRank,
+    private val animeRankService: AnimeRankService,
     private val agendaService: AgendaService,
     // 아래 repository 는 도메인화 작업 필요함.
     private val jwtKeyPairRepository: JwtKeyPairRepository,
@@ -43,7 +43,7 @@ class ScheduleConfiguration(
     // 애니메이션 순위 업데이트
     // 매일 1:00 에 실행
     @Scheduled(cron = "0 1 * * * ?")
-    fun animeRankBatch() = updateAnimeRank.handle()
+    fun animeRankBatch() = animeRankService.renew()
 
     // jwt 키 갱신
     // 매 10분마다 실행

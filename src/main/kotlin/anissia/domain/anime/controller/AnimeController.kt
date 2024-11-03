@@ -14,8 +14,8 @@ import org.springframework.web.server.ServerWebExchange
 @RequestMapping("/anime")
 class AnimeController(
     private val animeService: AnimeService,
-    private val getGenres: GetGenres,
-    private val getAnimeRank: GetAnimeRank,
+    private val animeGenreGenres: AnimeGenreGenres,
+    private val animeRankService: AnimeRankService,
 ) {
     @GetMapping("/list/{page:\\d+}")
     fun getAnimeList(cmd: GetAnimeListCommand, exchange: ServerWebExchange): ResultWrapper<Page<AnimeItem>> =
@@ -35,11 +35,11 @@ class AnimeController(
 
     @GetMapping("/genres")
     fun getGenres(exchange: ServerWebExchange): ResultWrapper<List<String>> =
-        ResultWrapper.ok(getGenres.handle())
+        ResultWrapper.ok(animeGenreGenres.get())
 
     @GetMapping("/rank/{type}")
     fun getAnimeRank(cmd: GetAnimeRankCommand, exchange: ServerWebExchange): ResultWrapper<List<Map<*,*>>> =
-        ResultWrapper.ok(getAnimeRank.handle(cmd))
+        ResultWrapper.ok(animeRankService.get(cmd))
 
     @DeleteMapping("/{animeNo}")
     fun deleteAnime(cmd: DeleteAnimeCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =

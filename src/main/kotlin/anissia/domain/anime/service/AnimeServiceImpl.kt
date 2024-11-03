@@ -19,7 +19,6 @@ import anissia.domain.translator.service.GetPassedDate
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.ElasticsearchService
 import anissia.shared.ResultWrapper
-import com.fasterxml.jackson.core.io.JsonStringEncoder
 import com.fasterxml.jackson.core.type.TypeReference
 import me.saro.kit.lang.KoreanKit
 import me.saro.kit.service.CacheStore
@@ -35,9 +34,9 @@ import java.util.*
 @Service
 class AnimeServiceImpl(
     private val animeRepository: AnimeRepository,
-    private val hitAnime: HitAnime,
     private val animeCaptionRepository: AnimeCaptionRepository,
-    private val updateAnimeDocument: UpdateAnimeDocument,
+    private val animeDocumentService: AnimeDocumentService,
+    private val animeRankService: AnimeRankService,
     private val activePanelService: ActivePanelService,
     private val agendaRepository: AgendaRepository,
     private val getPassedDate: GetPassedDate,
@@ -48,7 +47,6 @@ class AnimeServiceImpl(
 ): AnimeService {
 
     private val log = As.logger<AnimeServiceImpl>()
-    private val jsonStringEncoder = JsonStringEncoder.getInstance()
     private val mapper = As.OBJECT_MAPPER
 
     private val autocorrectStore = CacheStore<String, List<String>>(60 * 60000)
@@ -56,7 +54,7 @@ class AnimeServiceImpl(
     override fun get(cmd: GetAnimeCommand, session: Session): AnimeItem =
         animeRepository.findWithCaptionsByAnimeNo(cmd.animeNo)
             ?.let { AnimeItem(it, true) }
-            ?.also { hitAnime.handle(HitAnimeCommand(cmd.animeNo), session) }
+            ?.also { animeRankService.hit(HitAnimeCommand(cmd.animeNo), session) }
             ?: AnimeItem()
 
     override fun getList(cmd: GetAnimeListCommand): Page<AnimeItem> {
@@ -218,7 +216,7 @@ class AnimeServiceImpl(
 
         animeRepository.save(anime)
         activePanelRepository.save(activePanel)
-        updateAnimeDocument.handle(anime)
+        animeDocumentService.update(anime)
 
         return ResultWrapper.ok(anime.animeNo)
     }
@@ -285,7 +283,7 @@ class AnimeServiceImpl(
 
         animeRepository.save(anime)
         activePanelRepository.save(activePanel)
-        updateAnimeDocument.handle(anime)
+        animeDocumentService.update(anime)
 
         return ResultWrapper.of("ok", "", anime.animeNo)
     }
@@ -309,7 +307,7 @@ class AnimeServiceImpl(
 
         animeCaptionRepository.deleteByAnimeNo(animeNo)
         animeRepository.delete(anime)
-        updateAnimeDocument.handle(anime)
+        animeDocumentService.update(anime)
         agendaRepository.save(agenda)
 
         return ResultWrapper.ok()
@@ -367,7 +365,7 @@ class AnimeServiceImpl(
 
         activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
 
-        updateAnimeDocument.handle(anime)
+        animeDocumentService.update(anime)
         animeRepository.updateCaptionCount(anime.animeNo)
         agendaRepository.save(agenda.apply { status = "recover" })
 
