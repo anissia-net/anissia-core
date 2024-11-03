@@ -1,11 +1,10 @@
 package anissia.domain.session.controller
 
-import anissia.domain.session.command.DoLoginCommand
+import anissia.domain.session.command.DoUserLoginCommand
 import anissia.domain.session.command.DoTokenLoginCommand
-import anissia.domain.session.model.LoginInfoItem
-import anissia.domain.session.service.DoLogin
-import anissia.domain.session.service.DoTokenLogin
-import anissia.domain.session.service.UpdateJwt
+import anissia.domain.session.model.JwtAuthInfoItem
+import anissia.domain.session.service.LoginService
+import anissia.domain.session.service.JwtService
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import org.springframework.web.bind.annotation.*
@@ -14,19 +13,18 @@ import org.springframework.web.server.ServerWebExchange
 @RestController
 @RequestMapping("/session")
 class SessionController(
-    private val doLogin: DoLogin,
-    private val doTokenLogin: DoTokenLogin,
-    private val updateJwt: UpdateJwt,
+    private val loginService: LoginService,
+    private val jwtService: JwtService,
 ) {
     @PostMapping
-    fun doLogin(@RequestBody cmd: DoLoginCommand, exchange: ServerWebExchange): ResultWrapper<LoginInfoItem> =
-        doLogin.handle(cmd, As.toSession(exchange))
+    fun doLogin(@RequestBody cmd: DoUserLoginCommand, exchange: ServerWebExchange): ResultWrapper<JwtAuthInfoItem> =
+        loginService.doUserLogin(cmd, As.toSession(exchange))
 
     @PostMapping("/token")
-    fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): ResultWrapper<LoginInfoItem> =
-        doTokenLogin.handle(cmd, As.toSession(exchange))
+    fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): ResultWrapper<JwtAuthInfoItem> =
+        loginService.doTokenLogin(cmd, As.toSession(exchange))
 
     @PutMapping()
-    fun updateJwt(exchange: ServerWebExchange): ResultWrapper<LoginInfoItem> =
-        updateJwt.handle(As.toSession(exchange))
+    fun updateAuthInfo(exchange: ServerWebExchange): ResultWrapper<JwtAuthInfoItem> =
+        jwtService.updateAuthInfo(As.toSession(exchange))
 }

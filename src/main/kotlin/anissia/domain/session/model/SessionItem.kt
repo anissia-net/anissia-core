@@ -5,7 +5,7 @@ import anissia.domain.account.AccountRole
 import com.fasterxml.jackson.annotation.JsonIgnore
 import gs.shared.FailException
 
-class Session (
+class SessionItem (
         val an: Long = 0,
         val name: String = "",
         val email: String = "",
@@ -13,7 +13,7 @@ class Session (
         val ip: String = "",
 ) {
     companion object {
-        fun cast(account: Account, ip: String) = Session(
+        fun cast(account: Account, ip: String) = SessionItem(
             an = account.an,
             name = account.name,
             email = account.email,

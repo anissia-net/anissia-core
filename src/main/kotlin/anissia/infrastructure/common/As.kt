@@ -1,6 +1,6 @@
 package anissia.infrastructure.common
 
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
@@ -38,14 +38,14 @@ class As {
         val DE_BASE64_URL = Base64.getUrlDecoder()
 
 
-        private val typeRefSession = object: TypeReference<Session>() {}
+        private val typeRefSessionItem = object: TypeReference<SessionItem>() {}
 
         inline fun <reified T> logger(): Logger =
             LoggerFactory.getLogger(T::class.java)
 
-        fun toSession(exchange: ServerWebExchange): Session {
+        fun toSession(exchange: ServerWebExchange): SessionItem {
             val jud = As.decodeBase64Url(exchange.request.headers.getFirst("jud")!!)
-            return OBJECT_MAPPER.readValue(jud, typeRefSession)
+            return OBJECT_MAPPER.readValue(jud, typeRefSessionItem)
         }
 
         fun getResource(path: String): URL = As::class.java.getResource(path)!!

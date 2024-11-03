@@ -3,7 +3,7 @@ package anissia.domain.session.command
 import anissia.infrastructure.common.As
 import gs.shared.FailException
 
-class DoLoginCommand(
+class DoUserLoginCommand(
     val email: String = "",
     val password: String = "",
     val makeLoginToken: Boolean = false

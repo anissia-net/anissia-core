@@ -1,13 +1,9 @@
 package test.domain.session
 
-import anissia.domain.session.service.DoLogin
-import anissia.domain.session.service.DoTokenLogin
-import anissia.domain.session.service.UpdateJwt
+import anissia.domain.session.service.LoginService
 
 class SessionTest(
-    private val doLogin: DoLogin,
-    private val doTokenLogin: DoTokenLogin,
-    private val updateJwt: UpdateJwt,
+    private val loginService: LoginService,
 ) {
 //    @PostMapping
 //    fun doLogin(@RequestBody cmd: DoLoginCommand, exchange: ServerWebExchange): ResultWrapper<LoginInfoItem> =

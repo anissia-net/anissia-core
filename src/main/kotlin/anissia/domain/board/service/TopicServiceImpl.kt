@@ -9,7 +9,7 @@ import anissia.domain.board.model.BoardTopicItem
 import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTickerRepository
 import anissia.domain.board.repository.BoardTopicRepository
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -49,26 +49,26 @@ class TopicServiceImpl(
             ) }
 
     @Transactional
-    override fun add(cmd: NewTopicCommand, session: Session): ResultWrapper<Long> {
-        if (!session.isLogin) {
+    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+        if (!sessionItem.isLogin) {
             return ResultWrapper.fail("로그인이 필요합니다.", 0)
         }
 
         return cmd.ticker
-            .takeIf { permission(it, session) }
+            .takeIf { permission(it, sessionItem) }
             ?.let {
                 val topic = boardTopicRepository.saveAndFlush(
                     BoardTopic.create(
                         ticker = cmd.ticker,
                         topic = cmd.topic,
-                        an = session.an,
+                        an = sessionItem.an,
                     )
                 )
                 boardPostRepository.saveAndFlush(
                     BoardPost.createRootPost(
                         topicNo = topic.topicNo,
                         content = cmd.content,
-                        an = session.an,
+                        an = sessionItem.an,
                     )
                 )
                 ResultWrapper.ok(topic.topicNo)
@@ -76,19 +76,19 @@ class TopicServiceImpl(
             ?: ResultWrapper.fail("권한이 없습니다.", -1)
     }
 
-    private fun permission(ticker: String, session: Session): Boolean =
+    private fun permission(ticker: String, sessionItem: SessionItem): Boolean =
         boardTickerRepository.findByIdOrNull(ticker)?.run {
-            writeTopicRoles.isEmpty() || session.roles.any { it in writeTopicRoles }
+            writeTopicRoles.isEmpty() || sessionItem.roles.any { it in writeTopicRoles }
         } ?: false
 
     @Transactional
-    override fun edit(cmd: EditTopicCommand, session: Session): ResultWrapper<Unit> {
+    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
-        session.validateLogin()
+        sessionItem.validateLogin()
 
         return boardTopicRepository
             .findByIdOrNull(cmd.topicNo)
-            ?.takeIf { it.an == session.an }
+            ?.takeIf { it.an == sessionItem.an }
             ?.let { node ->
                 boardPostRepository
                     .findWithAccountByTopicNoAndRootIsTrue(cmd.topicNo)
@@ -101,21 +101,21 @@ class TopicServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeleteTopicCommand, session: Session): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
-        session.validateLogin()
+        sessionItem.validateLogin()
 
         return boardTopicRepository
             .findByIdOrNull(cmd.topicNo)
-            ?.takeIf { it.an == session.an || session.isAdmin }
+            ?.takeIf { it.an == sessionItem.an || sessionItem.isAdmin }
             ?.let {
-                if (it.an != session.an) {
+                if (it.an != sessionItem.an) {
                     activePanelRepository.save(
                         ActivePanel(
                             published = false,
                             code = "DEL",
-                            an = session.an,
-                            data1 = "[${session.name}]님이 글을 삭제했습니다.",
+                            an = sessionItem.an,
+                            data1 = "[${sessionItem.name}]님이 글을 삭제했습니다.",
                             data2 = "작성자/회원번호: ${it.account?.name}/${it.an}",
                             data3 = "${it.topic}\n${boardPostRepository.findWithAccountByTopicNoAndRootIsTrue(it.topicNo)?.content}",
                         )

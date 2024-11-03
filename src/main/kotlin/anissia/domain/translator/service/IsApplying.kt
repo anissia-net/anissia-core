@@ -1,7 +1,7 @@
 package anissia.domain.translator.service
 
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 
 interface IsApplying {
-    fun handle(session: Session): Boolean
+    fun handle(sessionItem: SessionItem): Boolean
 }

@@ -7,7 +7,7 @@ import anissia.domain.account.command.RequestRegisterCommand
 import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.BCryptService
@@ -41,10 +41,10 @@ class RegisterServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRegisterCommand, session: Session): ResultWrapper<Unit> {
+    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
 
-        if (session.isLogin) {
+        if (sessionItem.isLogin) {
             return ResultWrapper.fail("로그인 중에는 계정을 생성할 수 없습니다.")
         }
 
@@ -60,7 +60,7 @@ class RegisterServiceImpl(
             return ResultWrapper.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
         }
 
-        val ip = session.ip
+        val ip = sessionItem.ip
         val auth = accountRegisterAuthRepository.save(
             AccountRegisterAuth(
                 token = TextKit.generateBase62(128, 256),

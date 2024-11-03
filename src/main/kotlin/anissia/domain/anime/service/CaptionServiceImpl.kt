@@ -8,7 +8,7 @@ import anissia.domain.anime.command.*
 import anissia.domain.anime.model.*
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeRepository
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.shared.ResultWrapper
 import me.saro.kit.service.CacheStore
 import org.springframework.data.domain.Page
@@ -29,20 +29,20 @@ class CaptionServiceImpl(
 
     private val recentListStore = CacheStore<Int, Page<CaptionRecentItem>>(5 * 60000)
 
-    override fun getList(cmd: GetListCaptionByAnimeNoCommand, session: Session): List<CaptionItem> {
+    override fun getList(cmd: GetListCaptionByAnimeNoCommand, sessionItem: SessionItem): List<CaptionItem> {
         cmd.validate()
         return animeCaptionRepository.findAllWithAccountByAnimeNoOrderByUpdDtDesc(cmd.animeNo).map { CaptionItem(it) }
-            .also { animeRankService.hit(HitAnimeCommand(cmd.animeNo), session) }
+            .also { animeRankService.hit(HitAnimeCommand(cmd.animeNo), sessionItem) }
     }
 
-    override fun getList(cmd: GetMyListCaptionCommand, session: Session): Page<MyCaptionItem> {
+    override fun getList(cmd: GetMyListCaptionCommand, sessionItem: SessionItem): Page<MyCaptionItem> {
         cmd.validate()
-        session.validateAdmin()
+        sessionItem.validateAdmin()
 
         return if (cmd.active == 1) {
-            animeCaptionRepository.findAllWithAnimeForAdminCaptionActiveList(session.an, PageRequest.of(cmd.page, 20))
+            animeCaptionRepository.findAllWithAnimeForAdminCaptionActiveList(sessionItem.an, PageRequest.of(cmd.page, 20))
         } else {
-            animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(session.an, PageRequest.of(cmd.page, 20))
+            animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(sessionItem.an, PageRequest.of(cmd.page, 20))
         }.map { MyCaptionItem(it) }
     }
 
@@ -61,35 +61,35 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun add(cmd: AddCaptionCommand, session: Session): ResultWrapper<Unit> {
+    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
-        session.validateAdmin()
+        sessionItem.validateAdmin()
 
         val animeNo = cmd.animeNo
 
         val anime = animeRepository.findByIdOrNull(animeNo)
             ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.")
 
-        if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, session.an)).isPresent) {
+        if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, sessionItem.an)).isPresent) {
             return ResultWrapper.fail("이미 작업중인 작품입니다.")
         }
 
-        animeCaptionRepository.save(AnimeCaption(anime = anime, an = session.an))
+        animeCaptionRepository.save(AnimeCaption(anime = anime, an = sessionItem.an))
         animeRepository.updateCaptionCount(animeNo)
         animeDocumentService.update(anime)
-        activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
+        activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
 
         return ResultWrapper.of("ok", "자막을 추가하였습니다.\n자막메뉴에서 확인해주세요.")
     }
 
     @Transactional
-    override fun edit(cmd: EditCaptionCommand, session: Session): ResultWrapper<Unit> {
+    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
-        session.validateAdmin()
+        sessionItem.validateAdmin()
 
         val animeNo = cmd.animeNo
 
-        val caption = animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, session.an))
+        val caption = animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, sessionItem.an))
             ?: return ResultWrapper.fail("존재하지 않는 자막입니다.")
 
         animeCaptionRepository.save(caption.apply {
@@ -104,26 +104,26 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeleteCaptionCommand, session: Session): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
-        session.validateAdmin()
+        sessionItem.validateAdmin()
 
         val animeNo = cmd.animeNo
 
-        return animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, session.an))
+        return animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, sessionItem.an))
             ?.run {
                 animeCaptionRepository.delete(this)
                 animeRepository.updateCaptionCount(animeNo)
                 animeDocumentService.update(UpdateAnimeDocumentCommand(animeNo))
-                activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
+                activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
                 ResultWrapper.ok()
             }
             ?: ResultWrapper.fail("이미 삭제되었습니다.")
     }
 
     @Transactional
-    override fun delete(account: Account, session: Session): Int {
-        session.validateRoot()
+    override fun delete(account: Account, sessionItem: SessionItem): Int {
+        sessionItem.validateRoot()
         return animeCaptionRepository.deleteByAn(account.an)
     }
 }

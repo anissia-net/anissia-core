@@ -2,8 +2,8 @@ package anissia.infrastructure.configuration
 
 
 import anissia.domain.account.Account
-import anissia.domain.session.infrastructure.JwtService
-import anissia.domain.session.model.Session
+import anissia.domain.session.service.JwtService
+import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As
 import com.fasterxml.jackson.databind.ObjectMapper
 import gs.shared.ErrorException
@@ -34,16 +34,16 @@ class JwtDecoderFilter(
         val jwt = exchange.request.headers["jwt"]?.get(0) ?: ""
         val ip = exchange.request.remoteAddress?.address?.hostAddress?:"0.0.0.0"
 
-        val session = try {
+        val sessionItem = try {
             if (jwt.isBlank()) {
-                Session.cast(Account(), ip)
+                SessionItem.cast(Account(), ip)
             } else {
-                val key = jwtService.findKey(jwtService.es256.toJwtHeader(jwt).kid!!)
-                val claims = jwtService.es256.toJwtClaims(jwt, key)
+                val key = jwtService.getKey(jwtService.alg().toJwtHeader(jwt).kid!!)
+                val claims = jwtService.alg().toJwtClaims(jwt, key)
                 val id = (claims.id!!).toLong()
                 val roles = claims.claim<String>("roles")?.takeIf { it.isNotBlank() }?.split(",") ?: listOf()
                 claims.assert()
-                Session(
+                SessionItem(
                     an = id,
                     name = claims.audience!!,
                     email = claims.subject!!,
@@ -52,10 +52,10 @@ class JwtDecoderFilter(
                 )
             }
         } catch (e: Exception) {
-            Session.cast(Account(), ip)
+            SessionItem.cast(Account(), ip)
         }
 
-        val jud = As.encodeBase64Url(objectMapper.writeValueAsString(session))
+        val jud = As.encodeBase64Url(objectMapper.writeValueAsString(sessionItem))
 
         return chain.filter(
             exchange.mutate().request(exchange.request.mutate().header("jud", jud).build()).build());

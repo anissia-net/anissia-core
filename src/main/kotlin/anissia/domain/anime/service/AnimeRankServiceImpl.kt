@@ -8,7 +8,7 @@ import anissia.domain.anime.command.HitAnimeCommand
 import anissia.domain.anime.repository.AnimeHitHourRepository
 import anissia.domain.anime.repository.AnimeHitRepository
 import anissia.domain.anime.repository.AnimeStoreRepository
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -40,8 +40,8 @@ class AnimeRankServiceImpl(
     }
 
     @Async
-    override fun hit(cmd: HitAnimeCommand, session: Session) {
-        animeHitRepository.save(AnimeHit(animeNo = cmd.animeNo, ip = session.ip, hour = OffsetDateTime.now().format(As.DTF_RANK_HOUR).toLong()))
+    override fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem) {
+        animeHitRepository.save(AnimeHit(animeNo = cmd.animeNo, ip = sessionItem.ip, hour = OffsetDateTime.now().format(As.DTF_RANK_HOUR).toLong()))
     }
 
     private fun clearCache() {

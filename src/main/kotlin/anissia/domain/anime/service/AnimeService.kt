@@ -2,17 +2,17 @@ package anissia.domain.anime.service
 
 import anissia.domain.anime.command.*
 import anissia.domain.anime.model.*
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page
 
 interface AnimeService {
-    fun get(cmd: GetAnimeCommand, session: Session): AnimeItem
+    fun get(cmd: GetAnimeCommand, sessionItem: SessionItem): AnimeItem
     fun getList(cmd: GetAnimeListCommand): Page<AnimeItem>
-    fun getDelist(session: Session): Page<AnimeItem>
+    fun getDelist(sessionItem: SessionItem): Page<AnimeItem>
     fun getAutocorrect(cmd: GetAutocorrectAnimeCommand): List<String>
-    fun add(cmd: NewAnimeCommand, session: Session): ResultWrapper<Long>
-    fun edit(cmd: EditAnimeCommand, session: Session): ResultWrapper<Long>
-    fun delete(cmd: DeleteAnimeCommand, session: Session): ResultWrapper<Unit>
-    fun recover(cmd: RecoverAnimeCommand, session: Session): ResultWrapper<Long>
+    fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long>
+    fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long>
+    fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ResultWrapper<Unit>
+    fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long>
 }

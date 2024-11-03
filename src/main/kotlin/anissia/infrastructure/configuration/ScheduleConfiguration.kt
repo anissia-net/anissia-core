@@ -6,7 +6,7 @@ import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.agenda.service.AgendaService
 import anissia.domain.anime.service.AnimeRankService
 import anissia.domain.session.JwtKeyPair
-import anissia.domain.session.infrastructure.JwtService
+import anissia.domain.session.service.JwtService
 import anissia.domain.session.model.JwtKeyItem
 import anissia.domain.session.repository.JwtKeyPairRepository
 import anissia.domain.session.repository.LoginFailRepository
@@ -36,7 +36,7 @@ class ScheduleConfiguration(
 ) {
 
     private val log = As.logger<ScheduleConfiguration>()
-    private val alg get() = jwtService.es256
+    private val alg get() = jwtService.alg()
     private val timeMillis get() = System.currentTimeMillis().toString()
 
 
@@ -58,7 +58,7 @@ class ScheduleConfiguration(
     // 매 10분 10초마다 실행
     @PostConstruct
     @Scheduled(cron = "10 0/10 * * * ?")
-    fun syncJwtKeyList() = jwtService.updateKeyStore()
+    fun syncJwtKeyList() = jwtService.renewKeyStore()
 
     // 오래된 jwt 키 삭제
     // 매시간 2분에 실행

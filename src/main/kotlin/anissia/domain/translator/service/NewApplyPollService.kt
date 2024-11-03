@@ -8,7 +8,7 @@ import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.AgendaPoll
 import anissia.domain.agenda.repository.AgendaPollRepository
 import anissia.domain.agenda.repository.AgendaRepository
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.infrastructure.ApplyValue
 import anissia.domain.translator.command.NewApplyPollCommand
 import anissia.shared.ResultWrapper
@@ -25,9 +25,9 @@ class NewApplyPollService(
     private val activePanelService: ActivePanelService,
 ): NewApplyPoll {
     @Transactional
-    override fun handle(cmd: NewApplyPollCommand, session: Session): ResultWrapper<Unit> {
+    override fun handle(cmd: NewApplyPollCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
-        session.validateAdmin()
+        sessionItem.validateAdmin()
 
         var point = cmd.point.toInt()
 
@@ -39,12 +39,12 @@ class NewApplyPollService(
 
         val polls = app.polls
         if (point != 0) {
-            if (polls.filter { it.an == session.an }.any { it.vote != 0 }) {
+            if (polls.filter { it.an == sessionItem.an }.any { it.vote != 0 }) {
                 return ResultWrapper.fail("찬성/반대는 한 신청처에 한번만 할 수 있습니다.")
             }
         }
 
-        if (session.isRoot) {
+        if (sessionItem.isRoot) {
             point *= 10
         }
         val poll = agendaPollRepository.save(
@@ -52,8 +52,8 @@ class NewApplyPollService(
                 agenda = app,
                 voteUp = if (point > 0) point else 0,
                 voteDown = if (point < 0) point else 0,
-                name = session.name,
-                an = session.an,
+                name = sessionItem.name,
+                an = sessionItem.an,
                 comment = cmd.comment
             )
         )

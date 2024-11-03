@@ -1,7 +1,7 @@
 package anissia.domain.translator.service
 
 import anissia.domain.agenda.repository.AgendaRepository
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.infrastructure.ApplyValue
 import org.springframework.stereotype.Service
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 class IsApplyingService(
     private val agendaRepository: AgendaRepository
 ): IsApplying {
-    override fun handle(session: Session): Boolean {
-        return agendaRepository.existsByCodeAndStatusAndAn(ApplyValue.CODE, "ACT", session.an)
+    override fun handle(sessionItem: SessionItem): Boolean {
+        return agendaRepository.existsByCodeAndStatusAndAn(ApplyValue.CODE, "ACT", sessionItem.an)
     }
 }

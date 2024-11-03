@@ -7,7 +7,7 @@ import anissia.domain.account.command.RequestRecoverPasswordCommand
 import anissia.domain.account.command.ValidateRecoverPasswordCommand
 import anissia.domain.account.repository.AccountRecoverAuthRepository
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.BCryptService
@@ -39,7 +39,7 @@ class RecoverPasswordServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRecoverPasswordCommand, session: Session): ResultWrapper<Unit> {
+    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
 
         var account: Account = accountRepository.findByEmailAndName(cmd.email, cmd.name)
@@ -51,7 +51,7 @@ class RecoverPasswordServiceImpl(
             return ResultWrapper.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
         }
 
-        val ip = session.ip
+        val ip = sessionItem.ip
 
         val auth = accountRecoverAuthRepository
             .save(

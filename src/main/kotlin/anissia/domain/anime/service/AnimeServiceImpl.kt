@@ -15,7 +15,7 @@ import anissia.domain.anime.model.*
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeGenreRepository
 import anissia.domain.anime.repository.AnimeRepository
-import anissia.domain.session.model.Session
+import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.GetPassedDate
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.ElasticsearchService
@@ -52,10 +52,10 @@ class AnimeServiceImpl(
 
     private val autocorrectStore = CacheStore<String, List<String>>(60 * 60000)
 
-    override fun get(cmd: GetAnimeCommand, session: Session): AnimeItem =
+    override fun get(cmd: GetAnimeCommand, sessionItem: SessionItem): AnimeItem =
         animeRepository.findWithCaptionsByAnimeNo(cmd.animeNo)
             ?.let { AnimeItem(it, true) }
-            ?.also { animeRankService.hit(HitAnimeCommand(cmd.animeNo), session) }
+            ?.also { animeRankService.hit(HitAnimeCommand(cmd.animeNo), sessionItem) }
             ?: AnimeItem()
 
     override fun getList(cmd: GetAnimeListCommand): Page<AnimeItem> {
@@ -159,8 +159,8 @@ class AnimeServiceImpl(
         }
     }
 
-    override fun getDelist(session: Session): Page<AnimeItem> {
-        session.validateAdmin()
+    override fun getDelist(sessionItem: SessionItem): Page<AnimeItem> {
+        sessionItem.validateAdmin()
 
         return agendaRepository.findAllByCodeAndStatusOrderByAgendaNoDesc("ANIME-DEL", "wait")
             .map { As.OBJECT_MAPPER.readValue(it.data1!!, object: TypeReference<AnimeItem>(){}).apply { this.agendaNo = it.agendaNo } }
@@ -178,10 +178,10 @@ class AnimeServiceImpl(
             ?: listOf()
 
     @Transactional
-    override fun add(cmd: NewAnimeCommand, session: Session): ResultWrapper<Long> {
+    override fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
         cmd.validate()
-        session.validateAdmin()
-        getPassedDate.handle(session.an)
+        sessionItem.validateAdmin()
+        getPassedDate.handle(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
             ?: return ResultWrapper.fail("애니메이션 등록은 권한 취득일로부터 90일 후에 가능합니다.", -1)
 
@@ -211,8 +211,8 @@ class AnimeServiceImpl(
             published = true,
             code = "ANIME",
             status = "C",
-            an = session.an,
-            data1 = "[${session.name}]님이 애니메이션 [${anime.subject}]을(를) 추가하였습니다."
+            an = sessionItem.an,
+            data1 = "[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 추가하였습니다."
         )
 
         animeRepository.save(anime)
@@ -223,10 +223,10 @@ class AnimeServiceImpl(
     }
 
     @Transactional
-    override fun edit(cmd: EditAnimeCommand, session: Session): ResultWrapper<Long> {
+    override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
         cmd.validate()
-        session.validateAdmin()
-        getPassedDate.handle(session.an)
+        sessionItem.validateAdmin()
+        getPassedDate.handle(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
             ?: return ResultWrapper.fail("애니메이션 편집은 권한 취득일로부터 90일 후에 가능합니다.", -1)
 
@@ -244,8 +244,8 @@ class AnimeServiceImpl(
             published = true,
             code = "ANIME",
             status = "U",
-            an = session.an,
-            data1 = "[${session.name}]님이 애니메이션 [${cmd.subject}]을(를) 수정하였습니다."
+            an = sessionItem.an,
+            data1 = "[${sessionItem.name}]님이 애니메이션 [${cmd.subject}]을(를) 수정하였습니다."
         )
 
         val anime = animeRepository.findByIdOrNull(animeNo)
@@ -290,21 +290,21 @@ class AnimeServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeleteAnimeCommand, session: Session): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
         cmd.validate()
-        session.validateAdmin()
-        getPassedDate.handle(session.an)
+        sessionItem.validateAdmin()
+        getPassedDate.handle(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
             ?: return ResultWrapper.fail("애니메이션 삭제는 권한 취득일로부터 90일 후에 가능합니다.")
 
         val animeNo = cmd.animeNo
-        val agenda = Agenda(code = "ANIME-DEL", status = "wait", an = session.an)
+        val agenda = Agenda(code = "ANIME-DEL", status = "wait", an = sessionItem.an)
 
         val anime = animeRepository.findWithCaptionsByAnimeNo(animeNo)
             ?.also { agenda.data1 = As.toJsonString(AnimeItem(it, true)) }
             ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.")
 
-        activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
+        activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
 
         animeCaptionRepository.deleteByAnimeNo(animeNo)
         animeRepository.delete(anime)
@@ -315,9 +315,9 @@ class AnimeServiceImpl(
     }
 
     @Transactional
-    override fun recover(cmd: RecoverAnimeCommand, session: Session): ResultWrapper<Long> {
+    override fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
         cmd.validate()
-        session.validateAdmin()
+        sessionItem.validateAdmin()
 
         val agenda = agendaRepository
             .findByIdOrNull(cmd.agendaNo)?.takeIf { it.code == "ANIME-DEL" && it.status == "wait" }
@@ -364,7 +364,7 @@ class AnimeServiceImpl(
             }
         }
 
-        activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
+        activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
 
         animeDocumentService.update(anime)
         animeRepository.updateCaptionCount(anime.animeNo)
