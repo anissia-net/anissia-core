@@ -1,8 +1,8 @@
 package anissia.domain.anime.service
 
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.activePanel.model.NewActivePanelTextCommand
-import anissia.domain.activePanel.service.NewActivePanelText
+import anissia.domain.activePanel.model.AddTextActivePanelCommand
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.Anime
 import anissia.domain.anime.AnimeCaption
@@ -26,7 +26,7 @@ class RecoverAnimeService(
     private val animeRepository: AnimeRepository,
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val updateAnimeDocument: UpdateAnimeDocument,
-    private val newActivePanelText: NewActivePanelText,
+    private val activePanelService: ActivePanelService,
     private val agendaRepository: AgendaRepository,
     private val accountRepository: AccountRepository,
 ): RecoverAnime {
@@ -81,7 +81,7 @@ class RecoverAnimeService(
             }
         }
 
-        newActivePanelText.handle(NewActivePanelTextCommand("[${session.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
+        activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
 
         updateAnimeDocument.handle(anime)
         animeRepository.updateCaptionCount(anime.animeNo)

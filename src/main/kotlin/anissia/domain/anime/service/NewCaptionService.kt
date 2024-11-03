@@ -1,7 +1,7 @@
 package anissia.domain.anime.service
 
-import anissia.domain.activePanel.model.NewActivePanelTextCommand
-import anissia.domain.activePanel.service.NewActivePanelText
+import anissia.domain.activePanel.model.AddTextActivePanelCommand
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.anime.AnimeCaption
 import anissia.domain.anime.model.NewCaptionCommand
 import anissia.domain.anime.repository.AnimeCaptionRepository
@@ -17,7 +17,7 @@ class NewCaptionService(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeRepository: AnimeRepository,
     private val updateAnimeDocument: UpdateAnimeDocument,
-    private val newActivePanelText: NewActivePanelText
+    private val activePanelService: ActivePanelService
 ): NewCaption {
     @Transactional
     override fun handle(cmd: NewCaptionCommand, session: Session): ResultWrapper<Unit> {
@@ -36,7 +36,7 @@ class NewCaptionService(
         animeCaptionRepository.save(AnimeCaption(anime = anime, an = session.an))
         animeRepository.updateCaptionCount(animeNo)
         updateAnimeDocument.handle(anime)
-        newActivePanelText.handle(NewActivePanelTextCommand("[${session.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
+        activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
 
         return ResultWrapper.of("ok", "자막을 추가하였습니다.\n자막메뉴에서 확인해주세요.")
     }

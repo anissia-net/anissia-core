@@ -1,6 +1,6 @@
 package anissia.domain.activePanel.model
 
-class GetActivePanelListCommand(
+class GetListActivePanelCommand(
     val mode: String,
     val page: Int
 ) {

@@ -5,8 +5,7 @@ import anissia.domain.account.service.UserService
 
 class AccountUserTest(
     private val userService: UserService,
-    private val editUserPassword: EditUserPassword,
-    private val getUser: GetUser,
+
 ) {
 //    @GetMapping
 //    fun getUser(exchange: ServerWebExchange) =

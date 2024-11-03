@@ -1,6 +1,6 @@
 package anissia.domain.activePanel.model
 
-class NewActivePanelNoticeCommand(
+class DoCommandActivePanelCommand(
     var query: String = ""
 ) {
     val published get() = query.startsWith("!")

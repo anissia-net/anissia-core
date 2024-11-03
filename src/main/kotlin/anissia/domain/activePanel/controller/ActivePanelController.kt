@@ -1,10 +1,9 @@
 package anissia.domain.activePanel.controller
 
 import anissia.domain.activePanel.model.ActivePanelItem
-import anissia.domain.activePanel.model.GetActivePanelListCommand
-import anissia.domain.activePanel.model.NewActivePanelNoticeCommand
-import anissia.domain.activePanel.service.GetActivePanelList
-import anissia.domain.activePanel.service.NewActivePanelNotice
+import anissia.domain.activePanel.model.GetListActivePanelCommand
+import anissia.domain.activePanel.model.DoCommandActivePanelCommand
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page
@@ -14,14 +13,13 @@ import org.springframework.web.server.ServerWebExchange
 @RestController
 @RequestMapping("/active-panel")
 class ActivePanelController(
-    private val getActivePanelList: GetActivePanelList,
-    private val newActivePanelNotice: NewActivePanelNotice,
+    private val activePanelService: ActivePanelService,
 ) {
     @GetMapping("/list/{page:[\\d]+}")
-    fun getList(cmd: GetActivePanelListCommand, exchange: ServerWebExchange): ResultWrapper<Page<ActivePanelItem>> =
-        ResultWrapper.ok(getActivePanelList.handle(cmd, As.toSession(exchange)))
+    fun getList(cmd: GetListActivePanelCommand, exchange: ServerWebExchange): ResultWrapper<Page<ActivePanelItem>> =
+        ResultWrapper.ok(activePanelService.getList(cmd, As.toSession(exchange)))
 
-    @PostMapping("/notice")
-    fun newNotice(@RequestBody cmd: NewActivePanelNoticeCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-        newActivePanelNotice.handle(cmd, As.toSession(exchange))
+    @PostMapping("/command")
+    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
+        activePanelService.doCommand(cmd, As.toSession(exchange))
 }

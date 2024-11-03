@@ -1,7 +1,7 @@
 package anissia.domain.anime.service
 
-import anissia.domain.activePanel.model.NewActivePanelTextCommand
-import anissia.domain.activePanel.service.NewActivePanelText
+import anissia.domain.activePanel.model.AddTextActivePanelCommand
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.model.AnimeItem
@@ -21,7 +21,7 @@ class DeleteAnimeService(
     private val animeRepository: AnimeRepository,
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val updateAnimeDocument: UpdateAnimeDocument,
-    private val newActivePanelText: NewActivePanelText,
+    private val activePanelService: ActivePanelService,
     private val agendaRepository: AgendaRepository,
     private val getPassedDate: GetPassedDate,
 ): DeleteAnime {
@@ -41,7 +41,7 @@ class DeleteAnimeService(
             ?.also { agenda.data1 = As.toJsonString(AnimeItem(it, true)) }
             ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.")
 
-        newActivePanelText.handle(NewActivePanelTextCommand("[${session.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
+        activePanelService.addText(AddTextActivePanelCommand("[${session.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
 
         animeCaptionRepository.deleteByAnimeNo(animeNo)
         animeRepository.delete(anime)
