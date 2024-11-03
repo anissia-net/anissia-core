@@ -4,16 +4,10 @@ package test.domain.anime
 import anissia.domain.anime.service.*
 
 class AnimeTest(
-    private val getAnime: GetAnime,
+    private val animeService: AnimeService,
     private val getAnimeAutocorrect: GetAnimeAutocorrect,
-    private val getAnimeList: GetAnimeList,
-    private val getAnimeDelist: GetAnimeDelist,
     private val getGenres: GetGenres,
     private val getAnimeRank: GetAnimeRank,
-    private val deleteAnime: DeleteAnime,
-    private val newAnime: NewAnime,
-    private val editAnime: EditAnime,
-    private val recoverAnime: RecoverAnime,
 ) {
 //    @GetMapping("/list/{page:\\d+}")
 //    fun getAnimeList(cmd: GetAnimeListCommand, exchange: ServerWebExchange): ResultWrapper<Page<AnimeItem>> =

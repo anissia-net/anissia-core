@@ -1,6 +1,6 @@
 package anissia.domain.anime.model
 
-class GetCaptionRecentCommand(
+class GetRecentListCaptionCommand(
     val page: Int
 ) {
     fun validate() {

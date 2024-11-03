@@ -12,38 +12,33 @@ import org.springframework.web.server.ServerWebExchange
 @RestController
 @RequestMapping("/anime")
 class AnimeCaptionController(
-    private val getCaptionListByAnimeNo: GetCaptionListByAnimeNo,
-    private val getMyCaptionList: GetMyCaptionList,
-    private val getCaptionRecent: GetCaptionRecent,
-    private val newCaption: NewCaption,
-    private val deleteCaption: DeleteCaption,
-    private val editCaption: EditCaption
+    private val captionService: CaptionService,
 ) {
     @GetMapping("/caption/animeNo/{animeNo:\\d+}")
-    fun getCaptionListByAnimeNo(cmd: GetCaptionListByAnimeNoCommand, exchange: ServerWebExchange): ResultWrapper<List<CaptionItem>> =
-        ResultWrapper.ok(getCaptionListByAnimeNo.handle(cmd, As.toSession(exchange)))
+    fun getCaptionListByAnimeNo(cmd: GetListCaptionByAnimeNoCommand, exchange: ServerWebExchange): ResultWrapper<List<CaptionItem>> =
+        ResultWrapper.ok(captionService.getList(cmd, As.toSession(exchange)))
 
     @GetMapping("/caption/myList/{active}/{page}")
-    fun getMyCaptionList(cmd: GetMyCaptionListCommand, exchange: ServerWebExchange): ResultWrapper<Page<MyCaptionItem>> =
-        ResultWrapper.ok(getMyCaptionList.handle(cmd, As.toSession(exchange)))
+    fun getMyCaptionList(cmd: GetMyListCaptionCommand, exchange: ServerWebExchange): ResultWrapper<Page<MyCaptionItem>> =
+        ResultWrapper.ok(captionService.getList(cmd, As.toSession(exchange)))
 
     @GetMapping("/caption/recent")
     fun getCaptionRecent(exchange: ServerWebExchange): ResultWrapper<List<CaptionRecentItem>> =
-        ResultWrapper.ok(getCaptionRecent.handle(GetCaptionRecentCommand(page = -1)).content)
+        ResultWrapper.ok(captionService.getList(GetRecentListCaptionCommand(page = -1)).content)
 
     @GetMapping("/caption/recent/{page:\\d+}")
-    fun getCaptionRecent(cmd: GetCaptionRecentCommand, exchange: ServerWebExchange): ResultWrapper<Page<CaptionRecentItem>> =
-        ResultWrapper.ok(getCaptionRecent.handle(cmd))
+    fun getCaptionRecent(cmd: GetRecentListCaptionCommand, exchange: ServerWebExchange): ResultWrapper<Page<CaptionRecentItem>> =
+        ResultWrapper.ok(captionService.getList(cmd))
 
     @DeleteMapping("/caption/{animeNo}")
     fun deleteCaption(cmd: DeleteCaptionCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-        deleteCaption.handle(cmd, As.toSession(exchange))
+        captionService.delete(cmd, As.toSession(exchange))
 
     @PostMapping("/caption/{animeNo}")
-    fun newCaption(cmd: NewCaptionCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-        newCaption.handle(cmd, As.toSession(exchange))
+    fun newCaption(cmd: AddCaptionCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
+        captionService.add(cmd, As.toSession(exchange))
 
     @PutMapping("/caption/{animeNo}")
     fun editCaption(@RequestBody cmd: EditCaptionCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): ResultWrapper<Unit> =
-        editCaption.handle(cmd.apply { this.animeNo = animeNo }, As.toSession(exchange))
+        captionService.edit(cmd.apply { this.animeNo = animeNo }, As.toSession(exchange))
 }

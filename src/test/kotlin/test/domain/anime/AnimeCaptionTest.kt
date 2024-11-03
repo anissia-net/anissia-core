@@ -8,7 +8,7 @@ class AnimeCaptionTest(
     private val getMyCaptionList: GetMyCaptionList,
     private val getCaptionRecent: GetCaptionRecent,
     private val newCaption: NewCaption,
-    private val deleteCaption: DeleteCaption,
+    private val captionService: CaptionService,
     private val editCaption: EditCaption
 ) {
 //    @GetMapping("/caption/animeNo/{animeNo:\\d+}")

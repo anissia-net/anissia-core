@@ -1,5 +1,5 @@
 package anissia.domain.anime.model
 
-class GetAnimeAutocorrectCommand(
+class GetAutocorrectAnimeCommand(
     val q: String
 )

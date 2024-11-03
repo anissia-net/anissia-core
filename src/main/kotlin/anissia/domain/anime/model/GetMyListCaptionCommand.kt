@@ -1,6 +1,6 @@
 package anissia.domain.anime.model
 
-class GetMyCaptionListCommand(
+class GetMyListCaptionCommand(
     val active: Int,
     val page: Int
 ) {
