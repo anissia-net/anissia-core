@@ -24,7 +24,7 @@ interface AgendaRepository : JpaRepository<Agenda, Long> { //, QuerydslPredicate
 
     @Modifying
     @Query("DELETE FROM Agenda a WHERE a.code = 'ANIME-DEL' and a.updDt < :baseDateTime")
-    fun deletePaddingDeleteAnime(baseDateTime: OffsetDateTime = OffsetDateTime.now().minusDays(30)): Int
+    fun deleteDeletePadding(baseDateTime: OffsetDateTime = OffsetDateTime.now().minusDays(30)): Int
 
     @EntityGraph(attributePaths = ["polls"])
     fun findWithPollsByAgendaNoAndCode(agendaNo: Long, code: String): Agenda?

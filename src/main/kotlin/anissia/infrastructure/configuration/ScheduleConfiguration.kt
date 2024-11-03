@@ -3,7 +3,7 @@ package anissia.infrastructure.configuration
 import anissia.domain.account.repository.AccountRecoverAuthRepository
 import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.activePanel.repository.ActivePanelRepository
-import anissia.domain.agenda.service.DeletePaddingDeleteAnime
+import anissia.domain.agenda.service.AgendaService
 import anissia.domain.anime.service.UpdateAnimeRank
 import anissia.domain.session.JwtKeyPair
 import anissia.domain.session.infrastructure.JwtService
@@ -24,7 +24,7 @@ import org.springframework.scheduling.annotation.Scheduled
 class ScheduleConfiguration(
     private val jwtService: JwtService,
     private val updateAnimeRank: UpdateAnimeRank,
-    private val deletePaddingDeleteAnime: DeletePaddingDeleteAnime,
+    private val agendaService: AgendaService,
     // 아래 repository 는 도메인화 작업 필요함.
     private val jwtKeyPairRepository: JwtKeyPairRepository,
     private val activePanelRepository: ActivePanelRepository,
@@ -68,7 +68,7 @@ class ScheduleConfiguration(
     // 삭제 예정 애니메이션 삭제
     // 매일 20시에 실행
     @Scheduled(cron = "0 0 20 * * ?")
-    fun deletePaddingDeleteAnime() = deletePaddingDeleteAnime.handle()
+    fun deletePaddingDeleteAnime() = agendaService.deleteDeletePaddingAnime()
 
     // 오래된 활동이력 삭제
     // 매일 10시에 실행

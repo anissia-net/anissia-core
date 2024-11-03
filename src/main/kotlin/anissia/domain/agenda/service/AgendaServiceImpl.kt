@@ -5,13 +5,13 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class DeletePaddingDeleteAnimeService(
+class AgendaServiceImpl(
     private val agendaRepository: AgendaRepository,
-): DeletePaddingDeleteAnime {
+): AgendaService {
 
     @Transactional
-    override fun handle() {
-        agendaRepository.deletePaddingDeleteAnime()
+    override fun deleteDeletePaddingAnime() {
+        agendaRepository.deleteDeletePadding()
     }
 
 }
