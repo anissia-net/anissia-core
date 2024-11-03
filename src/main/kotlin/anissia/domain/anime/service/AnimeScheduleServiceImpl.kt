@@ -1,20 +1,39 @@
 package anissia.domain.anime.service
 
+import anissia.domain.anime.model.AnimeScheduleItem
 import anissia.domain.anime.model.GetScheduleCommand
 import anissia.domain.anime.model.GetScheduleSvgCommand
+import anissia.domain.anime.repository.AnimeRepository
+import anissia.infrastructure.common.As
+import anissia.infrastructure.service.GoogleAnalyticsProxyService
+import me.saro.kit.service.CacheStore
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebExchange
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
-class GetScheduleSvgService(
-    private val getSchedule: GetSchedule
-): GetScheduleSvg {
+class AnimeScheduleServiceImpl(
+    private val animeRepository: AnimeRepository,
+    private val googleAnalyticsProxyService: GoogleAnalyticsProxyService,
+): AnimeScheduleService {
 
+    private val scheduleCacheStore = CacheStore<String, List<AnimeScheduleItem>>((5L * 60000L))
     private val svgDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
 
-    override fun handle(cmd: GetScheduleSvgCommand, exchange: ServerWebExchange): String {
+    override fun get(cmd: GetScheduleCommand, exchange: ServerWebExchange): List<AnimeScheduleItem> {
+        cmd.validate()
+        return if (cmd.useCache) {
+            scheduleCacheStore.find(cmd.week) { getScheduleNotCache(cmd.week) }
+                .also { googleAnalyticsProxyService.send("/api/anime/schedule/${cmd.week}", exchange) }
+        } else {
+            // 캐시 없는 호출은 관리자만 가능
+            As.toSession(exchange).validateAdmin()
+            getScheduleNotCache(cmd.week)
+        }
+    }
+
+    override fun get(cmd: GetScheduleSvgCommand, exchange: ServerWebExchange): String {
         cmd.validate()
         val now = OffsetDateTime.now()
         val color = cmd.color
@@ -24,7 +43,7 @@ class GetScheduleSvgService(
         val ymdColor = color.substring(18, 24)
         val listBgColor = color.substring(24, 30)
         val listColor = color.substring(30, 36)
-        val schedule = getSchedule.handle(GetScheduleCommand("${now.dayOfWeek.value % 7}", true), exchange)
+        val schedule = get(GetScheduleCommand("${now.dayOfWeek.value % 7}", true), exchange)
         val width = cmd.width
         val height = schedule.size * 20 + 50
         return """<?xml version="1.0" encoding="utf-8"?>
@@ -40,4 +59,17 @@ ${schedule.joinToString("\n") { """<tspan x="2" dy="20"><![CDATA[${it.time} ${it
 </text>
 </svg>"""
     }
+
+    private fun getScheduleNotCache(week: String): List<AnimeScheduleItem> =
+        animeRepository
+            .findAllSchedule(week)
+            .map { AnimeScheduleItem(it) }
+            .run {
+                when(week) {
+                    "7" -> sortedByDescending { if (it.time != "") it.time else "9999" }
+                    "8" -> sortedBy { if (it.time != "") it.time else "9999" }
+                    else -> sortedBy { it.time }
+                }
+            }
+
 }

@@ -1,5 +1,6 @@
 package anissia.domain.anime.service
 
+import anissia.domain.account.Account
 import anissia.domain.activePanel.model.AddTextActivePanelCommand
 import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.anime.AnimeCaption
@@ -117,5 +118,11 @@ class CaptionServiceImpl(
                 ResultWrapper.ok()
             }
             ?: ResultWrapper.fail("이미 삭제되었습니다.")
+    }
+
+    @Transactional
+    override fun delete(account: Account, session: Session): Int {
+        session.validateRoot()
+        return animeCaptionRepository.deleteByAn(account.an)
     }
 }

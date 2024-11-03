@@ -1,5 +1,6 @@
 package anissia.domain.anime.service
 
+import anissia.domain.account.Account
 import anissia.domain.anime.model.*
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
@@ -12,4 +13,5 @@ interface CaptionService {
     fun add(cmd: AddCaptionCommand, session: Session): ResultWrapper<Unit>
     fun edit(cmd: EditCaptionCommand, session: Session): ResultWrapper<Unit>
     fun delete(cmd: DeleteCaptionCommand, session: Session): ResultWrapper<Unit>
+    fun delete(account: Account, session: Session): Int
 }

@@ -27,24 +27,16 @@ interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key>
     @Query("DELETE FROM AnimeCaption a WHERE a.anime.animeNo = :animeNo")
     fun deleteByAnimeNo(animeNo: Long): Int
 
+    @Modifying
+    @Query("DELETE FROM AnimeCaption a WHERE a.an = :an")
+    fun deleteByAn(an: Long): Int
+
     //@EntityGraph(attributePaths = ["account"])
     @Query("SELECT a.name FROM Account a WHERE a.an in (SELECT b.an FROM AnimeCaption b where b.anime.animeNo = :animeNo)")
     fun findAllTranslatorByAnimeNo(animeNo: Long): List<String>
 
     fun findAllByAn(an: Long): List<AnimeCaption>
 
-    //@EntityGraph(attributePaths = ["account", "anime"])
-    //fun findTop20ByUpdDtBeforeAndWebsiteNotOrderByUpdDtDesc(updDt: OffsetDateTime = OffsetDateTime.now().plusMinutes(10), website: String = ""): List<AnimeCaption>
-
     @EntityGraph(attributePaths = ["account", "anime"])
     fun findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(pageable: Pageable, updDt: OffsetDateTime = OffsetDateTime.now().minusDays(90), website: String = ""): Page<AnimeCaption>
-
-//
-//    @EntityGraph(attributePaths = ["anime"])
-//    fun findAllWithAnimeByUnOrderByUpdDtDesc(un: Long, pageable: Pageable): Page<AnimeCaption>
-//
-//    fun findByAnAndUn(an: Long, un: Long): AnimeCaption?
-//
-//    @EntityGraph(attributePaths = ["anime"])
-//    fun findWithAnimeByAnAndUn(an: Long, un: Long): AnimeCaption?
 }

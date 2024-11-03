@@ -1,12 +1,10 @@
 package test.domain.anime
 
 
-import anissia.domain.anime.service.GetSchedule
-import anissia.domain.anime.service.GetScheduleSvg
+import anissia.domain.anime.service.AnimeScheduleService
 
 class AnimeScheduleTest(
-    private val getSchedule: GetSchedule,
-    private val getScheduleSvg: GetScheduleSvg,
+    private val animeScheduleService: AnimeScheduleService,
 ) {
 //    @GetMapping("/schedule/{week:[0-8]}")
 //    fun getSchedule(cmd: GetScheduleCommand, exchange: ServerWebExchange): ResultWrapper<List<AnimeScheduleItem>> =

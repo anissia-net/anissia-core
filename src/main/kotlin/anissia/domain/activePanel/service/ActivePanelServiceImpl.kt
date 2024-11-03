@@ -4,11 +4,12 @@ import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.ActivePanel
 import anissia.domain.activePanel.model.ActivePanelItem
-import anissia.domain.activePanel.model.GetListActivePanelCommand
-import anissia.domain.activePanel.model.DoCommandActivePanelCommand
 import anissia.domain.activePanel.model.AddTextActivePanelCommand
+import anissia.domain.activePanel.model.DoCommandActivePanelCommand
+import anissia.domain.activePanel.model.GetListActivePanelCommand
 import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.anime.service.AnimeDocumentService
+import anissia.domain.anime.service.CaptionService
 import anissia.domain.session.model.Session
 import anissia.infrastructure.common.As
 import anissia.shared.ResultWrapper
@@ -22,6 +23,7 @@ class ActivePanelServiceImpl(
     private val activePanelRepository: ActivePanelRepository,
     private val accountRepository: AccountRepository,
     private val animeDocumentService: AnimeDocumentService,
+    private val captionService: CaptionService
 ): ActivePanelService {
     override fun getList(cmd: GetListActivePanelCommand, session: Session): Page<ActivePanelItem> {
         cmd.validate()
@@ -49,8 +51,9 @@ class ActivePanelServiceImpl(
                         // remove permission
                         user.roles.removeIf { it == AccountRole.TRANSLATOR }
                         accountRepository.save(user)
-                        //adminService.deleteCaption(user)
+                        val deleteCount = captionService.delete(user, session)
                         addText(AddTextActivePanelCommand("[${user.name}]님의 자막제작자 권한이 해지되었습니다."), null)
+                        addText(AddTextActivePanelCommand("[${user.name}]님의 모든 작품 ${deleteCount}개가 삭제되었습니다."), null)
                     } else {
                         return ResultWrapper.fail("${user.name}님은 자막제작자 권한을 가지고 있지 않습니다.")
                     }
