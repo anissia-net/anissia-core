@@ -2,7 +2,7 @@ package anissia.domain.account.model
 
 import anissia.infrastructure.common.As
 
-class RecoverCommand(
+class RequestRecoverPasswordCommand(
     var email: String = "",
     var name: String = ""
 ) {

@@ -1,6 +1,6 @@
 package anissia.domain.account.model
 
-class RecoverValidationCommand(
+class CompleteRegisterCommand(
     var absoluteToken: String
 ) {
     /** token number */

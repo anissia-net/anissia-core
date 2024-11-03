@@ -1,6 +1,8 @@
 package anissia.domain.account.service
 
+import anissia.domain.account.model.AccountUserItem
 import anissia.domain.account.model.EditUserNameCommand
+import anissia.domain.account.model.EditUserPasswordCommand
 import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.model.NewActivePanelTextCommand
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
 
 @Service
-class EditUserNameService(
+class UserServiceImpl(
     private val bCryptService: BCryptService,
     private val accountRepository: AccountRepository,
     private val accountBanNameRepository: AccountBanNameRepository,
@@ -30,12 +32,28 @@ class EditUserNameService(
     private val newActivePanelText: NewActivePanelText,
     private val updateAnimeDocument: UpdateAnimeDocument,
     private val animeCaptionRepository: AnimeCaptionRepository,
-): EditUserName {
+): UserService {
 
     val codeUpdateName = "AC-UPD-NAME"
 
+    override fun get(session: Session): AccountUserItem =
+        AccountUserItem.cast(accountRepository.findWithRolesByAn(session.an)!!)
+
+    override fun editPassword(cmd: EditUserPasswordCommand, session: Session): ResultWrapper<Unit> {
+        cmd.validate()
+        session.validateLogin()
+
+        val account = accountRepository.findByIdOrNull(session.an)
+            ?.takeIf { bCryptService.matches(it.password, cmd.oldPassword) }
+            ?: return ResultWrapper.fail("기존 암호가 일치하지 않습니다.")
+
+        account.password = bCryptService.encode(cmd.newPassword)
+        accountRepository.save(account)
+        return ResultWrapper.ok()
+    }
+
     @Transactional
-    override fun handle(cmd: EditUserNameCommand, session: Session): ResultWrapper<Unit> {
+    override fun editName(cmd: EditUserNameCommand, session: Session): ResultWrapper<Unit> {
         cmd.validate()
         session.validateLogin()
 

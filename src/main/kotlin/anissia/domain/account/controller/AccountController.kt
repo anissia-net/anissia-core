@@ -2,7 +2,8 @@ package anissia.domain.account.controller
 
 
 import anissia.domain.account.model.*
-import anissia.domain.account.service.*
+import anissia.domain.account.service.RecoverPasswordService
+import anissia.domain.account.service.RegisterServiceImpl
 import anissia.infrastructure.common.As
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
@@ -10,29 +11,26 @@ import org.springframework.web.server.ServerWebExchange
 @RestController
 @RequestMapping("/account")
 class AccountController(
-    private val recover: Recover,
-    private val recoverPassword: RecoverPassword,
-    private val recoverValidation: RecoverValidation,
-    private val register: Register,
-    private val registerValidation: RegisterValidation,
+    private val recover: RecoverPasswordService,
+    private val register: RegisterServiceImpl,
 ) {
     @PostMapping("/register")
-    fun register(@RequestBody cmd: RegisterCommand, exchange: ServerWebExchange) =
-        register.handle(cmd, As.toSession(exchange))
+    fun register(@RequestBody cmd: RequestRegisterCommand, exchange: ServerWebExchange) =
+        register.request(cmd, As.toSession(exchange))
 
     @PutMapping("/register")
-    fun registerValidation(@RequestBody cmd: RegisterValidationCommand, exchange: ServerWebExchange) =
-        registerValidation.handle(cmd)
+    fun registerValidation(@RequestBody cmd: CompleteRegisterCommand, exchange: ServerWebExchange) =
+        register.complete(cmd)
 
     @PostMapping("/recover")
-    fun recover(@RequestBody cmd: RecoverCommand, exchange: ServerWebExchange) =
-        recover.handle(cmd, As.toSession(exchange))
+    fun recover(@RequestBody cmd: RequestRecoverPasswordCommand, exchange: ServerWebExchange) =
+        recover.request(cmd, As.toSession(exchange))
 
     @PutMapping("/recover")
-    fun recoverValidation(@RequestBody cmd: RecoverValidationCommand, exchange: ServerWebExchange) =
-        recoverValidation.handle(cmd)
+    fun recoverValidation(@RequestBody cmd: ValidateRecoverPasswordCommand, exchange: ServerWebExchange) =
+        recover.validate(cmd)
 
     @PutMapping("/recover/password")
-    fun recoverPassword(@RequestBody cmd: RecoverPasswordCommand, exchange: ServerWebExchange) =
-        recoverPassword.handle(cmd)
+    fun recoverPassword(@RequestBody cmd: CompleteRecoverPasswordCommand, exchange: ServerWebExchange) =
+        recover.complete(cmd)
 }

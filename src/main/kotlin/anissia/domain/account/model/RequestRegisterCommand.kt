@@ -2,7 +2,7 @@ package anissia.domain.account.model
 
 import anissia.infrastructure.common.As
 
-class RegisterCommand(
+class RequestRegisterCommand(
     var email: String = "",
     var password: String = "",
     var name: String = ""

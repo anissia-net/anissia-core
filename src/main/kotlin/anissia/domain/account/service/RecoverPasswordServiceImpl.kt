@@ -2,12 +2,15 @@ package anissia.domain.account.service
 
 import anissia.domain.account.Account
 import anissia.domain.account.AccountRecoverAuth
-import anissia.domain.account.model.RecoverCommand
+import anissia.domain.account.model.CompleteRecoverPasswordCommand
+import anissia.domain.account.model.RequestRecoverPasswordCommand
+import anissia.domain.account.model.ValidateRecoverPasswordCommand
 import anissia.domain.account.repository.AccountRecoverAuthRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.session.model.Session
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService
+import anissia.infrastructure.service.BCryptService
 import anissia.infrastructure.service.EmailService
 import anissia.shared.ResultWrapper
 import me.saro.kit.TextKit
@@ -18,15 +21,16 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
-class RecoverService(
+class RecoverPasswordServiceImpl(
     private val accountRecoverAuthRepository: AccountRecoverAuthRepository,
     private val accountRepository: AccountRepository,
     @Value("\${host}") private val host: String,
     private val asyncService: AsyncService,
     private val emailService: EmailService,
-): Recover {
+    private val bCryptService: BCryptService,
+): RecoverPasswordService {
 
-    private val log = As.logger<RecoverService>()
+    private val log = As.logger<RecoverPasswordServiceImpl>()
     private val recoverAuthHtml = As.getResource("/email/account-recover-auth.html").readText()
     private val emailDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초")
 
@@ -35,7 +39,7 @@ class RecoverService(
     }
 
     @Transactional
-    override fun handle(cmd: RecoverCommand, session: Session): ResultWrapper<Unit> {
+    override fun request(cmd: RequestRecoverPasswordCommand, session: Session): ResultWrapper<Unit> {
         cmd.validate()
 
         var account: Account = accountRepository.findByEmailAndName(cmd.email, cmd.name)
@@ -70,6 +74,32 @@ class RecoverService(
         }
 
         return ResultWrapper.ok()
+    }
+
+
+    @Transactional
+    override fun complete(cmd: CompleteRecoverPasswordCommand): ResultWrapper<Unit> {
+        cmd.validate()
+
+        val auth = accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
+            ?: return ResultWrapper.fail("이메일 인증이 만료되었습니다.")
+
+        val account = auth.account
+            ?: return ResultWrapper.fail("해당 메일인증에서 계정정보를 찾을 수 없습니다.")
+
+        accountRecoverAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() })
+        accountRepository.save(account.apply { password = bCryptService.encode(cmd.password) })
+
+        return ResultWrapper.ok()
+    }
+
+    @Transactional
+    override fun validate(cmd: ValidateRecoverPasswordCommand): ResultWrapper<Unit> {
+        cmd.validate()
+
+        return accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
+            ?.let { ResultWrapper.ok() }
+            ?: ResultWrapper.fail("")
     }
 
 }
