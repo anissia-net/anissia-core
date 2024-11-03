@@ -14,7 +14,7 @@ interface AnimeHitRepository : JpaRepository<AnimeHit, Long> { //, QuerydslPredi
     @Query(
         """
         SELECT
-            new anissia.domain.anime.core.AnimeHitHour(a.hour, a.animeNo, count(distinct a.ip))
+            new anissia.domain.anime.AnimeHitHour(a.hour, a.animeNo, count(distinct a.ip))
         FROM AnimeHit a
         WHERE a.hour < :hour
         GROUP BY a.hour, a.animeNo

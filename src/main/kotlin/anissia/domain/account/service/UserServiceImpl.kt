@@ -6,7 +6,7 @@ import anissia.domain.account.model.AccountUserItem
 import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
-import anissia.domain.activePanel.service.ActivePanelService
+import anissia.domain.activePanel.service.ActivePanelLogService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.command.UpdateAnimeDocumentCommand
@@ -29,7 +29,7 @@ class UserServiceImpl(
     private val accountBanNameRepository: AccountBanNameRepository,
     private val translatorApplyService: TranslatorApplyService,
     private val agendaRepository: AgendaRepository,
-    private val activePanelService: ActivePanelService,
+    private val activePanelLogService: ActivePanelLogService,
     private val animeDocumentService: AnimeDocumentService,
     private val animeCaptionRepository: AnimeCaptionRepository,
 ): UserService {
@@ -98,7 +98,7 @@ class UserServiceImpl(
             animeCaptionRepository.findAllByAn(sessionItem.an).mapNotNull { it.anime?.animeNo }.forEach{
                 animeDocumentService.update(UpdateAnimeDocumentCommand(it))
             }
-            activePanelService.addText(AddTextActivePanelCommand("운영진 [$oldName]님의 닉네임이 [$newName]님으로 변경되었습니다."), null)
+            activePanelLogService.addText(AddTextActivePanelCommand("운영진 [$oldName]님의 닉네임이 [$newName]님으로 변경되었습니다."), null)
         }
 
         return ResultWrapper.ok()

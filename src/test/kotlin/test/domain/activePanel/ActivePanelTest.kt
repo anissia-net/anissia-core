@@ -1,11 +1,11 @@
 package test.domain.activePanel
 
-import anissia.domain.activePanel.service.ActivePanelService
+import anissia.domain.activePanel.service.ActivePanelLogService
 
 class ActivePanelTest(
-    private val activePanelService: ActivePanelService,
+    private val activePanelLogService: ActivePanelLogService,
 
-) {
+    ) {
 //    @GetMapping("/list/{page:[\\d]+}")
 //    fun getList(cmd: GetActivePanelListCommand, exchange: ServerWebExchange): ResultWrapper<Page<ActivePanelItem>> =
 //        ResultWrapper.ok(getActivePanelList.handle(cmd, As.toSession(exchange)))

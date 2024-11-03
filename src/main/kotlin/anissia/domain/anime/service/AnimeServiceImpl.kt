@@ -4,7 +4,7 @@ import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.ActivePanel
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.repository.ActivePanelRepository
-import anissia.domain.activePanel.service.ActivePanelService
+import anissia.domain.activePanel.service.ActivePanelLogService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.Anime
@@ -38,7 +38,7 @@ class AnimeServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeDocumentService: AnimeDocumentService,
     private val animeRankService: AnimeRankService,
-    private val activePanelService: ActivePanelService,
+    private val activePanelLogService: ActivePanelLogService,
     private val agendaRepository: AgendaRepository,
     private val translatorApplyService: TranslatorApplyService,
     private val animeGenreRepository: AnimeGenreRepository,
@@ -304,7 +304,7 @@ class AnimeServiceImpl(
             ?.also { agenda.data1 = As.toJsonString(AnimeItem(it, true)) }
             ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.")
 
-        activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
+        activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
 
         animeCaptionRepository.deleteByAnimeNo(animeNo)
         animeRepository.delete(anime)
@@ -364,7 +364,7 @@ class AnimeServiceImpl(
             }
         }
 
-        activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
+        activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
 
         animeDocumentService.update(anime)
         animeRepository.updateCaptionCount(anime.animeNo)

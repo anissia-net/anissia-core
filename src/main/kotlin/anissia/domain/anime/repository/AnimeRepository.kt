@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query
 
 interface AnimeRepository : JpaRepository<Anime, Long> { //, QuerydslPredicateExecutor<Anime> {
 
-    @Query("SELECT A FROM Anime A WHERE A.status <> anissia.domain.anime.core.AnimeStatus.END AND A.week = :week")
+    @Query("SELECT A FROM Anime A WHERE A.status <> anissia.domain.anime.AnimeStatus.END AND A.week = :week")
     fun findAllSchedule(week: String): List<Anime>
 
     fun findAllByOrderByAnimeNoDesc(pageable: Pageable): Page<Anime>

@@ -2,7 +2,7 @@ package anissia.domain.anime.service
 
 import anissia.domain.account.Account
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
-import anissia.domain.activePanel.service.ActivePanelService
+import anissia.domain.activePanel.service.ActivePanelLogService
 import anissia.domain.anime.AnimeCaption
 import anissia.domain.anime.command.*
 import anissia.domain.anime.model.CaptionItem
@@ -25,7 +25,7 @@ class CaptionServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeRepository: AnimeRepository,
     private val animeDocumentService: AnimeDocumentService,
-    private val activePanelService: ActivePanelService,
+    private val activePanelLogService: ActivePanelLogService,
     private val animeRankService: AnimeRankService,
 ): CaptionService {
 
@@ -79,7 +79,7 @@ class CaptionServiceImpl(
         animeCaptionRepository.save(AnimeCaption(anime = anime, an = sessionItem.an))
         animeRepository.updateCaptionCount(animeNo)
         animeDocumentService.update(anime)
-        activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
+        activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
 
         return ResultWrapper.of("ok", "자막을 추가하였습니다.\n자막메뉴에서 확인해주세요.")
     }
@@ -117,7 +117,7 @@ class CaptionServiceImpl(
                 animeCaptionRepository.delete(this)
                 animeRepository.updateCaptionCount(animeNo)
                 animeDocumentService.update(UpdateAnimeDocumentCommand(animeNo))
-                activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
+                activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
                 ResultWrapper.ok()
             }
             ?: ResultWrapper.fail("이미 삭제되었습니다.")

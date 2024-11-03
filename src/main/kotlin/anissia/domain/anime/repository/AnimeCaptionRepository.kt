@@ -16,11 +16,11 @@ interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key>
     fun findAllWithAccountByAnimeNoOrderByUpdDtDesc(animeNo: Long): List<AnimeCaption>
 
     @EntityGraph(attributePaths = ["anime"])
-    @Query("SELECT a FROM AnimeCaption a JOIN a.anime b WHERE a.an = :an AND b.status <> anissia.domain.anime.core.AnimeStatus.END ORDER BY a.updDt DESC")
+    @Query("SELECT a FROM AnimeCaption a JOIN a.anime b WHERE a.an = :an AND b.status <> anissia.domain.anime.AnimeStatus.END ORDER BY a.updDt DESC")
     fun findAllWithAnimeForAdminCaptionActiveList(an: Long, pageable: Pageable): Page<AnimeCaption>
 
     @EntityGraph(attributePaths = ["anime"])
-    @Query("SELECT a FROM AnimeCaption a JOIN a.anime b WHERE a.an = :an AND b.status = anissia.domain.anime.core.AnimeStatus.END ORDER BY a.updDt DESC")
+    @Query("SELECT a FROM AnimeCaption a JOIN a.anime b WHERE a.an = :an AND b.status = anissia.domain.anime.AnimeStatus.END ORDER BY a.updDt DESC")
     fun findAllWithAnimeForAdminCaptionEndList(an: Long, pageable: Pageable): Page<AnimeCaption>
 
     @Modifying

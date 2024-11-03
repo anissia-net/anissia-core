@@ -3,7 +3,7 @@ package anissia.domain.translator.service
 import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
-import anissia.domain.activePanel.service.ActivePanelService
+import anissia.domain.activePanel.service.ActivePanelLogService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.AgendaPoll
 import anissia.domain.agenda.repository.AgendaPollRepository
@@ -29,7 +29,7 @@ class TranslatorApplyServiceImpl(
     private val agendaRepository: AgendaRepository,
     private val agendaPollRepository: AgendaPollRepository,
     private val accountRepository: AccountRepository,
-    private val activePanelService: ActivePanelService,
+    private val activePanelLogService: ActivePanelLogService,
 ): TranslatorApplyService {
     override fun get(cmd: GetApplyCommand): TranslatorApplyItem {
         cmd.validate()
@@ -123,7 +123,7 @@ class TranslatorApplyServiceImpl(
             val account = accountRepository.findByIdOrNull(app.an)!!
             account.roles.add(AccountRole.TRANSLATOR)
             accountRepository.save(account)
-            activePanelService.addText(AddTextActivePanelCommand("[${account.name}]님이 자막제작자로 참여하였습니다."), null)
+            activePanelLogService.addText(AddTextActivePanelCommand("[${account.name}]님이 자막제작자로 참여하였습니다."), null)
             agendaPollRepository.save(toApplySystemPoll(app, "조건이 충족되어 권한이 부여되었습니다."))
         } else if (vote <= -3) {
             app.status = "DONE"
