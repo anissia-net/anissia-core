@@ -1,15 +1,15 @@
 package anissia.domain.account.service
 
 import anissia.domain.account.model.AccountUserItem
-import anissia.domain.account.model.EditUserNameCommand
-import anissia.domain.account.model.EditUserPasswordCommand
+import anissia.domain.account.command.EditUserNameCommand
+import anissia.domain.account.command.EditUserPasswordCommand
 import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.activePanel.model.AddTextActivePanelCommand
+import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
-import anissia.domain.anime.model.UpdateAnimeDocumentCommand
+import anissia.domain.anime.command.UpdateAnimeDocumentCommand
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.session.model.Session

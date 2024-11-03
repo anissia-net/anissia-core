@@ -1,5 +1,9 @@
 package anissia.domain.translator.controller
 
+import anissia.domain.translator.command.GetApplyCommand
+import anissia.domain.translator.command.GetApplyListCommand
+import anissia.domain.translator.command.NewApplyCommand
+import anissia.domain.translator.command.NewApplyPollCommand
 import anissia.domain.translator.model.*
 import anissia.domain.translator.service.*
 import anissia.infrastructure.common.As

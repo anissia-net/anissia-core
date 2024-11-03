@@ -2,7 +2,7 @@ package anissia.domain.anime.service
 
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.ActivePanel
-import anissia.domain.activePanel.model.AddTextActivePanelCommand
+import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
@@ -10,6 +10,7 @@ import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.Anime
 import anissia.domain.anime.AnimeCaption
 import anissia.domain.anime.AnimeStatus
+import anissia.domain.anime.command.*
 import anissia.domain.anime.model.*
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeGenreRepository

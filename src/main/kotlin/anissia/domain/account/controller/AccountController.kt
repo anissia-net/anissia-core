@@ -1,7 +1,7 @@
 package anissia.domain.account.controller
 
 
-import anissia.domain.account.model.*
+import anissia.domain.account.command.*
 import anissia.domain.account.service.RecoverPasswordService
 import anissia.domain.account.service.RegisterServiceImpl
 import anissia.infrastructure.common.As

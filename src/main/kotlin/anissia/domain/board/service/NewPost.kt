@@ -1,6 +1,6 @@
 package anissia.domain.board.service
 
-import anissia.domain.board.model.NewPostCommand
+import anissia.domain.board.command.NewPostCommand
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 

@@ -2,7 +2,7 @@ package anissia.domain.board.service
 
 import anissia.domain.activePanel.ActivePanel
 import anissia.domain.activePanel.repository.ActivePanelRepository
-import anissia.domain.board.model.DeletePostCommand
+import anissia.domain.board.command.DeletePostCommand
 import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.Session

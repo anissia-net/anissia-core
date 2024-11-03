@@ -1,7 +1,7 @@
 package anissia.domain.anime.service
 
-import anissia.domain.anime.model.GetAnimeRankCommand
-import anissia.domain.anime.model.HitAnimeCommand
+import anissia.domain.anime.command.GetAnimeRankCommand
+import anissia.domain.anime.command.HitAnimeCommand
 import anissia.domain.session.model.Session
 
 interface AnimeRankService {

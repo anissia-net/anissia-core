@@ -1,8 +1,8 @@
 package anissia.domain.account.service
 
-import anissia.domain.account.model.CompleteRecoverPasswordCommand
-import anissia.domain.account.model.RequestRecoverPasswordCommand
-import anissia.domain.account.model.ValidateRecoverPasswordCommand
+import anissia.domain.account.command.CompleteRecoverPasswordCommand
+import anissia.domain.account.command.RequestRecoverPasswordCommand
+import anissia.domain.account.command.ValidateRecoverPasswordCommand
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 

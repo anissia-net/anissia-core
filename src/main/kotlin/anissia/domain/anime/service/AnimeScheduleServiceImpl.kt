@@ -1,8 +1,8 @@
 package anissia.domain.anime.service
 
 import anissia.domain.anime.model.AnimeScheduleItem
-import anissia.domain.anime.model.GetScheduleCommand
-import anissia.domain.anime.model.GetScheduleSvgCommand
+import anissia.domain.anime.command.GetScheduleCommand
+import anissia.domain.anime.command.GetScheduleSvgCommand
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.GoogleAnalyticsProxyService

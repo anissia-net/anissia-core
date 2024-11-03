@@ -2,7 +2,7 @@ package anissia.domain.board.service
 
 import anissia.domain.board.BoardPost
 import anissia.domain.board.BoardTopic
-import anissia.domain.board.model.NewTopicCommand
+import anissia.domain.board.command.NewTopicCommand
 import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTickerRepository
 import anissia.domain.board.repository.BoardTopicRepository

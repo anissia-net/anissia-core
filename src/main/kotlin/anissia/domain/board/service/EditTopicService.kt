@@ -1,6 +1,6 @@
 package anissia.domain.board.service
 
-import anissia.domain.board.model.EditTopicCommand
+import anissia.domain.board.command.EditTopicCommand
 import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.Session

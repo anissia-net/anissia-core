@@ -1,7 +1,7 @@
 package anissia.domain.account.service
 
-import anissia.domain.account.model.CompleteRegisterCommand
-import anissia.domain.account.model.RequestRegisterCommand
+import anissia.domain.account.command.CompleteRegisterCommand
+import anissia.domain.account.command.RequestRegisterCommand
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 

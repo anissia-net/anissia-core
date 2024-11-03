@@ -1,8 +1,8 @@
 package anissia.domain.account.service
 
 import anissia.domain.account.model.AccountUserItem
-import anissia.domain.account.model.EditUserNameCommand
-import anissia.domain.account.model.EditUserPasswordCommand
+import anissia.domain.account.command.EditUserNameCommand
+import anissia.domain.account.command.EditUserPasswordCommand
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper
 

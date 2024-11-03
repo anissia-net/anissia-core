@@ -1,7 +1,7 @@
 package anissia.domain.anime.service
 
 import anissia.domain.anime.Anime
-import anissia.domain.anime.model.UpdateAnimeDocumentCommand
+import anissia.domain.anime.command.UpdateAnimeDocumentCommand
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeDocumentRepository
 import anissia.domain.anime.repository.AnimeRepository

@@ -2,7 +2,7 @@ package anissia.domain.translator.service
 
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.translator.infrastructure.ApplyValue
-import anissia.domain.translator.model.GetApplyCommand
+import anissia.domain.translator.command.GetApplyCommand
 import anissia.domain.translator.model.TranslatorApplyItem
 import org.springframework.stereotype.Service
 

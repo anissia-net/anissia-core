@@ -1,8 +1,8 @@
 package anissia.domain.account.controller
 
 
-import anissia.domain.account.model.EditUserNameCommand
-import anissia.domain.account.model.EditUserPasswordCommand
+import anissia.domain.account.command.EditUserNameCommand
+import anissia.domain.account.command.EditUserPasswordCommand
 import anissia.domain.account.service.UserService
 import anissia.infrastructure.common.As
 import org.springframework.web.bind.annotation.*

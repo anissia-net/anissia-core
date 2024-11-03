@@ -2,7 +2,7 @@ package anissia.domain.translator.service
 
 import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.activePanel.model.AddTextActivePanelCommand
+import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.AgendaPoll
@@ -10,7 +10,7 @@ import anissia.domain.agenda.repository.AgendaPollRepository
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.session.model.Session
 import anissia.domain.translator.infrastructure.ApplyValue
-import anissia.domain.translator.model.NewApplyPollCommand
+import anissia.domain.translator.command.NewApplyPollCommand
 import anissia.shared.ResultWrapper
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

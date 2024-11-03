@@ -1,7 +1,7 @@
 package anissia.domain.session.service
 
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.session.model.GetLoginInfoItemCommand
+import anissia.domain.session.command.GetLoginInfoItemCommand
 import anissia.domain.session.model.LoginInfoItem
 import anissia.domain.session.model.Session
 import anissia.shared.ResultWrapper

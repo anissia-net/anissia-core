@@ -1,7 +1,7 @@
 package anissia.domain.session.controller
 
-import anissia.domain.session.model.DoLoginCommand
-import anissia.domain.session.model.DoTokenLoginCommand
+import anissia.domain.session.command.DoLoginCommand
+import anissia.domain.session.command.DoTokenLoginCommand
 import anissia.domain.session.model.LoginInfoItem
 import anissia.domain.session.service.DoLogin
 import anissia.domain.session.service.DoTokenLogin
