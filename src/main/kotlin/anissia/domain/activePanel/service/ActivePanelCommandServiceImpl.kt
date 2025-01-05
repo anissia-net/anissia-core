@@ -45,8 +45,13 @@ class ActivePanelCommandServiceImpl(
                 }
                 cmd.query == "/검색엔진 전체갱신" -> {
                     sessionItem.addText("[${sessionItem.name}]님이 검색엔진 reindex 작업을 시작했습니다.")
-                    animeDocumentService.reset()
+                    animeDocumentService.reset(false)
                     sessionItem.addText("검색엔진 reindex 작업이 완료되었습니다.")
+                }
+                cmd.query == "/검색엔진 초기화" -> {
+                    sessionItem.addText("[${sessionItem.name}]님이 검색엔진 초기화 작업을 시작했습니다.")
+                    animeDocumentService.reset(true)
+                    sessionItem.addText("검색엔진 초기화 작업이 완료되었습니다.")
                 }
                 else -> return ResultWrapper.fail("존재하지 않는 명령입니다.")
             }

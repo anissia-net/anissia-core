@@ -38,8 +38,11 @@ class AnimeDocumentServiceImpl(
     }
 
     @Transactional
-    override fun reset() {
-        animeDocumentRepository.dropAndCreateIndex()
-        animeRepository.findAll().forEach { update(it) }
+    override fun reset(drop: Boolean) {
+        if (drop) {
+            animeDocumentRepository.dropAndCreateIndex()
+        }
+        animeRepository.updateCaptionCountAll()
+        animeRepository.findAll().parallelStream().forEach { update(it) }
     }
 }

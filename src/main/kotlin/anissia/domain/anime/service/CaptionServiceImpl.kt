@@ -126,6 +126,13 @@ class CaptionServiceImpl(
     @Transactional
     override fun delete(account: Account, sessionItem: SessionItem): Int {
         sessionItem.validateRoot()
-        return animeCaptionRepository.deleteByAn(account.an)
+        val captionList: List<AnimeCaption> = animeCaptionRepository.findAllByAn(account.an)
+        val animeNoList: List<Long> = captionList.map { it.anime!!.animeNo }
+        val animeList = animeRepository.findAllByIds(animeNoList)
+        animeCaptionRepository.deleteAll(captionList)
+        animeCaptionRepository.flush()
+        animeRepository.updateCaptionCountByIds(animeNoList)
+        animeList.parallelStream().forEach { animeDocumentService.update(it) }
+        return captionList.count()
     }
 }

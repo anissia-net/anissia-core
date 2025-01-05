@@ -22,12 +22,23 @@ interface AnimeRepository : JpaRepository<Anime, Long> { //, QuerydslPredicateEx
 
     fun existsBySubjectAndAnimeNoNot(subject: String, animeNo: Long): Boolean
 
+    @Query("SELECT A FROM Anime A WHERE A.animeNo IN :animeNo")
+    fun findAllByIds(animeNo: List<Long>): List<Anime>
+
     @EntityGraph(attributePaths = ["captions"])
     fun findWithCaptionsByAnimeNo(animeNo: Long): Anime?
 
     @Modifying
     @Query("UPDATE Anime A SET A.captionCount = size(A.captions) WHERE A.animeNo = :animeNo")
     fun updateCaptionCount(animeNo: Long): Int
+
+    @Modifying
+    @Query("UPDATE Anime A SET A.captionCount = size(A.captions) WHERE A.animeNo IN :animeNo")
+    fun updateCaptionCountByIds(animeNo: List<Long>): Int
+
+    @Modifying
+    @Query("UPDATE Anime A SET A.captionCount = size(A.captions)")
+    fun updateCaptionCountAll(): Int
 
     @Query("SELECT concat(a.anime_no, ' ', a.subject) FROM anime a WHERE a.autocorrect LIKE concat(:autocorrect, '%')", nativeQuery = true)
     fun findTop10ByAutocorrectStartsWith(autocorrect: String, pageable: Pageable = PageRequest.of(0, 10)): List<String>

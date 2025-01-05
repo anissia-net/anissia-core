@@ -27,10 +27,6 @@ interface AnimeCaptionRepository : JpaRepository<AnimeCaption, AnimeCaption.Key>
     @Query("DELETE FROM AnimeCaption a WHERE a.anime.animeNo = :animeNo")
     fun deleteByAnimeNo(animeNo: Long): Int
 
-    @Modifying
-    @Query("DELETE FROM AnimeCaption a WHERE a.an = :an")
-    fun deleteByAn(an: Long): Int
-
     //@EntityGraph(attributePaths = ["account"])
     @Query("SELECT a.name FROM Account a WHERE a.an in (SELECT b.an FROM AnimeCaption b where b.anime.animeNo = :animeNo)")
     fun findAllTranslatorByAnimeNo(animeNo: Long): List<String>
