@@ -26,11 +26,11 @@ class TopicServiceImpl(
     private val activePanelRepository: ActivePanelRepository,
 ): TopicService {
     override fun get(cmd: GetTopicCommand): Mono<BoardTopicItem> =
-        Mono.just(boardTopicRepository.findWithAccountByTickerAndTopicNo(cmd.ticker, cmd.topicNo))
-            .map { BoardTopicItem(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(it.topicNo)) }
-
+        Mono.just(boardTopicRepository.findWithAccountByTickerAndTopicNo(cmd.ticker, cmd.topicNo)
             ?.let { BoardTopicItem(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(it.topicNo)) }
-            ?: BoardTopicItem()
+            ?: BoardTopicItem())
+
+
 
     override fun getList(cmd: GetTopicListCommand): Mono<Page<BoardTopicItem>> =
         boardTopicRepository

@@ -2,24 +2,25 @@ package anissia.domain.account.repository
 
 import anissia.domain.account.Account
 import org.springframework.data.jpa.repository.EntityGraph
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import reactor.core.publisher.Mono
 
-interface AccountRepository : JpaRepository<Account, Long> { //, QuerydslPredicateExecutor<Account> {
-
-    @EntityGraph(attributePaths = ["roles"])
-    fun findWithRolesByAn(an: Long): Account?
+interface AccountRepository : ReactiveCrudRepository<Account, Long> {
 
     @EntityGraph(attributePaths = ["roles"])
-    fun findWithRolesByName(name: String): Account?
+    fun findWithRolesByAn(an: Long): Mono<Account>
 
     @EntityGraph(attributePaths = ["roles"])
-    fun findWithRolesByEmail(email: String): Account?
+    fun findWithRolesByName(name: String): Mono<Account>
 
-    fun findByEmailAndName(email: String, name: String): Account?
+    @EntityGraph(attributePaths = ["roles"])
+    fun findWithRolesByEmail(email: String): Mono<Account>
 
-    fun findByName(name: String): Account?
+    fun findByEmailAndName(email: String, name: String): Mono<Account>
 
-    fun existsByName(name: String): Boolean
+    fun findByName(name: String): Mono<Account>
 
-    fun existsByEmail(mail: String): Boolean
+    fun existsByName(name: String): Mono<Boolean>
+
+    fun existsByEmail(mail: String): Mono<Boolean>
 }

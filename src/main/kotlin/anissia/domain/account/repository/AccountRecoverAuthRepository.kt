@@ -1,17 +1,18 @@
 package anissia.domain.account.repository
 
 import anissia.domain.account.AccountRecoverAuth
-import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 
-interface AccountRecoverAuthRepository : JpaRepository<AccountRecoverAuth, Long> { //, QuerydslPredicateExecutor<AccountRecoverAuth> {
+interface AccountRecoverAuthRepository : ReactiveCrudRepository<AccountRecoverAuth, Long> {
 
-    fun existsByAnAndExpDtAfter(an: Long, expDt: OffsetDateTime): Boolean
+    fun existsByAnAndExpDtAfter(an: Long, expDt: OffsetDateTime): Mono<Boolean>
 
-    fun findByNoAndTokenAndExpDtAfterAndUsedDtNull(no: Long, token: String, expDt: OffsetDateTime): AccountRecoverAuth?
+    fun findByNoAndTokenAndExpDtAfterAndUsedDtNull(no: Long, token: String, expDt: OffsetDateTime): Mono<AccountRecoverAuth>
 
     @Transactional
     @Modifying

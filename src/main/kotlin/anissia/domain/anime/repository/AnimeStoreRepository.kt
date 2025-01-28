@@ -1,7 +1,6 @@
 package anissia.domain.anime.repository
 
 import anissia.domain.anime.AnimeStore
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 
-interface AnimeStoreRepository : JpaRepository<AnimeStore, String> { //, QuerydslPredicateExecutor<AnimeStore>
-}
+interface AnimeStoreRepository : ReactiveCrudRepository<AnimeStore, String>

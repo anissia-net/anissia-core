@@ -1,7 +1,6 @@
 package anissia.domain.account.repository
 
 import anissia.domain.account.AccountBanName
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 
-interface AccountBanNameRepository : JpaRepository<AccountBanName, String> { //, QuerydslPredicateExecutor<AccountBanName>
-}
+interface AccountBanNameRepository : ReactiveCrudRepository<AccountBanName, String>
