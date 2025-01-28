@@ -22,7 +22,11 @@ class ElasticsearchService(
     private val password: String,
 ) {
     private val credentialsProvider = BasicCredentialsProvider()
-        .apply { setCredentials(AuthScope.ANY, UsernamePasswordCredentials(username, password)) }
+        .apply {
+            if ((username + password).isNotBlank()) {
+                setCredentials(AuthScope.ANY, UsernamePasswordCredentials(username, password))
+            }
+        }
 
     fun open(): RestClient = RestClient
         .builder(HttpHost(host, port))

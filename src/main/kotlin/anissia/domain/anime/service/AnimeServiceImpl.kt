@@ -19,7 +19,7 @@ import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.ElasticsearchService
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import me.saro.kit.lang.KoreanKit
 import me.saro.kit.service.CacheStore
@@ -178,19 +178,19 @@ class AnimeServiceImpl(
             ?: listOf()
 
     @Transactional
-    override fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): ApiResponse<Long> {
         cmd.validate()
         sessionItem.validateAdmin()
         translatorApplyService.getGrantedTime(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
-            ?: return ResultWrapper.fail("애니메이션 등록은 권한 취득일로부터 90일 후에 가능합니다.", -1)
+            ?: return ApiResponse.fail("애니메이션 등록은 권한 취득일로부터 90일 후에 가능합니다.", -1)
 
         if (animeGenreRepository.countByGenreIn(cmd.genresList).toInt() != cmd.genresList.size) {
-            return ResultWrapper.fail("장르 입력이 잘못되었습니다.", -1)
+            return ApiResponse.fail("장르 입력이 잘못되었습니다.", -1)
         }
 
         if (animeRepository.existsBySubject(cmd.subject)) {
-            return ResultWrapper.fail("이미 동일한 이름의 작품이 존재합니다.", -1)
+            return ApiResponse.fail("이미 동일한 이름의 작품이 존재합니다.", -1)
         }
 
         val anime = Anime(
@@ -219,25 +219,25 @@ class AnimeServiceImpl(
         activePanelRepository.save(activePanel)
         animeDocumentService.update(anime)
 
-        return ResultWrapper.ok(anime.animeNo)
+        return ApiResponse.ok(anime.animeNo)
     }
 
     @Transactional
-    override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): ApiResponse<Long> {
         cmd.validate()
         sessionItem.validateAdmin()
         translatorApplyService.getGrantedTime(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
-            ?: return ResultWrapper.fail("애니메이션 편집은 권한 취득일로부터 90일 후에 가능합니다.", -1)
+            ?: return ApiResponse.fail("애니메이션 편집은 권한 취득일로부터 90일 후에 가능합니다.", -1)
 
         val animeNo = cmd.animeNo
 
         if (animeGenreRepository.countByGenreIn(cmd.genresList).toInt() != cmd.genresList.size) {
-            return ResultWrapper.fail("장르 입력이 잘못되었습니다.", -1)
+            return ApiResponse.fail("장르 입력이 잘못되었습니다.", -1)
         }
 
         if (animeRepository.existsBySubjectAndAnimeNoNot(cmd.subject, animeNo)) {
-            return ResultWrapper.fail("이미 동일한 이름의 작품이 존재합니다.", -1)
+            return ApiResponse.fail("이미 동일한 이름의 작품이 존재합니다.", -1)
         }
 
         val activePanel = ActivePanel(
@@ -262,7 +262,7 @@ class AnimeServiceImpl(
                     it.website == cmd.website &&
                     it.twitter == cmd.twitter
                 ) {
-                    return ResultWrapper.fail("변경사항이 없습니다.", -1)
+                    return ApiResponse.fail("변경사항이 없습니다.", -1)
                 }
             }
             ?.also { activePanel.data2 = As.toJsonString(AnimeItem(it, false), mapOf("note" to "")) }
@@ -280,29 +280,29 @@ class AnimeServiceImpl(
                 twitter = cmd.twitter
             }
             ?.also { activePanel.data3 = As.toJsonString(AnimeItem(it, false), mapOf("note" to cmd.note)) }
-            ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.", -1)
+            ?: return ApiResponse.fail("존재하지 않는 애니메이션입니다.", -1)
 
         animeRepository.save(anime)
         activePanelRepository.save(activePanel)
         animeDocumentService.update(anime)
 
-        return ResultWrapper.of("ok", "", anime.animeNo)
+        return ApiResponse.of("ok", "", anime.animeNo)
     }
 
     @Transactional
-    override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateAdmin()
         translatorApplyService.getGrantedTime(sessionItem.an)
             ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
-            ?: return ResultWrapper.fail("애니메이션 삭제는 권한 취득일로부터 90일 후에 가능합니다.")
+            ?: return ApiResponse.fail("애니메이션 삭제는 권한 취득일로부터 90일 후에 가능합니다.")
 
         val animeNo = cmd.animeNo
         val agenda = Agenda(code = "ANIME-DEL", status = "wait", an = sessionItem.an)
 
         val anime = animeRepository.findWithCaptionsByAnimeNo(animeNo)
             ?.also { agenda.data1 = As.toJsonString(AnimeItem(it, true)) }
-            ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.")
+            ?: return ApiResponse.fail("존재하지 않는 애니메이션입니다.")
 
         activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
 
@@ -311,25 +311,25 @@ class AnimeServiceImpl(
         animeDocumentService.update(anime)
         agendaRepository.save(agenda)
 
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
     @Transactional
-    override fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): ApiResponse<Long> {
         cmd.validate()
         sessionItem.validateAdmin()
 
         val agenda = agendaRepository
             .findByIdOrNull(cmd.agendaNo)?.takeIf { it.code == "ANIME-DEL" && it.status == "wait" }
-            ?: return ResultWrapper.fail("이미 복원되었거나 존재하지 않는 애니메이션입니다.", -1)
+            ?: return ApiResponse.fail("이미 복원되었거나 존재하지 않는 애니메이션입니다.", -1)
 
         val animeItem = As.OBJECT_MAPPER.readValue(agenda.data1, object: TypeReference<AnimeItem>() {})
 
         if (animeRepository.existsById(animeItem.animeNo)) {
-            return ResultWrapper.fail("이미 복원되었거나 존재하지 않는 애니메이션입니다.", -1)
+            return ApiResponse.fail("이미 복원되었거나 존재하지 않는 애니메이션입니다.", -1)
         }
         if (animeRepository.existsBySubject(animeItem.subject)) {
-            return ResultWrapper.fail("이미 해당 제목의 에니메이션이 있습니다.", -1)
+            return ApiResponse.fail("이미 해당 제목의 에니메이션이 있습니다.", -1)
         }
 
         val anime = animeRepository.save(
@@ -370,6 +370,6 @@ class AnimeServiceImpl(
         animeRepository.updateCaptionCount(anime.animeNo)
         agendaRepository.save(agenda.apply { status = "recover" })
 
-        return ResultWrapper.of("ok", "", anime.animeNo)
+        return ApiResponse.of("ok", "", anime.animeNo)
     }
 }

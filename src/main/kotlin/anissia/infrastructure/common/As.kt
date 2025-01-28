@@ -1,6 +1,7 @@
 package anissia.infrastructure.common
 
 import anissia.domain.session.model.SessionItem
+import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
@@ -12,6 +13,7 @@ import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.util.HtmlUtils
+import reactor.core.publisher.Mono
 import java.net.URL
 import java.net.URLEncoder
 import java.time.LocalDate
@@ -37,6 +39,9 @@ class As {
         val EN_BASE64_URL = Base64.getUrlEncoder()
         val DE_BASE64_URL = Base64.getUrlDecoder()
 
+        fun Any.toJson(): String = OBJECT_MAPPER.writeValueAsString(this)
+
+        fun Any.toJsonBytes(): ByteArray = OBJECT_MAPPER.writeValueAsBytes(this)
 
         private val typeRefSessionItem = object: TypeReference<SessionItem>() {}
 
@@ -107,5 +112,9 @@ class As {
         fun encodeBase64Url(value: String): String = EN_BASE64_URL.encodeToString(value.toByteArray(Charsets.UTF_8))
 
         fun decodeBase64Url(value: String): String = DE_BASE64_URL.decode(value).toString(Charsets.UTF_8)
+
+        val <T> Mono<T>.toApiResponse: Mono<ApiResponse<T>>
+            get() = this.map { ApiResponse.ok(it) }
+
     }
 }

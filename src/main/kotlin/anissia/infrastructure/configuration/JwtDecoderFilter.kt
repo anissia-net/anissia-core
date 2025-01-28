@@ -6,7 +6,7 @@ import anissia.domain.session.model.SessionItem
 import anissia.domain.session.service.JwtService
 import anissia.infrastructure.common.As
 import com.fasterxml.jackson.databind.ObjectMapper
-import gs.shared.ErrorException
+import anissia.shared.ApiErrorException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -28,7 +28,7 @@ class JwtDecoderFilter(
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
 
         if ((exchange.request.headers["jud"]?.size ?: 0) > 0) {
-            throw ErrorException("jud header is banned")
+            throw ApiErrorException("jud header is banned")
         }
 
         val jwt = exchange.request.headers["jwt"]?.get(0) ?: ""

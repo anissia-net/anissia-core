@@ -10,7 +10,7 @@ import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTickerRepository
 import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.SessionItem
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -49,9 +49,9 @@ class TopicServiceImpl(
             ) }
 
     @Transactional
-    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): ApiResponse<Long> {
         if (!sessionItem.isLogin) {
-            return ResultWrapper.fail("로그인이 필요합니다.", 0)
+            return ApiResponse.fail("로그인이 필요합니다.", 0)
         }
 
         return cmd.ticker
@@ -71,9 +71,9 @@ class TopicServiceImpl(
                         an = sessionItem.an,
                     )
                 )
-                ResultWrapper.ok(topic.topicNo)
+                ApiResponse.ok(topic.topicNo)
             }
-            ?: ResultWrapper.fail("권한이 없습니다.", -1)
+            ?: ApiResponse.fail("권한이 없습니다.", -1)
     }
 
     private fun permission(ticker: String, sessionItem: SessionItem): Boolean =
@@ -82,7 +82,7 @@ class TopicServiceImpl(
         } ?: false
 
     @Transactional
-    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -93,15 +93,15 @@ class TopicServiceImpl(
                 boardPostRepository
                     .findWithAccountByTopicNoAndRootIsTrue(cmd.topicNo)
                     ?.also { boardPostRepository.save(it.apply { edit(cmd.content) }) }
-                    ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.", null)
+                    ?: ApiResponse.fail("권한이 없거나 존재하지 않는 글입니다.", null)
                 boardTopicRepository.save(node.apply { edit(cmd.topic) })
-                ResultWrapper.ok()
+                ApiResponse.ok()
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
+            ?: ApiResponse.fail("권한이 없거나 존재하지 않는 글입니다.")
     }
 
     @Transactional
-    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -123,8 +123,8 @@ class TopicServiceImpl(
                 }
                 boardPostRepository.deleteAllByTopicNo(cmd.topicNo)
                 boardTopicRepository.delete(it)
-                ResultWrapper.ok()
+                ApiResponse.ok()
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
+            ?: ApiResponse.fail("권한이 없거나 존재하지 않는 글입니다.")
     }
 }

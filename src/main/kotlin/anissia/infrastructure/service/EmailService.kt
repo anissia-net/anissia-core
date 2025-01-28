@@ -1,7 +1,7 @@
 package anissia.infrastructure.service
 
 import anissia.infrastructure.common.As
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.mail.Message
@@ -76,7 +76,7 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: String, subject: String, htmlContent: String): ResultWrapper<Unit> = send(listOf(to), listOf(), subject, htmlContent)
+    fun send(to: String, subject: String, htmlContent: String): ApiResponse<Unit> = send(listOf(to), listOf(), subject, htmlContent)
 
     /**
      * @param to receive to
@@ -84,7 +84,7 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: List<String>, cc: List<String>, subject: String, htmlContent: String): ResultWrapper<Unit> = try {
+    fun send(to: List<String>, cc: List<String>, subject: String, htmlContent: String): ApiResponse<Unit> = try {
         if (enable) {
             sender.send {
                 // from / to / cc / subject / text
@@ -94,7 +94,7 @@ class EmailService (
                 it.subject = subject
                 it.setText(htmlContent, "UTF-8", "html")
             }
-            ResultWrapper.ok()
+            ApiResponse.ok()
         } else {
             log.debug("""
                     EMAIL DEVELOP MODE
@@ -103,7 +103,7 @@ class EmailService (
                     subject: $subject
                     content: $htmlContent
                 """.trimIndent())
-            ResultWrapper.ok()
+            ApiResponse.ok()
         }
     } catch (e: Exception) {
         log.debug("""
@@ -114,6 +114,6 @@ class EmailService (
             content: $htmlContent
         """.trimIndent())
         log.error(e.message, e)
-        ResultWrapper.error(e.message)
+        ApiResponse.error(e.message)
     }
 }

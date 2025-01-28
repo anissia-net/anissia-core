@@ -15,8 +15,8 @@ import anissia.domain.translator.command.GetApplyListCommand
 import anissia.domain.translator.command.NewApplyPollCommand
 import anissia.domain.translator.infrastructure.ApplyValue
 import anissia.domain.translator.model.TranslatorApplyItem
-import anissia.shared.ResultWrapper
-import gs.shared.FailException
+import anissia.shared.ApiResponse
+import anissia.shared.ApiFailException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -54,20 +54,20 @@ class TranslatorApplyServiceImpl(
     }
 
     @Transactional
-    override fun add(cmd: AddApplyCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun add(cmd: AddApplyCommand, sessionItem: SessionItem): ApiResponse<Long> {
         cmd.validate()
         sessionItem.validateLogin()
 
         if (sessionItem.isAdmin) {
-            throw FailException("이미 권한이 있습니다.")
+            throw ApiFailException("이미 권한이 있습니다.")
         }
 
         if (isApplying(sessionItem)) {
-            throw FailException("신청중인 진행사항이 있습니다.")
+            throw ApiFailException("신청중인 진행사항이 있습니다.")
         }
 
         if (agendaRepository.existsByCodeAndStatusAndAnAndUpdDtAfter(ApplyValue.CODE, "DONE", sessionItem.an, OffsetDateTime.now().minusDays(7))) {
-            throw FailException("심사완료 일주일 후부터 재심사를 요청할 수 있습니다.")
+            throw ApiFailException("심사완료 일주일 후부터 재심사를 요청할 수 있습니다.")
         }
 
         agendaRepository.saveAndFlush(
@@ -79,26 +79,26 @@ class TranslatorApplyServiceImpl(
                 data2 = sessionItem.name,
                 data3 = cmd.website,
             )
-        ).run { return ResultWrapper.ok(agendaNo) }
+        ).run { return ApiResponse.ok(agendaNo) }
     }
 
     @Transactional
-    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateAdmin()
 
         var point = cmd.point.toInt()
 
         val app = agendaRepository.findByIdOrNull(cmd.applyNo)?.takeIf { it.code == ApplyValue.CODE }
-            ?: return ResultWrapper.fail("존재하지 않는 신청입니다.")
+            ?: return ApiResponse.fail("존재하지 않는 신청입니다.")
 
         app.takeIf { it.status == "ACT" }
-            ?: return ResultWrapper.fail("종료된 신청서입니다.")
+            ?: return ApiResponse.fail("종료된 신청서입니다.")
 
         val polls = app.polls
         if (point != 0) {
             if (polls.filter { it.an == sessionItem.an }.any { it.vote != 0 }) {
-                return ResultWrapper.fail("찬성/반대는 한 신청처에 한번만 할 수 있습니다.")
+                return ApiResponse.fail("찬성/반대는 한 신청처에 한번만 할 수 있습니다.")
             }
         }
 
@@ -132,7 +132,7 @@ class TranslatorApplyServiceImpl(
         }
         agendaRepository.save(app.apply { updDt = OffsetDateTime.now() })
 
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
     private fun toApplySystemPoll(agenda: Agenda, comment: String) = AgendaPoll(

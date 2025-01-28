@@ -33,7 +33,8 @@ dependencies {
 
 	// DB connector
 	implementation("com.zaxxer:HikariCP")
-	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    implementation("com.google.android.gms:play-services-basement:18.5.0")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 	// elasticsearch
 	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.17.0")

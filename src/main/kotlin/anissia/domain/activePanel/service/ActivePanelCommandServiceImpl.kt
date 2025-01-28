@@ -7,7 +7,7 @@ import anissia.domain.activePanel.command.DoCommandActivePanelCommand
 import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.anime.service.CaptionService
 import anissia.domain.session.model.SessionItem
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,7 +19,7 @@ class ActivePanelCommandServiceImpl(
     private val captionService: CaptionService,
 ) : ActivePanelCommandService {
     @Transactional
-    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -30,7 +30,7 @@ class ActivePanelCommandServiceImpl(
                 cmd.query.startsWith("/권한반납 ") -> {
                     val name = cmd.query.substring(cmd.query.indexOf(' ') + 1)
                     val user = accountRepository.findByName(name)
-                        ?: return ResultWrapper.fail("존재하지 않는 회원입니다.")
+                        ?: return ApiResponse.fail("존재하지 않는 회원입니다.")
 
                     if (user.isTranslator) {
                         // remove permission
@@ -40,7 +40,7 @@ class ActivePanelCommandServiceImpl(
                         sessionItem.addText("[${user.name}]님의 자막제작자 권한이 해지되었습니다.")
                         sessionItem.addText("[${user.name}]님의 모든 작품 ${deleteCount}개가 삭제되었습니다.")
                     } else {
-                        return ResultWrapper.fail("${user.name}님은 자막제작자 권한을 가지고 있지 않습니다.")
+                        return ApiResponse.fail("${user.name}님은 자막제작자 권한을 가지고 있지 않습니다.")
                     }
                 }
                 cmd.query == "/검색엔진 전체갱신" -> {
@@ -53,13 +53,13 @@ class ActivePanelCommandServiceImpl(
                     animeDocumentService.reset(true)
                     sessionItem.addText("검색엔진 초기화 작업이 완료되었습니다.")
                 }
-                else -> return ResultWrapper.fail("존재하지 않는 명령입니다.")
+                else -> return ApiResponse.fail("존재하지 않는 명령입니다.")
             }
 
         } else { // notice
             return sessionItem.addNotice(cmd)
         }
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
     private fun SessionItem.addText(text: String) =

@@ -12,7 +12,7 @@ import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.BCryptService
 import anissia.infrastructure.service.EmailService
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import me.saro.kit.TextKit
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -39,16 +39,16 @@ class RecoverPasswordServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
 
         var account: Account = accountRepository.findByEmailAndName(cmd.email, cmd.name)
         // not exist match info is secret for protect personal information
         // 개인정보보호를 위해 일치 하지 않는경우에도 일치하는 것과 같은 정보를 내보낸다.
-            ?: return ResultWrapper.ok()
+            ?: return ApiResponse.ok()
 
         if (accountRecoverAuthRepository.existsByAnAndExpDtAfter(account.an, OffsetDateTime.now())) {
-            return ResultWrapper.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
+            return ApiResponse.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
         }
 
         val ip = sessionItem.ip
@@ -73,33 +73,33 @@ class RecoverPasswordServiceImpl(
             )
         }
 
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
 
     @Transactional
-    override fun complete(cmd: CompleteRecoverPasswordCommand): ResultWrapper<Unit> {
+    override fun complete(cmd: CompleteRecoverPasswordCommand): ApiResponse<Unit> {
         cmd.validate()
 
         val auth = accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
-            ?: return ResultWrapper.fail("이메일 인증이 만료되었습니다.")
+            ?: return ApiResponse.fail("이메일 인증이 만료되었습니다.")
 
         val account = auth.account
-            ?: return ResultWrapper.fail("해당 메일인증에서 계정정보를 찾을 수 없습니다.")
+            ?: return ApiResponse.fail("해당 메일인증에서 계정정보를 찾을 수 없습니다.")
 
         accountRecoverAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() })
         accountRepository.save(account.apply { password = bCryptService.encode(cmd.password) })
 
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
     @Transactional
-    override fun validate(cmd: ValidateRecoverPasswordCommand): ResultWrapper<Unit> {
+    override fun validate(cmd: ValidateRecoverPasswordCommand): ApiResponse<Unit> {
         cmd.validate()
 
         return accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
-            ?.let { ResultWrapper.ok() }
-            ?: ResultWrapper.fail("")
+            ?.let { ApiResponse.ok() }
+            ?: ApiResponse.fail("")
     }
 
 }

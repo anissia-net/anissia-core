@@ -1,71 +1,70 @@
 package anissia.infrastructure.configuration
 
 import anissia.infrastructure.common.As
-import anissia.shared.ResultWrapper
-import gs.shared.ErrorException
-import gs.shared.FailException
+import anissia.infrastructure.common.As.Companion.toJsonBytes
+import anissia.shared.ApiErrorException
+import anissia.shared.ApiFailException
+import anissia.shared.ApiResponse
 import org.springframework.core.NestedRuntimeException
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.server.reactive.ServerHttpResponse
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.annotation.ControllerAdvice
-import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.server.MethodNotAllowedException
-import org.springframework.web.server.ResponseStatusException
-import org.springframework.web.server.ServerWebExchange
-import org.springframework.web.server.ServerWebInputException
+import org.springframework.web.server.*
+import reactor.core.publisher.Mono
 
-@ControllerAdvice
-class GlobalExceptionHandler {
+
+@Order(-2)
+@Component
+class GlobalExceptionHandler : WebExceptionHandler {
 
     private val log = As.logger<GlobalExceptionHandler>()
 
-    @ExceptionHandler(Error::class)
-    fun handleNotImplementedError(ex: Error, exchange: ServerWebExchange): ResponseEntity<ResultWrapper<Unit>> {
-        return ResponseEntity.status(HttpStatus.OK).body(ResultWrapper.error("알수없는 오류 입니다."))
-            .also { log(ex, exchange) }
-    }
+    override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> =
+        when (ex) {
+            is Error -> exchange.response.write(ApiResponse.error("알수없는 오류 입니다."))
 
-    @ExceptionHandler(Exception::class)
-    fun other(exception: Exception, exchange: ServerWebExchange): ResponseEntity<ResultWrapper<Unit>> {
-        return when (exception) {
-            is ServerWebInputException -> {
-                ResponseEntity.status(HttpStatus.OK).body(ResultWrapper.error("입력값이 잘못되었습니다."))
-            }
-            is IllegalArgumentException, is FailException -> {
-                ResponseEntity.status(HttpStatus.OK).body(ResultWrapper.error(exception.message ?: exception.javaClass.simpleName))
-            }
-            is MethodNotAllowedException -> {
-                ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ResultWrapper.error("METHOD_NOT_ALLOWED"))
-                    .also { log.info(exchange.request.let { "MNA ${it.method} ${it.uri} ${it.remoteAddress?.address?.hostAddress?:"0.0.0.0"}" }) }
-            }
+            is ServerWebInputException -> exchange.response.write(ApiResponse.error("입력값이 잘못되었습니다."))
+
+            is IllegalArgumentException, is ApiFailException -> exchange.response.write(ApiResponse.error(ex.message ?: ex.javaClass.simpleName))
+
+            is MethodNotAllowedException -> exchange.response.write(ApiResponse.error("METHOD_NOT_ALLOWED"), HttpStatus.METHOD_NOT_ALLOWED)
+                .also { log.info(exchange.request.let { "MNA ${it.method} ${it.uri} ${it.remoteAddress?.address?.hostAddress?:"0.0.0.0"}" }) }
+
             is ResponseStatusException -> {
-                val code = exception.statusCode.value()
-                ResponseEntity.status(code).body(ResultWrapper.error(exception.message))
-                    .also { log.info(exchange.request.let { "RSE ${it.method} ${it.uri} ${exception.message} ${it.remoteAddress?.address?.hostAddress?:"0.0.0.0"}" }) }
+                exchange.response.write(ApiResponse.error(ex.message), ex.statusCode)
+                    .also { log.info(exchange.request.let { "RSE ${it.method} ${it.uri} ${ex.message} ${it.remoteAddress?.address?.hostAddress?:"0.0.0.0"}" }) }
             }
+
             is MethodArgumentNotValidException -> {
-                val error = try {
-                    ResultWrapper.error(exception.bindingResult.allErrors[0].defaultMessage ?: "입력값이 잘못되었습니다.")
+                exchange.response.write(try {
+                    ApiResponse.error(ex.bindingResult.allErrors[0].defaultMessage ?: "입력값이 잘못되었습니다.")
                 } catch (e: Exception) {
-                    ResultWrapper.error("입력값이 잘못되었습니다.")
-                }
-                ResponseEntity.status(HttpStatus.OK).body(error)
+                    ApiResponse.error("입력값이 잘못되었습니다.")
+                })
             }
+
             is SecurityException -> {
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResultWrapper.error(exception.message))
-                    .also { log(exception, exchange) }
+                exchange.response.write(ApiResponse.error(ex.message), HttpStatus.UNAUTHORIZED)
+                    .also { log(ex, exchange) }
             }
-            is NestedRuntimeException, is ErrorException -> {
-                ResponseEntity.status(HttpStatus.OK).body(ResultWrapper.error(exception.message ?: exception.javaClass.simpleName))
-                    .also { log(exception, exchange) }
+
+            is NestedRuntimeException, is ApiErrorException -> {
+                exchange.response.write(ApiResponse.error(ex.message ?: ex.javaClass.simpleName))
+                    .also { log(ex, exchange) }
             }
+
             else -> {
-                ResponseEntity.status(HttpStatus.OK).body(ResultWrapper.error("unknown error"))
-                    .also { log(exception, exchange) }
+                exchange.response.write(ApiResponse.error("unknown error"))
+                    .also { log(ex, exchange) }
             }
         }
-    }
+
+    fun ServerHttpResponse.write(apiResponse: ApiResponse<Unit>, status: HttpStatusCode = HttpStatus.OK): Mono<Void> =
+        also { it.statusCode = status }
+            .writeWith(Mono.just(bufferFactory().wrap(apiResponse.toJsonBytes())))
 
     private fun log(throwable: Throwable, exchange: ServerWebExchange) {
         val message = exchange.request.let { "${throwable.message}\n${it.method} ${it.uri}" }

@@ -11,7 +11,7 @@ import anissia.domain.session.repository.JwtKeyPairRepository
 import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginPassRepository
 import anissia.domain.session.repository.LoginTokenRepository
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import me.saro.jwt.alg.es.JwtEs256
 import me.saro.jwt.core.Jwt
 import me.saro.jwt.core.JwtClaims
@@ -53,20 +53,20 @@ class JwtServiceImpl(
         keyStore.find { it.kid == kid }?.key
 
     @Transactional
-    override fun updateAuthInfo(sessionItem: SessionItem): ResultWrapper<JwtAuthInfoItem> {
+    override fun updateAuthInfo(sessionItem: SessionItem): ApiResponse<JwtAuthInfoItem> {
         if (sessionItem.isLogin) {
             accountRepository.findWithRolesByAn(sessionItem.an)
                 ?.run { getAuthInfo(GetJwtAuthInfoCommand(sessionItem = SessionItem.cast(this, sessionItem.ip), makeLoginToken = false)) }
                 ?.run { return@updateAuthInfo this }
         }
 
-        return ResultWrapper.fail("유효하지 않은 토큰 정보입니다.", null)
+        return ApiResponse.fail("유효하지 않은 토큰 정보입니다.", null)
     }
 
     override fun alg(): JwtEs256 = es256
 
     @Transactional
-    override fun getAuthInfo(cmd: GetJwtAuthInfoCommand): ResultWrapper<JwtAuthInfoItem> {
+    override fun getAuthInfo(cmd: GetJwtAuthInfoCommand): ApiResponse<JwtAuthInfoItem> {
         val session = cmd.sessionItem
 
         val token = cmd.takeIf { it.makeLoginToken }
@@ -80,7 +80,7 @@ class JwtServiceImpl(
         loginFailRepository.deleteByIpAndEmail(session.ip, session.email)
         loginPassRepository.save(LoginPass.create(an = session.an, connType = "login", ip = session.ip))
 
-        return ResultWrapper.ok(JwtAuthInfoItem(jwt, token))
+        return ApiResponse.ok(JwtAuthInfoItem(jwt, token))
     }
 
     fun toJwt(sessionItem: SessionItem): String = try {

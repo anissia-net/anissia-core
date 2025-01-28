@@ -3,8 +3,8 @@ package anissia.domain.activePanel.service
 
 import anissia.domain.activePanel.command.DoCommandActivePanelCommand
 import anissia.domain.session.model.SessionItem
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 
 interface ActivePanelCommandService {
-    fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ResultWrapper<Unit>
+    fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Unit>
 }

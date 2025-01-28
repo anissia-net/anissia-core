@@ -10,7 +10,7 @@ import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTickerRepository
 import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.SessionItem
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,7 +24,7 @@ class PostServiceImpl(
 ): PostService {
 
     @Transactional
-    override fun add(cmd: NewPostCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun add(cmd: NewPostCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -40,13 +40,13 @@ class PostServiceImpl(
                     )
                 )
                 boardTopicRepository.updatePostCount(cmd.topicNo)
-                ResultWrapper.ok()
+                ApiResponse.ok()
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글 혹은 게시판입니다.")
+            ?: ApiResponse.fail("권한이 없거나 존재하지 않는 글 혹은 게시판입니다.")
     }
 
     @Transactional
-    override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -55,13 +55,13 @@ class PostServiceImpl(
             ?.takeIf { !it.root && it.an == sessionItem.an }
             ?.let {
                 boardPostRepository.save(it.apply { edit(cmd.content) })
-                ResultWrapper.ok()
+                ApiResponse.ok()
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
+            ?: ApiResponse.fail("권한이 없거나 존재하지 않는 글입니다.")
     }
 
     @Transactional
-    override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -83,9 +83,9 @@ class PostServiceImpl(
                 }
                 boardPostRepository.delete(it)
                 boardTopicRepository.updatePostCount(it.topicNo)
-                ResultWrapper.ok()
+                ApiResponse.ok()
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
+            ?: ApiResponse.fail("권한이 없거나 존재하지 않는 글입니다.")
     }
 
     private fun validAddPermission(ticker: String, sessionItem: SessionItem): Boolean =

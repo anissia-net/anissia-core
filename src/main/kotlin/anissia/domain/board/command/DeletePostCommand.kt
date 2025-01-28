@@ -1,12 +1,12 @@
 package anissia.domain.board.command
 
-import gs.shared.FailException
+import anissia.shared.ApiFailException
 
 class DeletePostCommand(
     var postNo: Long,
 ) {
     fun validate() {
         if (postNo <= 0)
-            throw FailException()
+            throw ApiFailException()
     }
 }

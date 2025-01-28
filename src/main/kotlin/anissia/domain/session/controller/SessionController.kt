@@ -6,7 +6,7 @@ import anissia.domain.session.model.JwtAuthInfoItem
 import anissia.domain.session.service.JwtService
 import anissia.domain.session.service.LoginService
 import anissia.infrastructure.common.As
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
 
@@ -17,14 +17,14 @@ class SessionController(
     private val jwtService: JwtService,
 ) {
     @PostMapping
-    fun doLogin(@RequestBody cmd: DoUserLoginCommand, exchange: ServerWebExchange): ResultWrapper<JwtAuthInfoItem> =
+    fun doLogin(@RequestBody cmd: DoUserLoginCommand, exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
         loginService.doUserLogin(cmd, As.toSession(exchange))
 
     @PostMapping("/token")
-    fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): ResultWrapper<JwtAuthInfoItem> =
+    fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
         loginService.doTokenLogin(cmd, As.toSession(exchange))
 
     @PutMapping()
-    fun updateAuthInfo(exchange: ServerWebExchange): ResultWrapper<JwtAuthInfoItem> =
+    fun updateAuthInfo(exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
         jwtService.updateAuthInfo(As.toSession(exchange))
 }

@@ -15,8 +15,8 @@ import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.service.BCryptService
-import anissia.shared.ResultWrapper
-import gs.shared.FailException
+import anissia.shared.ApiResponse
+import anissia.shared.ApiFailException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -39,45 +39,45 @@ class UserServiceImpl(
     override fun get(sessionItem: SessionItem): AccountUserItem =
         AccountUserItem.cast(accountRepository.findWithRolesByAn(sessionItem.an)!!)
 
-    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
         val account = accountRepository.findByIdOrNull(sessionItem.an)
             ?.takeIf { bCryptService.matches(it.password, cmd.oldPassword) }
-            ?: return ResultWrapper.fail("기존 암호가 일치하지 않습니다.")
+            ?: return ApiResponse.fail("기존 암호가 일치하지 않습니다.")
 
         account.password = bCryptService.encode(cmd.newPassword)
         accountRepository.save(account)
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
     @Transactional
-    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
         val account = accountRepository.findByIdOrNull(sessionItem.an)
             ?.takeIf { bCryptService.matches(it.password, cmd.password) }
-            ?: return ResultWrapper.fail("암호가 일치하지 않습니다.")
+            ?: return ApiResponse.fail("암호가 일치하지 않습니다.")
 
         val oldName = account.name
         val newName = cmd.name
 
         if (oldName == newName) {
-            return ResultWrapper.fail("기존 이름과 같습니다.")
+            return ApiResponse.fail("기존 이름과 같습니다.")
         }
 
         if (translatorApplyService.isApplying(sessionItem)) {
-            throw FailException("자막제작자 신청중에는 이름을 바꿀 수 없습니다.")
+            throw ApiFailException("자막제작자 신청중에는 이름을 바꿀 수 없습니다.")
         }
 
         if (agendaRepository.existsByCodeAndStatusAndAnAndUpdDtAfter(codeUpdateName, "DONE", sessionItem.an, OffsetDateTime.now().minusDays(1))) {
-            return ResultWrapper.fail("이름은 하루에 한번만 바꿀 수 있습니다.")
+            return ApiResponse.fail("이름은 하루에 한번만 바꿀 수 있습니다.")
         }
 
         if (accountRepository.existsByName(newName) || accountBanNameRepository.existsById(newName)) {
-            return ResultWrapper.fail("사용중이거나 사용할 수 없는 이름입니다.")
+            return ApiResponse.fail("사용중이거나 사용할 수 없는 이름입니다.")
         }
 
         agendaRepository.saveAndFlush(
@@ -101,7 +101,7 @@ class UserServiceImpl(
             activePanelLogService.addText(AddTextActivePanelCommand("운영진 [$oldName]님의 닉네임이 [$newName]님으로 변경되었습니다."), null)
         }
 
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
     private fun getUserTakeIfPassword(password: String, sessionItem: SessionItem) =

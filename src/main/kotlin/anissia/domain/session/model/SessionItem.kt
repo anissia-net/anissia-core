@@ -3,7 +3,7 @@ package anissia.domain.session.model
 import anissia.domain.account.Account
 import anissia.domain.account.AccountRole
 import com.fasterxml.jackson.annotation.JsonIgnore
-import gs.shared.FailException
+import anissia.shared.ApiFailException
 
 class SessionItem (
         val an: Long = 0,
@@ -23,15 +23,15 @@ class SessionItem (
     }
 
     fun validateLogin() {
-        if (!isLogin) throw FailException("로그인이 필요합니다.")
+        if (!isLogin) throw ApiFailException("로그인이 필요합니다.")
     }
 
     fun validateAdmin() {
-        if (!isAdmin) throw FailException("권한이 없습니다.")
+        if (!isAdmin) throw ApiFailException("권한이 없습니다.")
     }
 
     fun validateRoot() {
-        if (!isRoot) throw FailException("권한이 없습니다.")
+        if (!isRoot) throw ApiFailException("권한이 없습니다.")
     }
 
     @get:JsonIgnore

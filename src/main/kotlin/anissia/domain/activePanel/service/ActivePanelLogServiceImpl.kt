@@ -8,7 +8,7 @@ import anissia.domain.activePanel.model.ActivePanelItem
 import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -24,13 +24,13 @@ class ActivePanelLogServiceImpl(
             .map { ActivePanelItem(it) }
     }
 
-    override fun addText(cmd: AddTextActivePanelCommand, sessionItem: SessionItem?): ResultWrapper<Unit> {
+    override fun addText(cmd: AddTextActivePanelCommand, sessionItem: SessionItem?): ApiResponse<Unit> {
         activePanelRepository.save(ActivePanel(published = cmd.published, an = sessionItem?.an ?: sessionItem?.an ?: 0, code = "TEXT", data1 = cmd.text))
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
-    override fun addNotice(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun addNotice(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         activePanelRepository.save(ActivePanel(published = cmd.published, an = sessionItem.an, code = "TEXT", data1 = "《공지》 ${sessionItem.name} : ${cmd.text}"))
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 }

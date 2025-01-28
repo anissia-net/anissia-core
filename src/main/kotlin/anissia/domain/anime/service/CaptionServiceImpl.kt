@@ -11,7 +11,7 @@ import anissia.domain.anime.model.MyCaptionItem
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.SessionItem
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import me.saro.kit.service.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -63,17 +63,17 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateAdmin()
 
         val animeNo = cmd.animeNo
 
         val anime = animeRepository.findByIdOrNull(animeNo)
-            ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.")
+            ?: return ApiResponse.fail("존재하지 않는 애니메이션입니다.")
 
         if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, sessionItem.an)).isPresent) {
-            return ResultWrapper.fail("이미 작업중인 작품입니다.")
+            return ApiResponse.fail("이미 작업중인 작품입니다.")
         }
 
         animeCaptionRepository.save(AnimeCaption(anime = anime, an = sessionItem.an))
@@ -81,18 +81,18 @@ class CaptionServiceImpl(
         animeDocumentService.update(anime)
         activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
 
-        return ResultWrapper.of("ok", "자막을 추가하였습니다.\n자막메뉴에서 확인해주세요.")
+        return ApiResponse.of("ok", "자막을 추가하였습니다.\n자막메뉴에서 확인해주세요.")
     }
 
     @Transactional
-    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateAdmin()
 
         val animeNo = cmd.animeNo
 
         val caption = animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, sessionItem.an))
-            ?: return ResultWrapper.fail("존재하지 않는 자막입니다.")
+            ?: return ApiResponse.fail("존재하지 않는 자막입니다.")
 
         animeCaptionRepository.save(caption.apply {
             edit(
@@ -102,11 +102,11 @@ class CaptionServiceImpl(
             )
         })
 
-        return ResultWrapper.of("ok", "자막정보가 반영되었습니다.")
+        return ApiResponse.of("ok", "자막정보가 반영되었습니다.")
     }
 
     @Transactional
-    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -118,9 +118,9 @@ class CaptionServiceImpl(
                 animeRepository.updateCaptionCount(animeNo)
                 animeDocumentService.update(UpdateAnimeDocumentCommand(animeNo))
                 activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
-                ResultWrapper.ok()
+                ApiResponse.ok()
             }
-            ?: ResultWrapper.fail("이미 삭제되었습니다.")
+            ?: ApiResponse.fail("이미 삭제되었습니다.")
     }
 
     @Transactional

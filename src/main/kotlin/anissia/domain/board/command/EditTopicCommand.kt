@@ -1,6 +1,6 @@
 package anissia.domain.board.command
 
-import gs.shared.FailException
+import anissia.shared.ApiFailException
 
 class EditTopicCommand(
     var topicNo: Long,
@@ -9,10 +9,10 @@ class EditTopicCommand(
 ) {
     fun validate() {
         if (topicNo <= 0)
-            throw FailException()
+            throw ApiFailException()
 
         if (content.isBlank())
-            throw FailException("내용을 입력해 주세요.")
+            throw ApiFailException("내용을 입력해 주세요.")
     }
 }
 

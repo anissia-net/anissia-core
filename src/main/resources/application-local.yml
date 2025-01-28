@@ -15,8 +15,8 @@ anissia:
   ndb:
     host: localhost
     port: 9200
-    username: elastic
-    password: elastic
+    username:
+    password:
 
 spring:
   jpa:
@@ -26,7 +26,7 @@ spring:
       dialect: org.hibernate.dialect.MariaDBDialect
       timezone.default_storage: NORMALIZE
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     open-in-view: true

@@ -12,7 +12,7 @@ import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.BCryptService
 import anissia.infrastructure.service.EmailService
-import anissia.shared.ResultWrapper
+import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import me.saro.kit.TextKit
 import org.springframework.beans.factory.annotation.Value
@@ -41,23 +41,23 @@ class RegisterServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ApiResponse<Unit> {
         cmd.validate()
 
         if (sessionItem.isLogin) {
-            return ResultWrapper.fail("로그인 중에는 계정을 생성할 수 없습니다.")
+            return ApiResponse.fail("로그인 중에는 계정을 생성할 수 없습니다.")
         }
 
         if (accountRepository.existsByEmail(cmd.email)) {
-            return ResultWrapper.fail("이미 가입된 계정입니다.")
+            return ApiResponse.fail("이미 가입된 계정입니다.")
         }
 
         if (accountRepository.existsByName(cmd.name) || accountBanNameRepository.existsById(cmd.name)) {
-            return ResultWrapper.fail("사용중이거나 사용할 수 없는 이름입니다.")
+            return ApiResponse.fail("사용중이거나 사용할 수 없는 이름입니다.")
         }
 
         if (accountRegisterAuthRepository.existsByEmailAndExpDtAfter(cmd.email, OffsetDateTime.now())) {
-            return ResultWrapper.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
+            return ApiResponse.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
         }
 
         val ip = sessionItem.ip
@@ -82,24 +82,24 @@ class RegisterServiceImpl(
             )
         }
 
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
     @Transactional
-    override fun complete(cmd: CompleteRegisterCommand): ResultWrapper<Unit> {
+    override fun complete(cmd: CompleteRegisterCommand): ApiResponse<Unit> {
         cmd.validate()
 
         val auth: AccountRegisterAuth = accountRegisterAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
-            ?: return ResultWrapper.fail("이메일 인증이 만료되었습니다.")
+            ?: return ApiResponse.fail("이메일 인증이 만료되었습니다.")
 
         val requestRegisterCommand = As.OBJECT_MAPPER.readValue(auth.data, object: TypeReference<RequestRegisterCommand>() {})
 
         if (accountRepository.existsByEmail(requestRegisterCommand.email)) {
-            return ResultWrapper.fail("이미 가입된 계정입니다.")
+            return ApiResponse.fail("이미 가입된 계정입니다.")
         }
 
         if (accountRepository.existsByName(requestRegisterCommand.name)) {
-            return ResultWrapper.fail("사용중인 닉네임 입니다.")
+            return ApiResponse.fail("사용중인 닉네임 입니다.")
         }
 
         accountRegisterAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() })
@@ -112,7 +112,7 @@ class RegisterServiceImpl(
             )
         )
 
-        return ResultWrapper.ok()
+        return ApiResponse.ok()
     }
 
 }
