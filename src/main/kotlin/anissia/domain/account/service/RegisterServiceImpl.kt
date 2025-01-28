@@ -41,7 +41,7 @@ class RegisterServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
 
         if (sessionItem.isLogin) {
@@ -86,7 +86,7 @@ class RegisterServiceImpl(
     }
 
     @Transactional
-    override fun complete(cmd: CompleteRegisterCommand): ApiResponse<Unit> {
+    override fun complete(cmd: CompleteRegisterCommand): ApiResponse<Void> {
         cmd.validate()
 
         val auth: AccountRegisterAuth = accountRegisterAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())

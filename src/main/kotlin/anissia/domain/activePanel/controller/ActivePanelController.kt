@@ -22,6 +22,6 @@ class ActivePanelController(
         ApiResponse.ok(activePanelLogService.getList(cmd, As.toSession(exchange)))
 
     @PostMapping("/command")
-    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): ApiResponse<Unit> =
+    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): ApiResponse<Void> =
         activePanelCommandService.doCommand(cmd, As.toSession(exchange))
 }

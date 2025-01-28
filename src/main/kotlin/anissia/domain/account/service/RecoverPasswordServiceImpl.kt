@@ -39,7 +39,7 @@ class RecoverPasswordServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
 
         var account: Account = accountRepository.findByEmailAndName(cmd.email, cmd.name)
@@ -78,7 +78,7 @@ class RecoverPasswordServiceImpl(
 
 
     @Transactional
-    override fun complete(cmd: CompleteRecoverPasswordCommand): ApiResponse<Unit> {
+    override fun complete(cmd: CompleteRecoverPasswordCommand): ApiResponse<Void> {
         cmd.validate()
 
         val auth = accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
@@ -94,7 +94,7 @@ class RecoverPasswordServiceImpl(
     }
 
     @Transactional
-    override fun validate(cmd: ValidateRecoverPasswordCommand): ApiResponse<Unit> {
+    override fun validate(cmd: ValidateRecoverPasswordCommand): ApiResponse<Void> {
         cmd.validate()
 
         return accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())

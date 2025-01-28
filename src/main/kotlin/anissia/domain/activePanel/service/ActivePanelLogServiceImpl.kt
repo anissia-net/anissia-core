@@ -24,12 +24,12 @@ class ActivePanelLogServiceImpl(
             .map { ActivePanelItem(it) }
     }
 
-    override fun addText(cmd: AddTextActivePanelCommand, sessionItem: SessionItem?): ApiResponse<Unit> {
+    override fun addText(cmd: AddTextActivePanelCommand, sessionItem: SessionItem?): ApiResponse<Void> {
         activePanelRepository.save(ActivePanel(published = cmd.published, an = sessionItem?.an ?: sessionItem?.an ?: 0, code = "TEXT", data1 = cmd.text))
         return ApiResponse.ok()
     }
 
-    override fun addNotice(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun addNotice(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Void> {
         activePanelRepository.save(ActivePanel(published = cmd.published, an = sessionItem.an, code = "TEXT", data1 = "《공지》 ${sessionItem.name} : ${cmd.text}"))
         return ApiResponse.ok()
     }

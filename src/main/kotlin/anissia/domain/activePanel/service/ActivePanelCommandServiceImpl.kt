@@ -19,7 +19,7 @@ class ActivePanelCommandServiceImpl(
     private val captionService: CaptionService,
 ) : ActivePanelCommandService {
     @Transactional
-    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
         sessionItem.validateAdmin()
 

@@ -3,7 +3,6 @@ package anissia.domain.board.service
 import anissia.domain.activePanel.ActivePanel
 import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.board.BoardPost
-import anissia.domain.board.BoardTicker
 import anissia.domain.board.BoardTopic
 import anissia.domain.board.command.*
 import anissia.domain.board.model.BoardTopicItem
@@ -13,10 +12,8 @@ import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As.Companion.toBlockList
 import anissia.shared.ApiFailException
-import anissia.shared.ApiResponse
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
@@ -33,7 +30,7 @@ class TopicServiceImpl(
     override fun get(cmd: GetTopicCommand): Mono<BoardTopicItem> =
         boardTopicRepository.findWithAccountByTickerAndTopicNo(cmd.ticker, cmd.topicNo)
             .map { BoardTopicItem(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(it.topicNo).toBlockList()) }
-            .switchIfEmpty(Mono.just(BoardTopicItem()))
+            .switchIfEmpty(Mono.fromCallable { BoardTopicItem() })
 
     override fun getList(cmd: GetTopicListCommand): Mono<Page<BoardTopicItem>> =
         boardTopicRepository.findAllWithAccountByTickerOrderByTickerAscFixedDescTopicNoDesc(cmd.ticker, PageRequest.of(cmd.page, 20))
@@ -104,8 +101,7 @@ class TopicServiceImpl(
                                 )
                             }
                     }
-                    .map { topic }
-                    .switchIfEmpty(Mono.just(topic))
+                    .then(Mono.fromCallable { topic })
             }
             .flatMap { topic -> boardPostRepository.deleteAllByTopicNo(topic.topicNo).map { topic } }
             .flatMap { boardTopicRepository.delete(it) }

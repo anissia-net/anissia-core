@@ -39,7 +39,7 @@ class UserServiceImpl(
     override fun get(sessionItem: SessionItem): AccountUserItem =
         AccountUserItem.cast(accountRepository.findWithRolesByAn(sessionItem.an)!!)
 
-    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -53,7 +53,7 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
         sessionItem.validateLogin()
 

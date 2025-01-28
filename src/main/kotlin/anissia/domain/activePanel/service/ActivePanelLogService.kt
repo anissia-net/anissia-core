@@ -11,6 +11,6 @@ import org.springframework.data.domain.Page
 
 interface ActivePanelLogService {
     fun getList(cmd: GetListActivePanelCommand, sessionItem: SessionItem): Page<ActivePanelItem>
-    fun addText(cmd: AddTextActivePanelCommand, sessionItem: SessionItem?): ApiResponse<Unit>
-    fun addNotice(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Unit>
+    fun addText(cmd: AddTextActivePanelCommand, sessionItem: SessionItem?): ApiResponse<Void>
+    fun addNotice(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Void>
 }

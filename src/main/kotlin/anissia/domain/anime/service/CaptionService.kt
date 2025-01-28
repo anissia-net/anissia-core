@@ -13,8 +13,8 @@ interface CaptionService {
     fun getList(cmd: GetListCaptionByAnimeNoCommand, sessionItem: SessionItem): List<CaptionItem>
     fun getList(cmd: GetMyListCaptionCommand, sessionItem: SessionItem): Page<MyCaptionItem>
     fun getList(cmd: GetRecentListCaptionCommand): Page<CaptionRecentItem>
-    fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit>
-    fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit>
-    fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit>
+    fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ApiResponse<Void>
+    fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ApiResponse<Void>
+    fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<Void>
     fun delete(account: Account, sessionItem: SessionItem): Int
 }

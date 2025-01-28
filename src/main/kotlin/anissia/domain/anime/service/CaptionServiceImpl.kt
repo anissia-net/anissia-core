@@ -63,7 +63,7 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -85,7 +85,7 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -106,7 +106,7 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
         sessionItem.validateAdmin()
 

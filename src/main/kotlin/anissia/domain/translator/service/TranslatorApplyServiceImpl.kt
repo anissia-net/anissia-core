@@ -83,7 +83,7 @@ class TranslatorApplyServiceImpl(
     }
 
     @Transactional
-    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ApiResponse<Void> {
         cmd.validate()
         sessionItem.validateAdmin()
 

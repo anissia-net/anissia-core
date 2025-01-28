@@ -6,6 +6,6 @@ import anissia.domain.session.model.SessionItem
 import anissia.shared.ApiResponse
 
 interface RegisterService {
-    fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ApiResponse<Unit>
-    fun complete(cmd: CompleteRegisterCommand): ApiResponse<Unit>
+    fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ApiResponse<Void>
+    fun complete(cmd: CompleteRegisterCommand): ApiResponse<Void>
 }

@@ -17,5 +17,5 @@ interface TranslatorApplyService {
     fun getGrantedTime(an: Long): OffsetDateTime?
     fun isApplying(sessionItem: SessionItem): Boolean
     fun add(cmd: AddApplyCommand, sessionItem: SessionItem): ApiResponse<Long>
-    fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ApiResponse<Unit>
+    fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ApiResponse<Void>
 }

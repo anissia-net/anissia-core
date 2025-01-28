@@ -8,6 +8,6 @@ import anissia.shared.ApiResponse
 
 interface UserService {
     fun get(sessionItem: SessionItem): AccountUserItem
-    fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ApiResponse<Unit>
-    fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ApiResponse<Unit>
+    fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ApiResponse<Void>
+    fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ApiResponse<Void>
 }

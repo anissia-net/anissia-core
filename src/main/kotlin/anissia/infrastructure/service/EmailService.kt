@@ -76,7 +76,7 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: String, subject: String, htmlContent: String): ApiResponse<Unit> = send(listOf(to), listOf(), subject, htmlContent)
+    fun send(to: String, subject: String, htmlContent: String): ApiResponse<Void> = send(listOf(to), listOf(), subject, htmlContent)
 
     /**
      * @param to receive to
@@ -84,7 +84,7 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: List<String>, cc: List<String>, subject: String, htmlContent: String): ApiResponse<Unit> = try {
+    fun send(to: List<String>, cc: List<String>, subject: String, htmlContent: String): ApiResponse<Void> = try {
         if (enable) {
             sender.send {
                 // from / to / cc / subject / text
