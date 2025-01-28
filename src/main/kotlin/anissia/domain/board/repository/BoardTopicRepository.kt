@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
-interface BoardTopicRepository : JpaRepository<BoardTopic, Long> { //, QuerydslPredicateExecutor<BoardTopic> {
+interface BoardTopicRepository : JpaRepository<BoardTopic, Long> {
 
     @EntityGraph(attributePaths = ["account"])
     fun findWithAccountByTickerAndTopicNo(ticker: String, topicNo: Long): BoardTopic?

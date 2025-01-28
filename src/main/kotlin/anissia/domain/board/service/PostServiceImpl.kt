@@ -14,6 +14,7 @@ import anissia.shared.ApiResponse
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 
 @Service
 class PostServiceImpl(
@@ -24,7 +25,7 @@ class PostServiceImpl(
 ): PostService {
 
     @Transactional
-    override fun add(cmd: NewPostCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun add(cmd: NewPostCommand, sessionItem: SessionItem): Mono<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -46,7 +47,7 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): Mono<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -61,7 +62,7 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): Mono<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 

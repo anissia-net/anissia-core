@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 
 @Service
 class TopicServiceImpl(
@@ -24,18 +25,19 @@ class TopicServiceImpl(
     private val boardTickerRepository: BoardTickerRepository,
     private val activePanelRepository: ActivePanelRepository,
 ): TopicService {
-    override fun get(cmd: GetTopicCommand): BoardTopicItem =
-        boardTopicRepository
-            .findWithAccountByTickerAndTopicNo(cmd.ticker, cmd.topicNo)
+    override fun get(cmd: GetTopicCommand): Mono<BoardTopicItem> =
+        Mono.just(boardTopicRepository.findWithAccountByTickerAndTopicNo(cmd.ticker, cmd.topicNo))
+            .map { BoardTopicItem(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(it.topicNo)) }
+
             ?.let { BoardTopicItem(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(it.topicNo)) }
             ?: BoardTopicItem()
 
-    override fun getList(cmd: GetTopicListCommand): Page<BoardTopicItem> =
+    override fun getList(cmd: GetTopicListCommand): Mono<Page<BoardTopicItem>> =
         boardTopicRepository
             .findAllWithAccountByTickerOrderByTickerAscFixedDescTopicNoDesc(cmd.ticker, PageRequest.of(cmd.page, 20))
             .map { BoardTopicItem(it) }
 
-    override fun getMainRecent(): Map<String, List<Map<String, Any>>> =
+    override fun getMainRecent(): Mono<Map<String, List<Map<String, Any>>>> =
         mapOf("notice" to getRecent("notice"), "inquiry" to getRecent("inquiry"))
 
     private fun getRecent(ticker: String): List<Map<String, Any>> =
@@ -49,7 +51,7 @@ class TopicServiceImpl(
             ) }
 
     @Transactional
-    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): ApiResponse<Long> {
+    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): Mono<Long> {
         if (!sessionItem.isLogin) {
             return ApiResponse.fail("로그인이 필요합니다.", 0)
         }
@@ -82,7 +84,7 @@ class TopicServiceImpl(
         } ?: false
 
     @Transactional
-    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): Mono<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -101,7 +103,7 @@ class TopicServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): ApiResponse<Unit> {
+    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<Unit> {
         cmd.validate()
         sessionItem.validateLogin()
 

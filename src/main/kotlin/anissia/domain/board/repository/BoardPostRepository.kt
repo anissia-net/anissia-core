@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
-interface BoardPostRepository : JpaRepository<BoardPost, Long> { //, QuerydslPredicateExecutor<BoardPost> {
-
+interface BoardPostRepository : JpaRepository<BoardPost, Long> {
 
     @EntityGraph(attributePaths = ["account"])
     fun findAllWithAccountByTopicNoOrderByPostNo(topicNo: Long): List<BoardPost>
@@ -18,13 +17,4 @@ interface BoardPostRepository : JpaRepository<BoardPost, Long> { //, QuerydslPre
     @Modifying
     @Query("DELETE FROM BoardPost A WHERE A.topicNo = :topicNo")
     fun deleteAllByTopicNo(topicNo: Long): Int
-
-//    @EntityGraph(attributePaths = ["user"])
-//    fun findAllWithUserByCodeOrderByBnDesc(code: String, pageable: Pageable): Page<BoardTopic>
-//
-//    @EntityGraph(attributePaths = ["user"])
-//    fun findAllWithUserBy(pageable: Pageable): List<BoardTopic>
-//
-//    @EntityGraph(attributePaths = ["user"])
-//    fun findWithUserByBn(bn: Long): Optional<BoardTopic>
 }

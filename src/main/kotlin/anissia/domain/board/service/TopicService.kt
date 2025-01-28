@@ -5,12 +5,13 @@ import anissia.domain.board.model.BoardTopicItem
 import anissia.domain.session.model.SessionItem
 import anissia.shared.ApiResponse
 import org.springframework.data.domain.Page
+import reactor.core.publisher.Mono
 
 interface TopicService {
-    fun get(cmd: GetTopicCommand): BoardTopicItem
-    fun getList(cmd: GetTopicListCommand): Page<BoardTopicItem>
-    fun getMainRecent(): Map<String, List<Map<String, Any>>>
-    fun add(cmd: NewTopicCommand, sessionItem: SessionItem): ApiResponse<Long>
-    fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): ApiResponse<Unit>
-    fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): ApiResponse<Unit>
+    fun get(cmd: GetTopicCommand): Mono<BoardTopicItem>
+    fun getList(cmd: GetTopicListCommand): Mono<Page<BoardTopicItem>>
+    fun getMainRecent(): Mono<Map<String, List<Map<String, Any>>>>
+    fun add(cmd: NewTopicCommand, sessionItem: SessionItem): Mono<Long>
+    fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): Mono<Unit>
+    fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<Unit>
 }
