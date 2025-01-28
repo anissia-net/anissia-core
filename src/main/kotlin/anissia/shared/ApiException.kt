@@ -3,6 +3,7 @@ package anissia.shared
 open class ApiException(
     private val code: String,
     override val message: String?,
+    private val data: Any? = null
 ): RuntimeException() {
-    fun <T> toResult(): ApiResponse<T> = ApiResponse.of(code, message)
+    fun toResult(): ApiResponse<Any?> = ApiResponse.of(code, message, data)
 }

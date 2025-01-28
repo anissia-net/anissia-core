@@ -13,6 +13,7 @@ import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.util.HtmlUtils
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.net.URL
 import java.net.URLEncoder
@@ -42,6 +43,8 @@ class As {
         fun Any.toJson(): String = OBJECT_MAPPER.writeValueAsString(this)
 
         fun Any.toJsonBytes(): ByteArray = OBJECT_MAPPER.writeValueAsBytes(this)
+
+        fun <T> Flux<T>.toBlockList(): List<T> = this.collectList().block() ?: emptyList()
 
         private val typeRefSessionItem = object: TypeReference<SessionItem>() {}
 
