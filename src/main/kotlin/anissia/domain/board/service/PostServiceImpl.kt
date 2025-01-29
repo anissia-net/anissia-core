@@ -1,7 +1,7 @@
 package anissia.domain.board.service
 
-import anissia.domain.activePanel.ActivePanel
-import anissia.domain.activePanel.repository.ActivePanelRepository
+import anissia.domain.activePanel.command.AddDeletePostLogActivePanelCommand
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.board.BoardPost
 import anissia.domain.board.command.DeletePostCommand
 import anissia.domain.board.command.EditPostCommand
@@ -20,8 +20,8 @@ import reactor.core.publisher.Mono
 class PostServiceImpl(
     private val boardPostRepository: BoardPostRepository,
     private val boardTopicRepository: BoardTopicRepository,
-    private val activePanelRepository: ActivePanelRepository,
     private val boardTickerRepository: BoardTickerRepository,
+    private val activePanelService: ActivePanelService,
 ): PostService {
 
     @Transactional
@@ -58,7 +58,7 @@ class PostServiceImpl(
             .doOnNextMono { post ->
                 Mono.just(post)
                     .filter { it.an != sessionItem.an }
-                    .flatMap { activePanelRepository.save(ActivePanel.deletePost(post, post.account, sessionItem)) }
+                    .flatMap { activePanelService.addDeletePost(AddDeletePostLogActivePanelCommand(post, post.account), sessionItem) }
             }
             .doOnNextMono { boardPostRepository.delete(it) }
             .flatMap { boardTopicRepository.updatePostCount(it.topicNo) }

@@ -6,7 +6,7 @@ import anissia.domain.board.model.BoardTopicItem
 import anissia.domain.board.service.BoardService
 import anissia.domain.board.service.PostService
 import anissia.domain.board.service.TopicService
-import anissia.infrastructure.common.As
+import anissia.infrastructure.common.As.Companion.sessionItem
 import anissia.infrastructure.common.As.Companion.toApiResponse
 import anissia.shared.ApiResponse
 import org.springframework.data.domain.Page
@@ -39,25 +39,25 @@ class BoardController(
 
     @PostMapping("/topic/{ticker}")
     fun newTopic(@RequestBody cmd: NewTopicCommand, @PathVariable ticker: String, exchange: ServerWebExchange): Mono<ApiResponse<Long>> =
-        topicService.add(cmd.apply { this.ticker = ticker }, As.toSession(exchange)).toApiResponse
+        topicService.add(cmd.apply { this.ticker = ticker }, exchange.sessionItem).toApiResponse
 
     @PutMapping("/topic/{topicNo}")
     fun editTopic(@RequestBody cmd: EditTopicCommand, @PathVariable topicNo: Long, exchange: ServerWebExchange): Mono<ApiResponse<Void>> =
-        topicService.edit(cmd.apply { this.topicNo = topicNo }, As.toSession(exchange)).toApiResponse
+        topicService.edit(cmd.apply { this.topicNo = topicNo }, exchange.sessionItem).toApiResponse
 
     @DeleteMapping("/topic/{topicNo}")
     fun deleteTopic(cmd: DeleteTopicCommand, exchange: ServerWebExchange): Mono<ApiResponse<Void>> =
-        topicService.delete(cmd, As.toSession(exchange)).toApiResponse
+        topicService.delete(cmd, exchange.sessionItem).toApiResponse
 
     @PostMapping("/post/{topicNo}")
     fun newPost(@RequestBody cmd: NewPostCommand, @PathVariable topicNo: Long, exchange: ServerWebExchange): Mono<ApiResponse<Void>> =
-        postService.add(cmd.apply { this.topicNo = topicNo }, As.toSession(exchange)).toApiResponse
+        postService.add(cmd.apply { this.topicNo = topicNo }, exchange.sessionItem).toApiResponse
 
     @PutMapping("/post/{postNo}")
     fun editPost(@RequestBody cmd: EditPostCommand, @PathVariable postNo: Long, exchange: ServerWebExchange): Mono<ApiResponse<Void>> =
-        postService.edit(cmd.apply { this.postNo = postNo }, As.toSession(exchange)).toApiResponse
+        postService.edit(cmd.apply { this.postNo = postNo }, exchange.sessionItem).toApiResponse
 
     @DeleteMapping("/post/{postNo}")
     fun deletePost(cmd: DeletePostCommand, exchange: ServerWebExchange): Mono<ApiResponse<Void>> =
-        postService.delete(cmd, As.toSession(exchange)).toApiResponse
+        postService.delete(cmd, exchange.sessionItem).toApiResponse
 }

@@ -4,7 +4,7 @@ class AccountTest(
 ) {
 //    @PostMapping("/register")
 //    fun register(@RequestBody cmd: RegisterCommand, exchange: ServerWebExchange) =
-//        register.handle(cmd, As.toSession(exchange))
+//        register.handle(cmd, exchange.sessionItem)
 //
 //    @PutMapping("/register")
 //    fun registerValidation(@RequestBody cmd: RegisterValidationCommand, exchange: ServerWebExchange) =
@@ -12,7 +12,7 @@ class AccountTest(
 //
 //    @PostMapping("/recover")
 //    fun recover(@RequestBody cmd: RecoverCommand, exchange: ServerWebExchange) =
-//        recover.handle(cmd, As.toSession(exchange))
+//        recover.handle(cmd, exchange.sessionItem)
 //
 //    @PutMapping("/recover")
 //    fun recoverValidation(@RequestBody cmd: RecoverValidationCommand, exchange: ServerWebExchange) =

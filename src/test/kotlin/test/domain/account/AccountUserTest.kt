@@ -9,13 +9,13 @@ class AccountUserTest(
 ) {
 //    @GetMapping
 //    fun getUser(exchange: ServerWebExchange) =
-//        getUser.handle(As.toSession(exchange))
+//        getUser.handle(exchange.sessionItem)
 //
 //    @PutMapping("/password")
 //    fun editUserPassword(@RequestBody cmd: EditUserPasswordCommand, exchange: ServerWebExchange) =
-//        editUserPassword.handle(cmd, As.toSession(exchange))
+//        editUserPassword.handle(cmd, exchange.sessionItem)
 //
 //    @PutMapping("/name")
 //    fun editUserName(@RequestBody cmd: EditUserNameCommand, exchange: ServerWebExchange) =
-//        editUserName.handle(cmd, As.toSession(exchange))
+//        editUserName.handle(cmd, exchange.sessionItem)
 }

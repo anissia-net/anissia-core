@@ -16,7 +16,7 @@ class AccountController(
 ) {
     @PostMapping("/register")
     fun register(@RequestBody cmd: RequestRegisterCommand, exchange: ServerWebExchange) =
-        register.request(cmd, As.toSession(exchange))
+        register.request(cmd, exchange.sessionItem)
 
     @PutMapping("/register")
     fun registerValidation(@RequestBody cmd: CompleteRegisterCommand, exchange: ServerWebExchange) =
@@ -24,7 +24,7 @@ class AccountController(
 
     @PostMapping("/recover")
     fun recover(@RequestBody cmd: RequestRecoverPasswordCommand, exchange: ServerWebExchange) =
-        recover.request(cmd, As.toSession(exchange))
+        recover.request(cmd, exchange.sessionItem)
 
     @PutMapping("/recover")
     fun recoverValidation(@RequestBody cmd: ValidateRecoverPasswordCommand, exchange: ServerWebExchange) =

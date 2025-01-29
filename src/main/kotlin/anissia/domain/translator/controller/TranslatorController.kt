@@ -31,9 +31,9 @@ class TranslatorController(
 
     @PostMapping("/apply")
     fun newApply(@RequestBody cmd: AddApplyCommand, exchange: ServerWebExchange): ApiResponse<Long> =
-        translatorApplyService.add(cmd, As.toSession(exchange))
+        translatorApplyService.add(cmd, exchange.sessionItem)
 
     @PostMapping("/apply/{applyNo:\\d+}/poll")
     fun newApplyPoll(@RequestBody cmd: NewApplyPollCommand, @PathVariable applyNo: Long, exchange: ServerWebExchange): ApiResponse<Void> =
-        translatorApplyService.addPoll(cmd.apply { this.applyNo = applyNo }, As.toSession(exchange))
+        translatorApplyService.addPoll(cmd.apply { this.applyNo = applyNo }, exchange.sessionItem)
 }

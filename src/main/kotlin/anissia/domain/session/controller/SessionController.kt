@@ -18,13 +18,13 @@ class SessionController(
 ) {
     @PostMapping
     fun doLogin(@RequestBody cmd: DoUserLoginCommand, exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
-        loginService.doUserLogin(cmd, As.toSession(exchange))
+        loginService.doUserLogin(cmd, exchange.sessionItem)
 
     @PostMapping("/token")
     fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
-        loginService.doTokenLogin(cmd, As.toSession(exchange))
+        loginService.doTokenLogin(cmd, exchange.sessionItem)
 
     @PutMapping()
     fun updateAuthInfo(exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
-        jwtService.updateAuthInfo(As.toSession(exchange))
+        jwtService.updateAuthInfo(exchange.sessionItem)
 }

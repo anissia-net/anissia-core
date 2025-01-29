@@ -26,7 +26,7 @@ class AnimeController(
 
     @GetMapping("/delist")
     fun getAnimeDelist(exchange: ServerWebExchange): ApiResponse<Page<AnimeItem>> =
-        ApiResponse.ok(animeService.getDelist(As.toSession(exchange)))
+        ApiResponse.ok(animeService.getDelist(exchange.sessionItem))
 
     @GetMapping("/animeNo/{animeNo:\\d+}")
     fun getAnime(cmd: GetAnimeCommand, sessionItem: SessionItem, exchange: ServerWebExchange): ApiResponse<AnimeItem> =
@@ -46,17 +46,17 @@ class AnimeController(
 
     @DeleteMapping("/{animeNo}")
     fun deleteAnime(cmd: DeleteAnimeCommand, exchange: ServerWebExchange): ApiResponse<Void> =
-        animeService.delete(cmd, As.toSession(exchange))
+        animeService.delete(cmd, exchange.sessionItem)
 
     @PostMapping
     fun newAnime(@RequestBody cmd: NewAnimeCommand, exchange: ServerWebExchange): ApiResponse<Long> =
-        animeService.add(cmd, As.toSession(exchange))
+        animeService.add(cmd, exchange.sessionItem)
 
     @PutMapping("/{animeNo}")
     fun editAnime(@RequestBody cmd: EditAnimeCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): ApiResponse<Long> =
-        animeService.edit(cmd.apply { this.animeNo = animeNo }, As.toSession(exchange))
+        animeService.edit(cmd.apply { this.animeNo = animeNo }, exchange.sessionItem)
 
     @PostMapping("/recover/{agendaNo}")
     fun recoverAnime(cmd: RecoverAnimeCommand, exchange: ServerWebExchange): ApiResponse<Long> =
-        animeService.recover(cmd, As.toSession(exchange))
+        animeService.recover(cmd, exchange.sessionItem)
 }

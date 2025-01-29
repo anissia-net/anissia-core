@@ -28,7 +28,7 @@ class AnimeScheduleServiceImpl(
                 .also { googleAnalyticsProxyService.send("/api/anime/schedule/${cmd.week}", exchange) }
         } else {
             // 캐시 없는 호출은 관리자만 가능
-            As.toSession(exchange).validateAdmin()
+            exchange.sessionItem.validateAdmin()
             getScheduleNotCache(cmd.week)
         }
     }

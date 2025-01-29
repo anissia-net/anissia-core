@@ -19,11 +19,11 @@ class AnimeCaptionController(
 ) {
     @GetMapping("/caption/animeNo/{animeNo:\\d+}")
     fun getCaptionListByAnimeNo(cmd: GetListCaptionByAnimeNoCommand, exchange: ServerWebExchange): ApiResponse<List<CaptionItem>> =
-        ApiResponse.ok(captionService.getList(cmd, As.toSession(exchange)))
+        ApiResponse.ok(captionService.getList(cmd, exchange.sessionItem))
 
     @GetMapping("/caption/myList/{active}/{page}")
     fun getMyCaptionList(cmd: GetMyListCaptionCommand, exchange: ServerWebExchange): ApiResponse<Page<MyCaptionItem>> =
-        ApiResponse.ok(captionService.getList(cmd, As.toSession(exchange)))
+        ApiResponse.ok(captionService.getList(cmd, exchange.sessionItem))
 
     @GetMapping("/caption/recent")
     fun getCaptionRecent(exchange: ServerWebExchange): ApiResponse<List<CaptionRecentItem>> =
@@ -35,13 +35,13 @@ class AnimeCaptionController(
 
     @DeleteMapping("/caption/{animeNo}")
     fun deleteCaption(cmd: DeleteCaptionCommand, exchange: ServerWebExchange): ApiResponse<Void> =
-        captionService.delete(cmd, As.toSession(exchange))
+        captionService.delete(cmd, exchange.sessionItem)
 
     @PostMapping("/caption/{animeNo}")
     fun newCaption(cmd: AddCaptionCommand, exchange: ServerWebExchange): ApiResponse<Void> =
-        captionService.add(cmd, As.toSession(exchange))
+        captionService.add(cmd, exchange.sessionItem)
 
     @PutMapping("/caption/{animeNo}")
     fun editCaption(@RequestBody cmd: EditCaptionCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): ApiResponse<Void> =
-        captionService.edit(cmd.apply { this.animeNo = animeNo }, As.toSession(exchange))
+        captionService.edit(cmd.apply { this.animeNo = animeNo }, exchange.sessionItem)
 }

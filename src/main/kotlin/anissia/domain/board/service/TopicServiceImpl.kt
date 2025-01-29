@@ -1,7 +1,7 @@
 package anissia.domain.board.service
 
-import anissia.domain.activePanel.ActivePanel
-import anissia.domain.activePanel.repository.ActivePanelRepository
+import anissia.domain.activePanel.command.AddDeleteTopicLogActivePanelCommand
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.board.BoardPost
 import anissia.domain.board.BoardTopic
 import anissia.domain.board.command.*
@@ -24,7 +24,7 @@ class TopicServiceImpl(
     private val boardTopicRepository: BoardTopicRepository,
     private val boardPostRepository: BoardPostRepository,
     private val boardTickerRepository: BoardTickerRepository,
-    private val activePanelRepository: ActivePanelRepository,
+    private val activePanelService: ActivePanelService,
 ): TopicService {
 
     override fun get(cmd: GetTopicCommand): Mono<BoardTopicItem> =
@@ -91,7 +91,7 @@ class TopicServiceImpl(
                 Mono.just(topic)
                     .filter { it.an != sessionItem.an }
                     .flatMap { boardPostRepository.findWithAccountByTopicNoAndRootIsTrue(it.topicNo) }
-                    .flatMap { activePanelRepository.save(ActivePanel.deleteTopic(topic, it, it.account, sessionItem)) }
+                    .flatMap { activePanelService.addDeleteTopic(AddDeleteTopicLogActivePanelCommand(topic, it, it.account), sessionItem) }
             }
             .flatMap { boardPostRepository.deleteAllByTopicNo(it.topicNo).thenReturn(it) }
             .flatMap { boardTopicRepository.delete(it) }

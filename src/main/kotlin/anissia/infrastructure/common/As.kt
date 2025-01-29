@@ -52,10 +52,13 @@ class As {
         inline fun <reified T> logger(): Logger =
             LoggerFactory.getLogger(T::class.java)
 
-        fun toSession(exchange: ServerWebExchange): SessionItem {
-            val jud = As.decodeBase64Url(exchange.request.headers.getFirst("jud")!!)
-            return OBJECT_MAPPER.readValue(jud, typeRefSessionItem)
-        }
+//        fun toSession(exchange: ServerWebExchange): SessionItem {
+//            val jud = As.decodeBase64Url(exchange.request.headers.getFirst("jud")!!)
+//            return OBJECT_MAPPER.readValue(jud, typeRefSessionItem)
+//        }
+
+        val ServerWebExchange.sessionItem: SessionItem get() =
+            OBJECT_MAPPER.readValue(decodeBase64Url(this.request.headers.getFirst("jud")!!), typeRefSessionItem)
 
         fun getResource(path: String): URL = As::class.java.getResource(path)!!
 
