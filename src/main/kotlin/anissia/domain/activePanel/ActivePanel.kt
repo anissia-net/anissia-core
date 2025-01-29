@@ -1,9 +1,5 @@
 package anissia.domain.activePanel
 
-import anissia.domain.account.Account
-import anissia.domain.board.BoardPost
-import anissia.domain.board.BoardTopic
-import anissia.domain.session.model.SessionItem
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 
