@@ -20,6 +20,7 @@ import anissia.shared.ApiFailException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 
 @Service
@@ -36,62 +37,38 @@ class UserServiceImpl(
 
     val codeUpdateName = "AC-UPD-NAME"
 
-    override fun get(sessionItem: SessionItem): AccountUserItem =
-        AccountUserItem.cast(accountRepository.findWithRolesByAn(sessionItem.an)!!)
+    override fun get(sessionItem: SessionItem): Mono<AccountUserItem> =
+        accountRepository.findWithRolesByAn(sessionItem.an).map { AccountUserItem.create(it) }
 
-    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ApiResponse<Void> {
-        cmd.validate()
-        sessionItem.validateLogin()
-
-        val account = accountRepository.findByIdOrNull(sessionItem.an)
-            ?.takeIf { bCryptService.matches(it.password, cmd.oldPassword) }
-            ?: return ApiResponse.fail("기존 암호가 일치하지 않습니다.")
-
-        account.password = bCryptService.encode(cmd.newPassword)
-        accountRepository.save(account)
-        return ApiResponse.ok()
-    }
+    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): Mono<Void> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .doOnNext { sessionItem.validateLogin() }
+            .flatMap { accountRepository.findById(sessionItem.an) }
+            .filter { bCryptService.matches(it.password, cmd.oldPassword) }
+            .switchIfEmpty(Mono.error(ApiFailException("기존 암호가 일치하지 않습니다.")))
+            .flatMap { accountRepository.save(it.apply { password = bCryptService.encode(cmd.newPassword) }) }.then()
 
     @Transactional
-    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ApiResponse<Void> {
-        cmd.validate()
-        sessionItem.validateLogin()
+    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<Void> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .doOnNext { sessionItem.validateLogin() }
+            .flatMap { accountRepository.findById(sessionItem.an) }
+            .filter { bCryptService.matches(it.password, cmd.password) }
+            .switchIfEmpty(Mono.error(ApiFailException("암호가 일치하지 않습니다.")))
+            .filter { it.name != cmd.name }
+            .switchIfEmpty(Mono.error(ApiFailException("기존 이름과 같습니다.")))
+            .filterWhen { translatorApplyService.isApplying(sessionItem).map { !it } }
+            .switchIfEmpty(Mono.error(ApiFailException("자막제작자 신청중에는 이름을 바꿀 수 없습니다.")))
+            .filterWhen { agendaRepository.existsByCodeAndStatusAndAnAndUpdDtAfter(codeUpdateName, "DONE", sessionItem.an, OffsetDateTime.now().minusDays(1)).map { !it } }
+            .switchIfEmpty(Mono.error(ApiFailException("이름은 하루에 한번만 바꿀 수 있습니다.")))
+            .filterWhen { accountRepository.existsByName(cmd.name).map { !it } }
+            .switchIfEmpty(Mono.error(ApiFailException("사용중이거나 사용할 수 없는 이름입니다.")))
+            .flatMap { agendaRepository.save(Agenda.changeName(sessionItem.an, it.name, cmd.name)).thenReturn(it) }
+            .flatMap { accountRepository.save(it.apply { name = cmd.name }) }
 
-        val account = accountRepository.findByIdOrNull(sessionItem.an)
-            ?.takeIf { bCryptService.matches(it.password, cmd.password) }
-            ?: return ApiResponse.fail("암호가 일치하지 않습니다.")
 
-        val oldName = account.name
-        val newName = cmd.name
-
-        if (oldName == newName) {
-            return ApiResponse.fail("기존 이름과 같습니다.")
-        }
-
-        if (translatorApplyService.isApplying(sessionItem)) {
-            throw ApiFailException("자막제작자 신청중에는 이름을 바꿀 수 없습니다.")
-        }
-
-        if (agendaRepository.existsByCodeAndStatusAndAnAndUpdDtAfter(codeUpdateName, "DONE", sessionItem.an, OffsetDateTime.now().minusDays(1))) {
-            return ApiResponse.fail("이름은 하루에 한번만 바꿀 수 있습니다.")
-        }
-
-        if (accountRepository.existsByName(newName) || accountBanNameRepository.existsById(newName)) {
-            return ApiResponse.fail("사용중이거나 사용할 수 없는 이름입니다.")
-        }
-
-        agendaRepository.saveAndFlush(
-            Agenda(
-                code = codeUpdateName,
-                status = "DONE",
-                an = sessionItem.an,
-                data1 = "DONE",
-                data2 = oldName,
-                data3 = newName,
-            )
-        )
-
-        accountRepository.saveAndFlush(account.apply { name = newName })
 
         // 운영진
         if (account.roles.isNotEmpty()) {

@@ -10,6 +10,7 @@ import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTickerRepository
 import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.SessionItem
+import anissia.infrastructure.common.As.Companion.doOnNextMono
 import anissia.shared.ApiFailException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -41,7 +42,7 @@ class PostServiceImpl(
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }
             .flatMap { boardPostRepository.findById(it.postNo) }
-            .filter { !it.root && it.an == sessionItem.an }
+            .filter { it.an == sessionItem.an }
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")))
             .flatMap { boardPostRepository.save(it.apply { edit(cmd.content) }) }
             .then()
@@ -52,27 +53,15 @@ class PostServiceImpl(
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }
             .flatMap { boardPostRepository.findById(cmd.postNo) }
-            .filter { !it.root && (it.an == sessionItem.an || sessionItem.isAdmin) }
+            .filter { it.an == sessionItem.an || sessionItem.isAdmin }
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")))
-            .flatMap { post ->
+            .doOnNextMono { post ->
                 Mono.just(post)
                     .filter { it.an != sessionItem.an }
-                    .flatMap {
-                        activePanelRepository.save(
-                            ActivePanel(
-                                published = false,
-                                code = "DEL",
-                                an = sessionItem.an,
-                                data1 = "[${sessionItem.name}]님이 댓글을 삭제했습니다.",
-                                data2 = "작성자/회원번호: ${it.account?.name}/${it.an}",
-                                data3 = it.content,
-                            )
-                        )
-                    }
-                    .then(Mono.fromCallable { post })
+                    .flatMap { activePanelRepository.save(ActivePanel.deletePost(post, post.account, sessionItem)) }
             }
-            .flatMap { post -> boardPostRepository.delete(post).then(Mono.fromCallable { post.topicNo }) }
-            .flatMap { boardTopicRepository.updatePostCount(it) }
+            .doOnNextMono { boardPostRepository.delete(it) }
+            .flatMap { boardTopicRepository.updatePostCount(it.topicNo) }
             .then()
 
     private fun validAddPermission(ticker: String, sessionItem: SessionItem): Mono<Boolean> =

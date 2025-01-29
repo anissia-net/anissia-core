@@ -46,7 +46,17 @@ class Agenda (
     @OneToMany(mappedBy = "agenda")
     val polls: List<AgendaPoll> = listOf()
 ) {
-
+    companion object {
+        fun changeName(an: Long, oldName: String, newName: String) =
+            Agenda(
+                code = "AC-UPD-NAME",
+                status = "DONE",
+                an = an,
+                data1 = "DONE",
+                data2 = oldName,
+                data3 = newName,
+            )
+    }
 }
 
 /*

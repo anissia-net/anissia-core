@@ -44,7 +44,8 @@ class As {
 
         fun Any.toJsonBytes(): ByteArray = OBJECT_MAPPER.writeValueAsBytes(this)
 
-        fun <T> Flux<T>.toBlockList(): List<T> = this.collectList().block() ?: emptyList()
+        fun <T, F> Mono<T>.doOnNextMono(call: (T) -> Mono<F>): Mono<T> =
+            this.flatMap { call(it).thenReturn(it) }
 
         private val typeRefSessionItem = object: TypeReference<SessionItem>() {}
 

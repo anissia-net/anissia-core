@@ -10,7 +10,7 @@ import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTickerRepository
 import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.SessionItem
-import anissia.infrastructure.common.As.Companion.toBlockList
+import anissia.infrastructure.common.As.Companion.doOnNextMono
 import anissia.shared.ApiFailException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -29,7 +29,10 @@ class TopicServiceImpl(
 
     override fun get(cmd: GetTopicCommand): Mono<BoardTopicItem> =
         boardTopicRepository.findWithAccountByTickerAndTopicNo(cmd.ticker, cmd.topicNo)
-            .map { BoardTopicItem(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(it.topicNo).toBlockList()) }
+            .flatMap { topic ->
+                boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(topic.topicNo).collectList()
+                    .map { BoardTopicItem(topic, it) }
+            }
             .switchIfEmpty(Mono.fromCallable { BoardTopicItem() })
 
     override fun getList(cmd: GetTopicListCommand): Mono<Page<BoardTopicItem>> =
@@ -57,7 +60,8 @@ class TopicServiceImpl(
             .filterWhen { permission(it, sessionItem) }
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없습니다.")))
             .flatMap { boardTopicRepository.save(BoardTopic.create(ticker = cmd.ticker, topic = cmd.topic, an = sessionItem.an)) }
-            .flatMap { boardPostRepository.save(BoardPost.createRootPost(topicNo = it.topicNo, content = cmd.content, an = sessionItem.an)).map { it.topicNo } }
+            .flatMap { boardPostRepository.save(BoardPost.createRootPost(topicNo = it.topicNo, content = cmd.content, an = sessionItem.an)) }
+            .map { it.topicNo }
 
     private fun permission(ticker: String, sessionItem: SessionItem): Mono<Boolean> =
         boardTickerRepository.findById(ticker)
@@ -83,27 +87,13 @@ class TopicServiceImpl(
             .flatMap { boardTopicRepository.findById(cmd.topicNo) }
             .filter { it.an == sessionItem.an || sessionItem.isAdmin }
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")))
-            .flatMap { topic ->
+            .doOnNextMono { topic ->
                 Mono.just(topic)
                     .filter { it.an != sessionItem.an }
-                    .flatMap {
-                        boardPostRepository.findWithAccountByTopicNoAndRootIsTrue(it.topicNo)
-                            .map { post ->
-                                activePanelRepository.save(
-                                    ActivePanel(
-                                        published = false,
-                                        code = "DEL",
-                                        an = sessionItem.an,
-                                        data1 = "[${sessionItem.name}]님이 글을 삭제했습니다.",
-                                        data2 = "작성자/회원번호: ${it.account?.name}/${it.an}",
-                                        data3 = "${it.topic}\n${post.content}",
-                                    )
-                                )
-                            }
-                    }
-                    .then(Mono.fromCallable { topic })
+                    .flatMap { boardPostRepository.findWithAccountByTopicNoAndRootIsTrue(it.topicNo) }
+                    .flatMap { activePanelRepository.save(ActivePanel.deleteTopic(topic, it, it.account, sessionItem)) }
             }
-            .flatMap { topic -> boardPostRepository.deleteAllByTopicNo(topic.topicNo).map { topic } }
+            .flatMap { boardPostRepository.deleteAllByTopicNo(it.topicNo).thenReturn(it) }
             .flatMap { boardTopicRepository.delete(it) }
             .then()
 }

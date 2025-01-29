@@ -5,9 +5,10 @@ import anissia.domain.account.command.EditUserPasswordCommand
 import anissia.domain.account.model.AccountUserItem
 import anissia.domain.session.model.SessionItem
 import anissia.shared.ApiResponse
+import reactor.core.publisher.Mono
 
 interface UserService {
-    fun get(sessionItem: SessionItem): AccountUserItem
-    fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ApiResponse<Void>
-    fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ApiResponse<Void>
+    fun get(sessionItem: SessionItem): Mono<AccountUserItem>
+    fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<Void>
+    fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): Mono<Void>
 }

@@ -10,7 +10,7 @@ class AccountUserItem (
     val roles: Set<AccountRole>,
 ) {
     companion object {
-        fun cast(account: Account) = AccountUserItem(
+        fun create(account: Account) = AccountUserItem(
             email = account.email,
             name = account.name,
             regTime = account.regDt.toEpochSecond(),
