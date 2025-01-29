@@ -1,4 +1,4 @@
-name: Anissia Core Nomad Deploy
+name: 일단 미사용
 
 on:
   push:
