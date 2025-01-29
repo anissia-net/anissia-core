@@ -3,7 +3,7 @@
 - 주소 : [anissia.net](https://anissia.net)
 
 ## 개발환경
-* Kotlin (JDK 21)
+* Kotlin (JDK 23)
   * **[Elastic Search](https://www.elastic.co)** (설치필요)
     <br/>도커 설치시 예시
     ```
