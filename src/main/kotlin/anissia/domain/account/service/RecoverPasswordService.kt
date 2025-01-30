@@ -4,10 +4,10 @@ import anissia.domain.account.command.CompleteRecoverPasswordCommand
 import anissia.domain.account.command.RequestRecoverPasswordCommand
 import anissia.domain.account.command.ValidateRecoverPasswordCommand
 import anissia.domain.session.model.SessionItem
-import anissia.shared.ApiResponse
+import reactor.core.publisher.Mono
 
 interface RecoverPasswordService {
-    fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): ApiResponse<Void>
-    fun validate(cmd: ValidateRecoverPasswordCommand): ApiResponse<Void>
-    fun complete(cmd: CompleteRecoverPasswordCommand): ApiResponse<Void>
+    fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): Mono<Void>
+    fun validate(cmd: ValidateRecoverPasswordCommand): Mono<Void>
+    fun complete(cmd: CompleteRecoverPasswordCommand): Mono<Void>
 }

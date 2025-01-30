@@ -33,8 +33,9 @@ interface AnimeCaptionRepository : ReactiveCrudRepository<AnimeCaption, AnimeCap
     @Query("SELECT a.name FROM Account a WHERE a.an in (SELECT b.an FROM AnimeCaption b where b.anime.animeNo = :animeNo)")
     fun findAllTranslatorByAnimeNo(animeNo: Long): Flux<String>
 
-    fun findAllByAn(an: Long): Mono<AnimeCaption>
+    @EntityGraph(attributePaths = ["anime"])
+    fun findAllWithAnimeByAn(an: Long): Flux<AnimeCaption>
 
     @EntityGraph(attributePaths = ["account", "anime"])
-    fun findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(pageable: Pageable, updDt: OffsetDateTime = OffsetDateTime.now().minusDays(90), website: String = ""): Mono<Page<AnimeCaption>>
+    fun findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(pageable: Pageable, updDt: OffsetDateTime = OffsetDateTime.now().minusDays(90), website: String = ""): Flux<Page<AnimeCaption>>
 }

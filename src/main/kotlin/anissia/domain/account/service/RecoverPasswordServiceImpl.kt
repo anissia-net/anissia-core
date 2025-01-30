@@ -12,11 +12,13 @@ import anissia.infrastructure.common.As
 import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.BCryptService
 import anissia.infrastructure.service.EmailService
-import anissia.shared.ApiResponse
+import anissia.shared.ApiException
 import me.saro.kit.TextKit
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -39,67 +41,60 @@ class RecoverPasswordServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): ApiResponse<Void> {
-        cmd.validate()
-
-        var account: Account = accountRepository.findByEmailAndName(cmd.email, cmd.name)
-        // not exist match info is secret for protect personal information
-        // 개인정보보호를 위해 일치 하지 않는경우에도 일치하는 것과 같은 정보를 내보낸다.
-            ?: return ApiResponse.ok()
-
-        if (accountRecoverAuthRepository.existsByAnAndExpDtAfter(account.an, OffsetDateTime.now())) {
-            return ApiResponse.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
-        }
-
-        val ip = sessionItem.ip
-
-        val auth = accountRecoverAuthRepository
-            .save(
-                AccountRecoverAuth(
-                token = TextKit.generateBase62(128, 256),
-                an = account.an,
-                ip = ip,
-                expDt = OffsetDateTime.now().plusHours(EXP_HOUR))
-            )
-
-        asyncService.async {
-            emailService.send(
-                cmd.email,
-                "[애니시아] 계정 복원 이메일 인증",
-                recoverAuthHtml
-                    .replace("[[ip]]", ip)
-                    .replace("[[exp_dt]]", emailDateFormat.format(auth.expDt))
-                    .replace("[[url]]", "${host}/recover/${auth.no}-${auth.token}")
-            )
-        }
-
-        return ApiResponse.ok()
-    }
-
-
-    @Transactional
-    override fun complete(cmd: CompleteRecoverPasswordCommand): ApiResponse<Void> {
-        cmd.validate()
-
-        val auth = accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
-            ?: return ApiResponse.fail("이메일 인증이 만료되었습니다.")
-
-        val account = auth.account
-            ?: return ApiResponse.fail("해당 메일인증에서 계정정보를 찾을 수 없습니다.")
-
-        accountRecoverAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() })
-        accountRepository.save(account.apply { password = bCryptService.encode(cmd.password) })
-
-        return ApiResponse.ok()
-    }
+    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): Mono<Void> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .flatMap { accountRepository.findByEmailAndName(cmd.email, cmd.name) }
+            .switchIfEmpty(Mono.error(ApiException.ok())) // 계정이 일치하지 않는 경우에도 일치하는 것과 같은 정상 ok 리턴을 한다.
+            .flatMap { account ->
+                accountRecoverAuthRepository.existsByAnAndExpDtAfter(account.an, OffsetDateTime.now())
+                    .flatMap {
+                        if (it) {
+                            Mono.error(ApiException.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다."))
+                        } else {
+                            Mono.just(account)
+                        }
+                    }
+            }
+            .flatMap { account ->
+                accountRecoverAuthRepository
+                    .save(
+                        AccountRecoverAuth(
+                            token = TextKit.generateBase62(128, 256),
+                            an = account.an,
+                            ip = sessionItem.ip,
+                            expDt = OffsetDateTime.now().plusHours(EXP_HOUR))
+                    )
+            }
+            .doOnNext { auth ->
+                emailService.send(
+                    cmd.email,
+                    "[애니시아] 계정 복원 이메일 인증",
+                    recoverAuthHtml
+                        .replace("[[ip]]", sessionItem.ip)
+                        .replace("[[exp_dt]]", emailDateFormat.format(auth.expDt))
+                        .replace("[[url]]", "${host}/recover/${auth.no}-${auth.token}")
+                ).subscribeOn(Schedulers.boundedElastic()).subscribe()
+            }
+            .then()
 
     @Transactional
-    override fun validate(cmd: ValidateRecoverPasswordCommand): ApiResponse<Void> {
-        cmd.validate()
+    override fun complete(cmd: CompleteRecoverPasswordCommand): Mono<Void> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .flatMap { accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now()) }
+            .switchIfEmpty(Mono.error(ApiException.fail("이메일 인증이 만료되었습니다.")))
+            .filter { it.account != null }
+            .switchIfEmpty(Mono.error(ApiException.fail("해당 메일인증에서 계정정보를 찾을 수 없습니다.")))
+            .flatMap { auth -> accountRecoverAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() }).mapNotNull<Account> { auth.account } }
+            .flatMap { account -> accountRepository.save(account.apply { password = bCryptService.encode(cmd.password) }) }
+            .then()
 
-        return accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
-            ?.let { ApiResponse.ok() }
-            ?: ApiResponse.fail("")
-    }
-
+    @Transactional
+    override fun validate(cmd: ValidateRecoverPasswordCommand): Mono<Void> =
+        Mono.just(cmd)
+            .doOnNext { cmd.validate() }
+            .flatMap { accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now()) }
+            .switchIfEmpty(Mono.error(ApiException.fail("이메일 인증이 만료되었습니다.")))
+            .then()
 }

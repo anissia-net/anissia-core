@@ -18,6 +18,7 @@ import me.saro.kit.TextKit
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -41,7 +42,7 @@ class RegisterServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ApiResponse<Void> {
+    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): Mono<Void> {
         cmd.validate()
 
         if (sessionItem.isLogin) {
@@ -86,7 +87,7 @@ class RegisterServiceImpl(
     }
 
     @Transactional
-    override fun complete(cmd: CompleteRegisterCommand): ApiResponse<Void> {
+    override fun complete(cmd: CompleteRegisterCommand): Mono<Void> {
         cmd.validate()
 
         val auth: AccountRegisterAuth = accountRegisterAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())

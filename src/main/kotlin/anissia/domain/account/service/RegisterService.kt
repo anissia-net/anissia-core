@@ -3,9 +3,9 @@ package anissia.domain.account.service
 import anissia.domain.account.command.CompleteRegisterCommand
 import anissia.domain.account.command.RequestRegisterCommand
 import anissia.domain.session.model.SessionItem
-import anissia.shared.ApiResponse
+import reactor.core.publisher.Mono
 
 interface RegisterService {
-    fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): ApiResponse<Void>
-    fun complete(cmd: CompleteRegisterCommand): ApiResponse<Void>
+    fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): Mono<Void>
+    fun complete(cmd: CompleteRegisterCommand): Mono<Void>
 }

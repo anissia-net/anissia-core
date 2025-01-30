@@ -1,7 +1,6 @@
 package anissia.infrastructure.service
 
 import anissia.infrastructure.common.As
-import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.mail.Message
@@ -10,6 +9,8 @@ import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import java.io.File
 import java.util.*
 
@@ -76,7 +77,7 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: String, subject: String, htmlContent: String): ApiResponse<Void> = send(listOf(to), listOf(), subject, htmlContent)
+    fun send(to: String, subject: String, htmlContent: String): Mono<Void> = send(listOf(to), listOf(), subject, htmlContent)
 
     /**
      * @param to receive to
@@ -84,36 +85,23 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: List<String>, cc: List<String>, subject: String, htmlContent: String): ApiResponse<Void> = try {
-        if (enable) {
-            sender.send {
-                // from / to / cc / subject / text
-                it.setFrom(InternetAddress(props["from"]))
-                to.forEach { to -> it.addRecipient(Message.RecipientType.TO, InternetAddress(to)) }
-                cc.forEach { cc -> it.addRecipient(Message.RecipientType.CC, InternetAddress(cc)) }
-                it.subject = subject
-                it.setText(htmlContent, "UTF-8", "html")
+    fun send(to: List<String>, cc: List<String>, subject: String, htmlContent: String): Mono<Void> =
+        Mono.fromCallable<Void> {
+            if (enable) {
+                sender.send {
+                    // from / to / cc / subject / text
+                    it.setFrom(InternetAddress(props["from"]))
+                    to.forEach { to -> it.addRecipient(Message.RecipientType.TO, InternetAddress(to)) }
+                    cc.forEach { cc -> it.addRecipient(Message.RecipientType.CC, InternetAddress(cc)) }
+                    it.subject = subject
+                    it.setText(htmlContent, "UTF-8", "html")
+                }
+            } else {
+                log.info("EMAIL DEVELOP MODE $to -> $cc -> $subject\n$htmlContent")
             }
-            ApiResponse.ok()
-        } else {
-            log.debug("""
-                    EMAIL DEVELOP MODE
-                    to: $to
-                    cc: $cc
-                    subject: $subject
-                    content: $htmlContent
-                """.trimIndent())
-            ApiResponse.ok()
+            null
+        }.doOnError {
+            log.info("EMAIL ERROR $to -> $cc -> $subject\n$htmlContent")
         }
-    } catch (e: Exception) {
-        log.debug("""
-            EMAIL ERROR
-            to: $to
-            cc: $cc
-            subject: $subject
-            content: $htmlContent
-        """.trimIndent())
-        log.error(e.message, e)
-        ApiResponse.error(e.message)
-    }
+
 }
