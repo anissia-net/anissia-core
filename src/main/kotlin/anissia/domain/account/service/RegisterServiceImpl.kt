@@ -26,8 +26,6 @@ class RegisterServiceImpl(
     private val accountBanNameRepository: AccountBanNameRepository,
     private val accountRegisterAuthRepository: AccountRegisterAuthRepository,
     private val accountRepository: AccountRepository,
-    private val bCryptService: BCryptService,
-    private val asyncService: AsyncService,
     @Value("\${host}") private val host: String,
 
     private val emailService: EmailService,

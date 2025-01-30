@@ -8,8 +8,8 @@ import anissia.domain.account.command.ValidateRecoverPasswordCommand
 import anissia.domain.account.repository.AccountRecoverAuthRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.session.model.SessionItem
-import anissia.infrastructure.common.As
-import anissia.infrastructure.service.BCryptService
+import anissia.infrastructure.common.enBCrypt
+import anissia.infrastructure.common.toResource
 import anissia.infrastructure.service.EmailService
 import anissia.shared.ApiException
 import me.saro.kit.TextKit
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -26,13 +25,10 @@ class RecoverPasswordServiceImpl(
     private val accountRecoverAuthRepository: AccountRecoverAuthRepository,
     private val accountRepository: AccountRepository,
     @Value("\${host}") private val host: String,
-    private val asyncService: AsyncService,
     private val emailService: EmailService,
-    private val bCryptService: BCryptService,
 ): RecoverPasswordService {
 
-    private val log = As.logger<RecoverPasswordServiceImpl>()
-    private val recoverAuthHtml = As.getResource("/email/account-recover-auth.html").readText()
+    private val recoverAuthHtml = "/email/account-recover-auth.html".toResource.readText()
     private val emailDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초")
 
     companion object {
@@ -86,7 +82,7 @@ class RecoverPasswordServiceImpl(
             .filter { it.account != null }
             .switchIfEmpty(Mono.error(ApiException.fail("해당 메일인증에서 계정정보를 찾을 수 없습니다.")))
             .flatMap { auth -> accountRecoverAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() }).mapNotNull<Account> { auth.account } }
-            .flatMap { account -> accountRepository.save(account.apply { password = bCryptService.encode(cmd.password) }) }
+            .flatMap { account -> accountRepository.save(account.apply { password = cmd.password.enBCrypt }) }
             .then()
 
     @Transactional

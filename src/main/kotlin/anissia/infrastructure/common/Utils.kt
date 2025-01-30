@@ -53,7 +53,7 @@ fun <T, U> Mono<Page<U>>.replacePage(list: List<T>): Mono<Page<T>> =
 val ServerWebExchange.sessionItem: SessionItem get() =
     OBJECT_MAPPER.readValue(this.request.headers.getFirst("jud")?.decodeBase64Url, typeRefSessionItem)
 
-val String.toBCrypt: String get() = BCrypt.hashpw(this, BCRYPT_SALT)
+val String.enBCrypt: String get() = BCrypt.hashpw(this, BCRYPT_SALT)
 fun String.eqBCrypt(plaintext: String): Boolean = BCrypt.checkpw(plaintext, this)
 
 val Any.toJson: String get() = OBJECT_MAPPER.writeValueAsString(this)

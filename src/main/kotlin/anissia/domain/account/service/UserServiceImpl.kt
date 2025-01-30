@@ -13,8 +13,9 @@ import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.TranslatorApplyService
-import anissia.infrastructure.common.As.Companion.doOnNextMono
-import anissia.infrastructure.service.BCryptService
+import anissia.infrastructure.common.doOnNextMono
+import anissia.infrastructure.common.enBCrypt
+import anissia.infrastructure.common.eqBCrypt
 import anissia.shared.ApiFailException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,7 +24,6 @@ import java.time.OffsetDateTime
 
 @Service
 class UserServiceImpl(
-    private val bCryptService: BCryptService,
     private val accountRepository: AccountRepository,
     private val accountBanNameRepository: AccountBanNameRepository,
     private val translatorApplyService: TranslatorApplyService,
@@ -43,9 +43,9 @@ class UserServiceImpl(
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }
             .flatMap { accountRepository.findById(sessionItem.an) }
-            .filter { bCryptService.matches(it.password, cmd.oldPassword) }
+            .filter { cmd.oldPassword.eqBCrypt(it.password) }
             .switchIfEmpty(Mono.error(ApiFailException("기존 암호가 일치하지 않습니다.")))
-            .flatMap { accountRepository.save(it.apply { password = bCryptService.encode(cmd.newPassword) }) }.then()
+            .flatMap { accountRepository.save(it.apply { password = cmd.newPassword.enBCrypt }) }.then()
 
     @Transactional
     override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<Void> =
@@ -53,7 +53,7 @@ class UserServiceImpl(
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }
             .flatMap { accountRepository.findById(sessionItem.an) }
-            .filter { bCryptService.matches(it.password, cmd.password) }
+            .filter { cmd.password.eqBCrypt(it.password) }
             .switchIfEmpty(Mono.error(ApiFailException("암호가 일치하지 않습니다.")))
             .filter { it.name != cmd.name }
             .switchIfEmpty(Mono.error(ApiFailException("기존 이름과 같습니다.")))
