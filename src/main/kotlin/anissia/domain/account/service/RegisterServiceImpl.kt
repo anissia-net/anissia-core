@@ -8,14 +8,12 @@ import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.session.model.SessionItem
-import anissia.infrastructure.common.As
 import anissia.infrastructure.common.enBCrypt
+import anissia.infrastructure.common.toClassByJson
 import anissia.infrastructure.common.toJson
 import anissia.infrastructure.common.toResource
-import anissia.infrastructure.service.BCryptService
 import anissia.infrastructure.service.EmailService
 import anissia.shared.ApiFailException
-import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import me.saro.kit.TextKit
 import org.springframework.beans.factory.annotation.Value
@@ -37,6 +35,7 @@ class RegisterServiceImpl(
 
     private val registerAuthHtml = "/email/account-register-auth.html".toResource.readText()
     private val emailDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초")
+    private val trRequestRegisterCommand: TypeReference<RequestRegisterCommand> = object: TypeReference<RequestRegisterCommand>() {}
 
     companion object {
         private const val EXP_HOUR = 1
@@ -80,33 +79,25 @@ class RegisterServiceImpl(
 
 
     @Transactional
-    override fun complete(cmd: CompleteRegisterCommand): Mono<Void> {
-        cmd.validate()
-
-        val auth: AccountRegisterAuth = accountRegisterAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
-            ?: return ApiResponse.fail("이메일 인증이 만료되었습니다.")
-
-        val requestRegisterCommand = As.OBJECT_MAPPER.readValue(auth.data, object: TypeReference<RequestRegisterCommand>() {})
-
-        if (accountRepository.existsByEmail(requestRegisterCommand.email)) {
-            return ApiResponse.fail("이미 가입된 계정입니다.")
-        }
-
-        if (accountRepository.existsByName(requestRegisterCommand.name)) {
-            return ApiResponse.fail("사용중인 닉네임 입니다.")
-        }
-
-        accountRegisterAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() })
-
-        accountRepository.save(
-            Account(
-                email = requestRegisterCommand.email,
-                password = requestRegisterCommand.password,
-                name = requestRegisterCommand.name
-            )
-        )
-
-        return ApiResponse.ok()
-    }
-
+    override fun complete(cmd: CompleteRegisterCommand): Mono<Void> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .flatMap { accountRegisterAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now()) }
+            .switchIfEmpty(Mono.error(ApiFailException("이메일 인증이 만료되었습니다.")))
+            .flatMap { accountRegisterAuth ->
+                val requestRegisterCommand = accountRegisterAuth.data.toClassByJson(trRequestRegisterCommand)
+                accountRepository.existsByEmail(requestRegisterCommand.email).filter { !it }
+                    .switchIfEmpty(Mono.error(ApiFailException("이미 가입된 계정입니다.")))
+                    .flatMap { accountRepository.existsByName(requestRegisterCommand.name).filter { !it } }
+                    .switchIfEmpty(Mono.error(ApiFailException("사용중인 닉네임 입니다.")))
+                    .flatMap { accountRegisterAuthRepository.save(accountRegisterAuth.apply { usedDt = OffsetDateTime.now() }) }
+                    .flatMap { accountRepository.save(
+                        Account(
+                            email = requestRegisterCommand.email,
+                            password = requestRegisterCommand.password,
+                            name = requestRegisterCommand.name
+                        )
+                    ) }
+                    .then()
+            }
 }
