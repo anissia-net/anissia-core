@@ -9,8 +9,12 @@ import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As
+import anissia.infrastructure.common.enBCrypt
+import anissia.infrastructure.common.toJson
+import anissia.infrastructure.common.toResource
 import anissia.infrastructure.service.BCryptService
 import anissia.infrastructure.service.EmailService
+import anissia.shared.ApiFailException
 import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import me.saro.kit.TextKit
@@ -31,7 +35,7 @@ class RegisterServiceImpl(
     private val emailService: EmailService,
 ): RegisterService {
 
-    private val registerAuthHtml = As.getResource("/email/account-register-auth.html").readText()
+    private val registerAuthHtml = "/email/account-register-auth.html".toResource.readText()
     private val emailDateFormat = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초")
 
     companion object {
@@ -39,49 +43,41 @@ class RegisterServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): Mono<Void> {
-        cmd.validate()
+    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): Mono<Void> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .filter { !sessionItem.isLogin }
+            .switchIfEmpty(Mono.error(ApiFailException("로그인 중에는 계정을 생성할 수 없습니다.")))
+            .filterWhen { accountRepository.existsByEmail(cmd.email).map { !it } }
+            .switchIfEmpty(Mono.error(ApiFailException("이미 가입된 계정입니다.")))
+            .filterWhen { accountRepository.existsByName(cmd.name).map { !it } }
+            .filterWhen { accountBanNameRepository.existsById(cmd.name).map { !it } }
+            .switchIfEmpty(Mono.error(ApiFailException("사용중이거나 사용할 수 없는 이름입니다.")))
+            .filterWhen { accountRegisterAuthRepository.existsByEmailAndExpDtAfter(cmd.email, OffsetDateTime.now()).map { !it } }
+            .switchIfEmpty(Mono.error(ApiFailException("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")))
+            .flatMap {
+                accountRegisterAuthRepository.save(
+                    AccountRegisterAuth(
+                        token = TextKit.generateBase62(128, 256),
+                        email = cmd.email,
+                        ip = sessionItem.ip,
+                        data = cmd.apply { password = cmd.password.enBCrypt }.toJson,
+                        expDt = OffsetDateTime.now().plusHours(1)
+                    )
+                )
+            }
+            .doOnNext { auth ->
+                emailService.send(
+                    cmd.email,
+                    "[애니시아] 회원가입 이메일 인증",
+                    registerAuthHtml
+                        .replace("[[ip]]", auth.ip)
+                        .replace("[[exp_dt]]", auth.expDt.format(emailDateFormat))
+                        .replace("[[url]]", "${host}/register/${auth.no}-${auth.token}")
+                )
+            }
+            .then()
 
-        if (sessionItem.isLogin) {
-            return ApiResponse.fail("로그인 중에는 계정을 생성할 수 없습니다.")
-        }
-
-        if (accountRepository.existsByEmail(cmd.email)) {
-            return ApiResponse.fail("이미 가입된 계정입니다.")
-        }
-
-        if (accountRepository.existsByName(cmd.name) || accountBanNameRepository.existsById(cmd.name)) {
-            return ApiResponse.fail("사용중이거나 사용할 수 없는 이름입니다.")
-        }
-
-        if (accountRegisterAuthRepository.existsByEmailAndExpDtAfter(cmd.email, OffsetDateTime.now())) {
-            return ApiResponse.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
-        }
-
-        val ip = sessionItem.ip
-        val auth = accountRegisterAuthRepository.save(
-            AccountRegisterAuth(
-                token = TextKit.generateBase62(128, 256),
-                email = cmd.email,
-                ip = ip,
-                data = As.toJsonString(cmd.apply { password = bCryptService.encode(password) }),
-                expDt = OffsetDateTime.now().plusHours(1)
-            )
-        )
-
-        asyncService.async {
-            emailService.send(
-                cmd.email,
-                "[애니시아] 회원가입 이메일 인증",
-                registerAuthHtml
-                    .replace("[[ip]]", ip)
-                    .replace("[[exp_dt]]", auth.expDt.format(emailDateFormat))
-                    .replace("[[url]]", "${host}/register/${auth.no}-${auth.token}")
-            )
-        }
-
-        return ApiResponse.ok()
-    }
 
     @Transactional
     override fun complete(cmd: CompleteRegisterCommand): Mono<Void> {
