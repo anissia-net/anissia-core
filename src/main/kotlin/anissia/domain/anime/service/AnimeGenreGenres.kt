@@ -1,5 +1,7 @@
 package anissia.domain.anime.service
 
+import reactor.core.publisher.Mono
+
 interface AnimeGenreGenres {
-    fun get(): List<String>
+    fun get(): Mono<List<String>>
 }

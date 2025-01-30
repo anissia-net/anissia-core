@@ -4,6 +4,7 @@ import anissia.domain.session.model.SessionItem
 import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.mindrot.jbcrypt.BCrypt
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.MethodParameter
@@ -13,7 +14,6 @@ import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.util.HtmlUtils
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.net.URL
 import java.net.URLEncoder
@@ -28,63 +28,65 @@ import java.util.*
  */
 class As {
     companion object {
-        val OBJECT_MAPPER = ObjectMapper()
-        const val IS_NAME = "[0-9A-Za-z가-힣㐀-䶵一-龻ぁ-ゖゝ-ヿ々_]{2,16}"
-        const val IS_MAIL = "[_a-z0-9\\-]+(\\.[_a-z0-9\\-]+)*@([_a-z0-9\\-]+\\.)+[a-z]{2,}";
-        val IS_MAIL_REGEX = Regex(IS_MAIL)
-        val DTF_ISO_YMD = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val DTF_ISO_YMDHMS = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-        val DTF_ISO_CAPTION = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
-        val DTF_RANK_HOUR = DateTimeFormatter.ofPattern("yyyyMMddHH")
-        val DTF_USER_YMDHMS = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss일")
-        val EN_BASE64_URL = Base64.getUrlEncoder()
-        val DE_BASE64_URL = Base64.getUrlDecoder()
-
-        fun Any.toJson(): String = OBJECT_MAPPER.writeValueAsString(this)
-
-        fun Any.toJsonBytes(): ByteArray = OBJECT_MAPPER.writeValueAsBytes(this)
-
-        fun <T, F> Mono<T>.doOnNextMono(call: (T) -> Mono<F>): Mono<T> =
-            this.flatMap { call(it).thenReturn(it) }
+        private val OBJECT_MAPPER = ObjectMapper()
+        val REGEX_NAME: Regex = Regex("[0-9A-Za-z가-힣㐀-䶵一-龻ぁ-ゖゝ-ヿ々_]{2,16}")
+        val REGEX_MAIL: Regex = Regex("[_a-z0-9\\-]+(\\.[_a-z0-9\\-]+)*@([_a-z0-9\\-]+\\.)+[a-z]{2,}")
+        val REGEX_ANIME_DATE: Regex = Regex("\\d{4}-\\d{2}-\\d{2}")
+        val DTF_ISO_YMD: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val DTF_ISO_YMDHMS: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val DTF_ISO_CAPTION: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+        val DTF_RANK_HOUR: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHH")
+        val DTF_USER_YMDHMS: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss일")
+        val EN_BASE64_URL: Base64.Encoder = Base64.getUrlEncoder()
+        val DE_BASE64_URL: Base64.Decoder = Base64.getUrlDecoder()
+        val BCRYPT_SALT: String = BCrypt.gensalt(10)
 
         private val typeRefSessionItem = object: TypeReference<SessionItem>() {}
 
-        inline fun <reified T> logger(): Logger =
-            LoggerFactory.getLogger(T::class.java)
+        inline fun <reified T> logger(): Logger = LoggerFactory.getLogger(T::class.java)
 
-//        fun toSession(exchange: ServerWebExchange): SessionItem {
-//            val jud = As.decodeBase64Url(exchange.request.headers.getFirst("jud")!!)
-//            return OBJECT_MAPPER.readValue(jud, typeRefSessionItem)
-//        }
+        fun <T, F> Mono<T>.doOnNextMono(call: (T) -> Mono<F>): Mono<T> = this.flatMap { call(it).thenReturn(it) }
+        val <T> Mono<T>.toApiResponse: Mono<ApiResponse<T>> get() = this.map { ApiResponse.ok(it) }
+
+        fun <T> Mono<Page<T>>.filterPage(filter: (T) -> Boolean): Mono<Page<T>> =
+            this.map { page -> PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements) }
+
+        fun <T, U> Mono<Page<U>>.replacePage(list: List<T>): Mono<Page<T>> =
+            this.map { page -> PageImpl(list, page.pageable, page.totalElements) }
 
         val ServerWebExchange.sessionItem: SessionItem get() =
-            OBJECT_MAPPER.readValue(decodeBase64Url(this.request.headers.getFirst("jud")!!), typeRefSessionItem)
+            OBJECT_MAPPER.readValue(this.request.headers.getFirst("jud")?.decodeBase64Url, typeRefSessionItem)
 
-        fun getResource(path: String): URL = As::class.java.getResource(path)!!
+        val String.toBCrypt: String get() = BCrypt.hashpw(this, BCRYPT_SALT)
+        fun String.eqBCrypt(plaintext: String): Boolean = BCrypt.checkpw(plaintext, this)
 
-        fun toJsonString(value: Any): String = OBJECT_MAPPER.writeValueAsString(value)!!
+        val Any.toJson: String get() = OBJECT_MAPPER.writeValueAsString(this)
+        val Any.toJsonBytes: ByteArray get() = OBJECT_MAPPER.writeValueAsBytes(this)
+        fun <T> String.toClassByJson(valueTypeRef: TypeReference<T>): T = OBJECT_MAPPER.readValue(this, valueTypeRef)!!
 
-        fun toJsonString(vararg value: Any): String {
-            val map = mutableMapOf<Any, Any>()
-            value.forEach { map.putAll(OBJECT_MAPPER.convertValue(it, object: TypeReference<Map<String, Any>>() {})) }
-            return OBJECT_MAPPER.writeValueAsString(map)!!
+        val String.toResource: URL get() = As::class.java.getResource(this)!!
+
+        val String.escapeHtml: String get() = HtmlUtils.htmlEscape(this)
+        val String.encodeUrl: String get() = URLEncoder.encode(this, Charsets.UTF_8)
+        val String.encodeBase64Url: String get() = EN_BASE64_URL.encodeToString(this.toByteArray(Charsets.UTF_8))
+        val String.decodeBase64Url: String get() = DE_BASE64_URL.decode(this).toString(Charsets.UTF_8)
+
+        // anissia anime date yyyy-MM-dd, yyyy-MM-99, yyyy-99-99 or empty
+        val String.isAsAnimeDate: Boolean get() = when {
+            this.isEmpty() -> true
+            else -> this.matches(REGEX_ANIME_DATE) && try {
+                LocalDate.parse(this.replace("-99", "-01"), DTF_ISO_YMD); true
+            } catch (e: Exception) { false }
         }
 
-        //fun <T> toClass(json: String): T = OBJECT_MAPPER.readValue(json, object: TypeReference<T>(){})
 
-        //fun <T> toClassList(json: String): List<T> = OBJECT_MAPPER.readValue(json, object: TypeReference<List<T>>(){})
-
-        fun String.escapeHtml() = HtmlUtils.htmlEscape(this)
-
-        fun String.encodeUrl() = URLEncoder.encode(this, Charsets.UTF_8)
-
-        fun <T> String.toClassByJson(valueTypeRef: TypeReference<T>) = OBJECT_MAPPER.readValue(this, valueTypeRef)!!
-
-        fun <T> String.toMapByJson() = this.toClassByJson(object: TypeReference<Map<String, Any>>(){})
-
-        fun <T, U> replacePage(page: Page<U>, list: List<T>): Page<T> = PageImpl(list, page.pageable, page.totalElements)
-
-        fun <T> filterPage(page: Page<T>, filter: (T) -> Boolean): Page<T> = PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements)
+//        fun toJsonString(vararg value: Any): String {
+//            val map = mutableMapOf<Any, Any>()
+//            value.forEach { map.putAll(OBJECT_MAPPER.convertValue(it, object: TypeReference<Map<String, Any>>() {})) }
+//            return OBJECT_MAPPER.writeValueAsString(map)!!
+//        }
+//        fun <T> filterPage(page: Page<T>, filter: (T) -> Boolean): Page<T> = PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements)
+//        fun <T, U> replacePage(page: Page<U>, list: List<T>): Page<T> = PageImpl(list, page.pageable, page.totalElements)
 
         fun getHttp400(msg: String): MethodArgumentNotValidException {
             val errors = BeanPropertyBindingResult(null, "").apply { reject("400", msg) }
@@ -98,30 +100,10 @@ class As {
         fun throwHttp400If(msg: String, isError: Boolean) {
             if (isError) { throwHttp400(msg) }
         }
-        fun throwHttp400Exception(msg: String, exec: () -> Unit) = try { exec() } catch (e: Exception) { throwHttp400(msg) }
 
-        fun isWebSite(website: String, allowEmpty: Boolean = false) =
+        fun throwHttp400Exception(msg: String, exec: () -> Unit): Unit = try { exec() } catch (e: Exception) { throwHttp400(msg) }
+
+        fun isWebSite(website: String, allowEmpty: Boolean = false): Boolean =
             (allowEmpty && website == "") || website.startsWith("https://") || website.startsWith("http://")
-
-        // anissia anime date yyyy-MM-dd, yyyy-MM-99, yyyy-99-99 or empty
-        fun isAsAnimeDate(animeDate: String): Boolean {
-            if (animeDate.isEmpty()) {
-                return true
-            } else if (animeDate.matches("[\\d]{4}-[\\d]{2}-[\\d]{2}".toRegex())) {
-                try {
-                    LocalDate.parse(animeDate.replace("-99", "-01"), DTF_ISO_YMD)
-                    return true
-                } catch (e: Exception) { }
-            }
-            return false
-        }
-
-        fun encodeBase64Url(value: String): String = EN_BASE64_URL.encodeToString(value.toByteArray(Charsets.UTF_8))
-
-        fun decodeBase64Url(value: String): String = DE_BASE64_URL.decode(value).toString(Charsets.UTF_8)
-
-        val <T> Mono<T>.toApiResponse: Mono<ApiResponse<T>>
-            get() = this.map { ApiResponse.ok(it) }
-
     }
 }

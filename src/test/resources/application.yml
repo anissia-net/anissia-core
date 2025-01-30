@@ -12,9 +12,7 @@ anissia:
     jdbcUrl: jdbc:mariadb://localhost:3306/anissia
     username: anissia
     password: anissia
-  ndb:
-    host: localhost
-    port: 9200
+  ndb.url: localhost:9200
 
 spring:
   jpa:

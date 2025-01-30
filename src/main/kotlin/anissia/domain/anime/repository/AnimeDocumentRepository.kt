@@ -26,7 +26,9 @@ class AnimeDocumentRepository(
             "translators" to translators,
             "endDate" to anime.endDate.replace("-", "").run { if (isEmpty()) 0L else toLong() }
         ))
+
         elasticsearch.request("PUT", "/$index/_doc/${anime.animeNo}", body)
+
         log.info("Updated anime document: $body")
     }
 

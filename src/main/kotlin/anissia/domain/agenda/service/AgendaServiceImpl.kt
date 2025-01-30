@@ -3,6 +3,7 @@ package anissia.domain.agenda.service
 import anissia.domain.agenda.repository.AgendaRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 
 @Service
 class AgendaServiceImpl(
@@ -10,8 +11,5 @@ class AgendaServiceImpl(
 ): AgendaService {
 
     @Transactional
-    override fun deleteDeletePaddingAnime() {
-        agendaRepository.deleteDeletePadding()
-    }
-
+    override fun deleteDeletePaddingAnime(): Mono<Int> = agendaRepository.deleteDeletePadding()
 }

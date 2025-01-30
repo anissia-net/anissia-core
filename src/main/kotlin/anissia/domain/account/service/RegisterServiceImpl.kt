@@ -9,7 +9,6 @@ import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As
-import anissia.infrastructure.service.AsyncService
 import anissia.infrastructure.service.BCryptService
 import anissia.infrastructure.service.EmailService
 import anissia.shared.ApiResponse
