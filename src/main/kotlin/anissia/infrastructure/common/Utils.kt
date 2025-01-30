@@ -44,11 +44,11 @@ inline fun <reified T> logger(): Logger = LoggerFactory.getLogger(T::class.java)
 fun <T, F> Mono<T>.doOnNextMono(call: (T) -> Mono<F>): Mono<T> = this.flatMap { call(it).thenReturn(it) }
 val <T> Mono<T>.toApiResponse: Mono<ApiResponse<T>> get() = this.map { ApiResponse.ok(it) }
 
-fun <T> Mono<Page<T>>.filterPage(filter: (T) -> Boolean): Mono<Page<T>> =
-    this.map { page -> PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements) }
+fun <T> Page<T>.filterPage(filter: (T) -> Boolean): Page<T> = PageImpl(this.content.filter { filter(it) }, this.pageable, this.totalElements)
+fun <T, U> Page<U>.replacePage(list: List<T>): Page<T> = PageImpl(list, this.pageable, this.totalElements)
 
-fun <T, U> Mono<Page<U>>.replacePage(list: List<T>): Mono<Page<T>> =
-    this.map { page -> PageImpl(list, page.pageable, page.totalElements) }
+fun <T> Mono<Page<T>>.filterPage(filter: (T) -> Boolean): Mono<Page<T>> = this.map { page -> PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements) }
+fun <T, U> Mono<Page<U>>.replacePage(list: List<T>): Mono<Page<T>> = this.map { page -> PageImpl(list, page.pageable, page.totalElements) }
 
 val ServerWebExchange.sessionItem: SessionItem get() =
     OBJECT_MAPPER.readValue(this.request.headers.getFirst("jud")?.decodeBase64Url, typeRefSessionItem)

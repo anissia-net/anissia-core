@@ -2,10 +2,10 @@ package anissia.domain.activePanel.service
 
 import anissia.domain.activePanel.ActivePanel
 import anissia.domain.activePanel.command.*
-import anissia.domain.activePanel.model.*
+import anissia.domain.activePanel.model.ActivePanelItem
 import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.session.model.SessionItem
-import anissia.infrastructure.common.As
+import anissia.infrastructure.common.filterPage
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -19,7 +19,7 @@ class ActivePanelServiceImpl(
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .flatMap { activePanelRepository.findAllByOrderByApNoDesc(PageRequest.of(it.page, 20)) }
-            .map { page -> if (cmd.mode == "admin" && sessionItem.isAdmin) page else As.filterPage(page) { item -> item.published } }
+            .map { page -> if (cmd.mode == "admin" && sessionItem.isAdmin) page else page.filterPage { item -> item.published } }
             .map { page -> page.map { ActivePanelItem(it) } }
 
     override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<Void> =
