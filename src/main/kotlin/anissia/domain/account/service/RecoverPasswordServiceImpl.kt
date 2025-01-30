@@ -73,7 +73,7 @@ class RecoverPasswordServiceImpl(
                         .replace("[[ip]]", sessionItem.ip)
                         .replace("[[exp_dt]]", emailDateFormat.format(auth.expDt))
                         .replace("[[url]]", "${host}/recover/${auth.no}-${auth.token}")
-                ).subscribeOn(Schedulers.boundedElastic()).subscribe()
+                )
             }
             .then()
 
