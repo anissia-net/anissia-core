@@ -1,8 +1,7 @@
 package anissia.infrastructure.service
 
-import anissia.infrastructure.common.As.Companion.encodeUrl
-import anissia.infrastructure.common.As.Companion.getHttp400
-import anissia.infrastructure.common.As.Companion.logger
+import anissia.infrastructure.common.encodeUrl
+import anissia.infrastructure.common.getHttp400
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -10,12 +9,10 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 
-
 @Service
 class GoogleAnalyticsProxyService(
     @Value("\${google.analytics.id}") private val id: String
 ) {
-    private val log = logger<GoogleAnalyticsProxyService>()
     private val apiClient = WebClient.builder().baseUrl("https://www.google-analytics.com/collect").build()
 
     fun send(path: String, exchange: ServerWebExchange) =
@@ -25,7 +22,8 @@ class GoogleAnalyticsProxyService(
                 val ua = request.headers["user-agent"]
                     ?.firstOrNull()
                     ?.encodeUrl
-                    ?: throw getHttp400("does not exist user-agent")
+                    ?: return@flatMap Mono.error<Unit>(getHttp400("does not exist user-agent"))
+
                 apiClient.post()
                     .bodyValue("v=1&tid=$id&cid=$ip&t=pageview&dp=${path.encodeUrl}&uip=$ip&ua=$ua")
                     .exchangeToMono { Mono.just(it.statusCode().is2xxSuccessful) }

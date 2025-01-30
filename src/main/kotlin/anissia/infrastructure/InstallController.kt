@@ -1,12 +1,28 @@
 package anissia.infrastructure
 
 import org.springframework.context.annotation.Profile
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
+import java.util.*
 
 @Profile("dev", "local")
 @RestController
 class InstallController(
 ) {
+
+    @Transactional
+    @GetMapping("/install", produces = ["text/plain"])
+    fun install(): Mono<String> {
+        val list = Collections.synchronizedList(mutableListOf<String>())
+
+
+        return Mono.fromCallable {
+            list.joinToString("\n")
+        }
+    }
+
 //    @Transactional
 //    @GetMapping("/install", produces = ["text/plain"])
 //    fun install(): String {

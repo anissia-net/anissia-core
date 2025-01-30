@@ -37,6 +37,7 @@ val DE_BASE64_URL: Base64.Decoder = Base64.getUrlDecoder()
 val BCRYPT_SALT: String = BCrypt.gensalt(10)
 
 private val typeRefSessionItem = object: TypeReference<SessionItem>() {}
+private val _log = logger<Utils>()
 
 inline fun <reified T> logger(): Logger = LoggerFactory.getLogger(T::class.java)
 
@@ -83,10 +84,10 @@ val String.isAsAnimeDate: Boolean get() = when {
 //        fun <T> filterPage(page: Page<T>, filter: (T) -> Boolean): Page<T> = PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements)
 //        fun <T, U> replacePage(page: Page<U>, list: List<T>): Page<T> = PageImpl(list, page.pageable, page.totalElements)
 
-fun getHttp400(msg: String): MethodArgumentNotValidException {
-    val errors = BeanPropertyBindingResult(null, "").apply { reject("400", msg) }
-    return MethodArgumentNotValidException(MethodParameter(Utils::class.java.constructors[0], -1, 0), errors)
-}
+fun getHttp400(msg: String): MethodArgumentNotValidException =
+    BeanPropertyBindingResult(null, "")
+        .apply { _log.error(msg); reject("400", msg) }
+        .run { MethodArgumentNotValidException(MethodParameter(Utils::class.java.constructors[0], -1, 0), this) }
 
 fun throwHttp400(msg: String) {
     throw getHttp400(msg)

@@ -1,6 +1,6 @@
 package anissia.infrastructure.service
 
-import anissia.infrastructure.common.As
+import anissia.infrastructure.common.logger
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.mail.Message
@@ -47,7 +47,7 @@ class EmailService (
     private val enable: Boolean = configFile.exists()
     private val props: Map<String, String> = if (enable) ObjectMapper().readValue(configFile, object: TypeReference<Map<String, String>>(){}) else mapOf()
     private val sender: JavaMailSenderImpl = JavaMailSenderImpl()
-    private val log: Logger = As.logger<EmailService>()
+    private val log: Logger = logger<EmailService>()
 
     init {
         if (enable) {

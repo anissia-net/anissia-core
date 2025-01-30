@@ -1,7 +1,7 @@
 package anissia.infrastructure.configuration
 
-import anissia.infrastructure.common.As
-import anissia.infrastructure.common.As.Companion.toJsonBytes
+import anissia.infrastructure.common.logger
+import anissia.infrastructure.common.toJsonBytes
 import anissia.shared.ApiErrorException
 import anissia.shared.ApiFailException
 import anissia.shared.ApiResponse
@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono
 @Component
 class GlobalExceptionHandler : WebExceptionHandler {
 
-    private val log = As.logger<GlobalExceptionHandler>()
+    private val log = logger<GlobalExceptionHandler>()
 
     override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> =
         when (ex) {
@@ -64,7 +64,7 @@ class GlobalExceptionHandler : WebExceptionHandler {
 
     fun ServerHttpResponse.write(apiResponse: ApiResponse<Void>, status: HttpStatusCode = HttpStatus.OK): Mono<Void> =
         also { it.statusCode = status }
-            .writeWith(Mono.just(bufferFactory().wrap(apiResponse.toJsonBytes())))
+            .writeWith(Mono.just(bufferFactory().wrap(apiResponse.toJsonBytes)))
 
     private fun log(throwable: Throwable, exchange: ServerWebExchange) {
         val message = exchange.request.let { "${throwable.message}\n${it.method} ${it.uri}" }

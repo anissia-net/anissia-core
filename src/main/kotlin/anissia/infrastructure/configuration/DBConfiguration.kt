@@ -29,8 +29,8 @@ class DBConfiguration (
 
 ) {
     @Bean
-    fun dataSource(): DataSource
-            = HikariConfig()
+    fun dataSource(): DataSource =
+        HikariConfig()
             .let {
                 it.driverClassName = driverClassName
                 it.jdbcUrl = jdbcUrl

@@ -12,7 +12,7 @@ import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginPassRepository
 import anissia.domain.session.repository.LoginTokenRepository
 import anissia.domain.session.service.JwtService
-import anissia.infrastructure.common.As
+import anissia.infrastructure.common.logger
 import jakarta.annotation.PostConstruct
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -35,7 +35,7 @@ class ScheduleConfiguration(
     private val accountRegisterAuthRepository: AccountRegisterAuthRepository,
 ) {
 
-    private val log = As.logger<ScheduleConfiguration>()
+    private val log = logger<ScheduleConfiguration>()
     private val alg get() = jwtService.alg()
     private val timeMillis get() = System.currentTimeMillis().toString()
 
