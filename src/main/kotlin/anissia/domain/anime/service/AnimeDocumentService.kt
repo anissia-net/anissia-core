@@ -6,6 +6,6 @@ import reactor.core.publisher.Mono
 
 interface AnimeDocumentService{
     fun update(cmd: UpdateAnimeDocumentCommand): Mono<Void>
-    fun update(anime: Anime, isDelete: Boolean = false): Mono<Void>
-    fun reset(drop: Boolean)
+    fun update(anime: Anime, isDelete: Boolean): Mono<Void>
+    fun reset(drop: Boolean): Mono<Void>
 }

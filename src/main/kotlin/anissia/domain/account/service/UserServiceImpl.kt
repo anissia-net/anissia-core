@@ -9,6 +9,7 @@ import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
+import anissia.domain.anime.Anime
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.service.AnimeDocumentService
 import anissia.domain.session.model.SessionItem
@@ -69,9 +70,9 @@ class UserServiceImpl(
             .filter { it.t1.roles.isNotEmpty() }
             .doOnNextMono {
                 animeCaptionRepository.findAllWithAnimeByAn(sessionItem.an)
-                    .mapNotNull { it.anime }
-                    .flatMap { animeDocumentService.update(it!!) }
-                    .then()
+                    .mapNotNull<Anime> { it.anime }
+                    .flatMap { anime -> animeDocumentService.update(anime, false) }
+                    .collectList()
             }
             .flatMap { activePanelService.addText(AddTextActivePanelCommand(false, "운영진 [${it.t2}]님의 닉네임이 [${it.t1.name}]님으로 변경되었습니다."), sessionItem) }
             .then()

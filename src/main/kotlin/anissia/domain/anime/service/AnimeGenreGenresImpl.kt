@@ -9,6 +9,11 @@ import reactor.core.publisher.Mono
 class AnimeGenreGenresImpl(
     private val animeGenreRepository: AnimeGenreRepository,
 ): AnimeGenreGenres {
+
     private val genresCacheStore = MonoCacheStore<String, List<String>>(60 * 60000)
-    override fun get(): Mono<List<String>> = genresCacheStore.find("genre") { animeGenreRepository.findAll().map { it.genre }.collectSortedList() }
+
+    override fun get(): Mono<List<String>> =
+        genresCacheStore.find("genre") {
+            animeGenreRepository.findAll().map { it.genre }.collectSortedList()
+        }
 }

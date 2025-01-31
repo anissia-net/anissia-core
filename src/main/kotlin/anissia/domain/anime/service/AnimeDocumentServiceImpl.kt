@@ -8,6 +8,7 @@ import anissia.domain.anime.repository.AnimeRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 
 @Service
 class AnimeDocumentServiceImpl(
@@ -18,31 +19,41 @@ class AnimeDocumentServiceImpl(
     private val index = "anissia_anime"
 
     @Transactional
-    override fun update(cmd: UpdateAnimeDocumentCommand) {
-        if (cmd.isDelete) {
-            update(Anime(animeNo = cmd.animeNo), true)
-        } else {
-            animeRepository.findByIdOrNull(cmd.animeNo)
-                ?.let { update(it) }
-                ?: update(Anime(animeNo = cmd.animeNo), true)
-        }
-    }
+    override fun update(cmd: UpdateAnimeDocumentCommand): Mono<Void> =
+        Mono.just(cmd)
+            .flatMap {
+                if (cmd.isDelete) {
+                    Mono.just(Anime(animeNo = cmd.animeNo))
+                } else {
+                    animeRepository.findById(cmd.animeNo)
+                }
+            }
+            .flatMap { update(it, cmd.isDelete) }
+            .then()
 
     @Transactional
-    override fun update(anime: Anime, isDelete: Boolean) {
-        if (isDelete) {
-            animeDocumentRepository.deleteByAnimeNo(anime.animeNo)
-        } else {
-            animeDocumentRepository.update(anime, animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo))
-        }
-    }
+    override fun update(anime: Anime, isDelete: Boolean): Mono<Void> =
+        Mono.fromCallable {
+            if (isDelete) {
+                animeDocumentRepository.deleteByAnimeNo(anime.animeNo)
+            } else {
+                animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo).collectList()
+                    .flatMap { translators -> animeDocumentRepository.update(anime, translators) }
+            }
+        }.then()
+
 
     @Transactional
-    override fun reset(drop: Boolean) {
-        if (drop) {
-            animeDocumentRepository.dropAndCreateIndex()
+    override fun reset(drop: Boolean): Mono<Void> =
+        Mono.fromCallable {
+            if (drop) {
+                animeDocumentRepository.dropAndCreateIndex().thenReturn(true)
+            } else {
+                Mono.just(true)
+            }
         }
-        animeRepository.updateCaptionCountAll()
-        animeRepository.findAll().parallelStream().forEach { update(it) }
-    }
+            .flatMap { animeRepository.updateCaptionCountAll() }
+            .flatMapMany { animeRepository.findAll() }
+            .flatMap { update(it, false) }
+            .collectList().then()
 }
