@@ -10,7 +10,7 @@ import anissia.domain.board.repository.BoardPostRepository
 import anissia.domain.board.repository.BoardTickerRepository
 import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.SessionItem
-import anissia.infrastructure.common.As.Companion.doOnNextMono
+import anissia.infrastructure.common.doOnNextMono
 import anissia.shared.ApiFailException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
