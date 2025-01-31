@@ -39,7 +39,7 @@ class UserServiceImpl(
     override fun get(sessionItem: SessionItem): Mono<AccountUserItem> =
         accountRepository.findWithRolesByAn(sessionItem.an).map { AccountUserItem.create(it) }
 
-    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }
@@ -49,7 +49,7 @@ class UserServiceImpl(
             .flatMap { accountRepository.save(it.apply { password = cmd.newPassword.enBCrypt }) }.then()
 
     @Transactional
-    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }

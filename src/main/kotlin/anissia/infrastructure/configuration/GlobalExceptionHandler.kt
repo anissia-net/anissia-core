@@ -22,7 +22,7 @@ class GlobalExceptionHandler : WebExceptionHandler {
 
     private val log = logger<GlobalExceptionHandler>()
 
-    override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> =
+    override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<String> =
         when (ex) {
             is Error -> exchange.response.write(ApiResponse.error("알수없는 오류 입니다."))
 
@@ -62,7 +62,7 @@ class GlobalExceptionHandler : WebExceptionHandler {
             }
         }
 
-    fun ServerHttpResponse.write(apiResponse: ApiResponse<Void>, status: HttpStatusCode = HttpStatus.OK): Mono<Void> =
+    fun ServerHttpResponse.write(apiResponse: ApiResponse<Void>, status: HttpStatusCode = HttpStatus.OK): Mono<String> =
         also { it.statusCode = status }
             .writeWith(Mono.just(bufferFactory().wrap(apiResponse.toJsonBytes)))
 

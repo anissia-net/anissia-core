@@ -19,7 +19,7 @@ class AnimeDocumentServiceImpl(
     private val index = "anissia_anime"
 
     @Transactional
-    override fun update(cmd: UpdateAnimeDocumentCommand): Mono<Void> =
+    override fun update(cmd: UpdateAnimeDocumentCommand): Mono<String> =
         Mono.just(cmd)
             .flatMap {
                 if (cmd.isDelete) {
@@ -32,7 +32,7 @@ class AnimeDocumentServiceImpl(
             .then()
 
     @Transactional
-    override fun update(anime: Anime, isDelete: Boolean): Mono<Void> =
+    override fun update(anime: Anime, isDelete: Boolean): Mono<String> =
         Mono.fromCallable {
             if (isDelete) {
                 animeDocumentRepository.deleteByAnimeNo(anime.animeNo)
@@ -44,7 +44,7 @@ class AnimeDocumentServiceImpl(
 
 
     @Transactional
-    override fun reset(drop: Boolean): Mono<Void> =
+    override fun reset(drop: Boolean): Mono<String> =
         Mono.fromCallable {
             if (drop) {
                 animeDocumentRepository.dropAndCreateIndex().thenReturn(true)

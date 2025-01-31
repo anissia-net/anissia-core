@@ -68,7 +68,7 @@ class TopicServiceImpl(
             .map { boardTicker -> boardTicker.writeTopicRoles.isEmpty() || sessionItem.roles.any { it in boardTicker.writeTopicRoles } }
 
     @Transactional
-    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { sessionItem.validateLogin() }
             .doOnNext { cmd.validate() }
@@ -80,7 +80,7 @@ class TopicServiceImpl(
             .then()
 
     @Transactional
-    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { sessionItem.validateLogin() }
             .doOnNext { cmd.validate() }

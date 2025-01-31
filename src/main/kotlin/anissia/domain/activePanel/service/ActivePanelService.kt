@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono
 
 interface ActivePanelService {
     fun getList(cmd: GetListActivePanelCommand, sessionItem: SessionItem): Mono<Page<ActivePanelItem>>
-    fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<Void>
+    fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<String>
     fun addText(cmd: AddTextActivePanelCommand, sessionItem: SessionItem?): Mono<ActivePanel>
     fun addNotice(cmd: AddTextActivePanelCommand, sessionItem: SessionItem): Mono<ActivePanel>
     fun addDeleteTopic(cmd: AddDeleteTopicLogActivePanelCommand, sessionItem: SessionItem): Mono<ActivePanel>

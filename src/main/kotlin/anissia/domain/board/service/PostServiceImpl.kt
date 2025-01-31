@@ -25,7 +25,7 @@ class PostServiceImpl(
 ): PostService {
 
     @Transactional
-    override fun add(cmd: NewPostCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun add(cmd: NewPostCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }
@@ -37,7 +37,7 @@ class PostServiceImpl(
             .then()
 
     @Transactional
-    override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }
@@ -48,7 +48,7 @@ class PostServiceImpl(
             .then()
 
     @Transactional
-    override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .doOnNext { sessionItem.validateLogin() }

@@ -36,7 +36,7 @@ class RecoverPasswordServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .flatMap { accountRepository.findByEmailAndName(cmd.email, cmd.name) }
@@ -74,7 +74,7 @@ class RecoverPasswordServiceImpl(
             .then()
 
     @Transactional
-    override fun complete(cmd: CompleteRecoverPasswordCommand): Mono<Void> =
+    override fun complete(cmd: CompleteRecoverPasswordCommand): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .flatMap { accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now()) }
@@ -86,7 +86,7 @@ class RecoverPasswordServiceImpl(
             .then()
 
     @Transactional
-    override fun validate(cmd: ValidateRecoverPasswordCommand): Mono<Void> =
+    override fun validate(cmd: ValidateRecoverPasswordCommand): Mono<String> =
         Mono.just(cmd)
             .doOnNext { cmd.validate() }
             .flatMap { accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now()) }

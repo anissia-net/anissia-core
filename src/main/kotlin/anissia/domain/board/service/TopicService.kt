@@ -11,6 +11,6 @@ interface TopicService {
     fun getList(cmd: GetTopicListCommand): Mono<Page<BoardTopicItem>>
     fun getMainRecent(): Mono<Map<String, List<Map<String, Any>>>>
     fun add(cmd: NewTopicCommand, sessionItem: SessionItem): Mono<Long>
-    fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): Mono<Void>
-    fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<Void>
+    fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): Mono<String>
+    fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<String>
 }

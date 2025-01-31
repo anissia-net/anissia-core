@@ -53,7 +53,7 @@ class AnimeRankServiceImpl(
             .subscribeOn(Schedulers.boundedElastic()).subscribe()
 
     @Transactional
-    override fun renew(): Mono<Void> =
+    override fun renew(): Mono<String> =
         animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(1000).format(DTF_RANK_HOUR).toLong())
     {
         // step 1. remove hit history older then 1000 days
@@ -64,7 +64,7 @@ class AnimeRankServiceImpl(
         extractAllRank()
     }
 
-    private fun mergeAnimeHit(): Mono<Void> {
+    private fun mergeAnimeHit(): Mono<String> {
         // merge by hour
         val hour = LocalDateTime.now().format(DTF_RANK_HOUR)
         animeHitRepository.extractAllAnimeHitHour(hour.toLong())

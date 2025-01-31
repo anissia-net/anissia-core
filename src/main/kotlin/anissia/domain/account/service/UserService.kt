@@ -9,6 +9,6 @@ import reactor.core.publisher.Mono
 
 interface UserService {
     fun get(sessionItem: SessionItem): Mono<AccountUserItem>
-    fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<Void>
-    fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): Mono<Void>
+    fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<String>
+    fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): Mono<String>
 }

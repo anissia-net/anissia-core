@@ -6,6 +6,6 @@ import anissia.domain.session.model.SessionItem
 import reactor.core.publisher.Mono
 
 interface RegisterService {
-    fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): Mono<Void>
-    fun complete(cmd: CompleteRegisterCommand): Mono<Void>
+    fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): Mono<String>
+    fun complete(cmd: CompleteRegisterCommand): Mono<String>
 }

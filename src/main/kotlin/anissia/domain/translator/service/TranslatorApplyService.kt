@@ -18,5 +18,5 @@ interface TranslatorApplyService {
     fun getGrantedTime(an: Long): Mono<OffsetDateTime>
     fun isApplying(sessionItem: SessionItem): Mono<Boolean>
     fun add(cmd: AddApplyCommand, sessionItem: SessionItem): Mono<Long>
-    fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): Mono<Void>
+    fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): Mono<String>
 }

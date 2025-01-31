@@ -22,7 +22,7 @@ class ActivePanelServiceImpl(
             .map { page -> if (cmd.mode == "admin" && sessionItem.isAdmin) page else page.filterPage { item -> item.published } }
             .map { page -> page.map { ActivePanelItem(it) } }
 
-    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .flatMap {
@@ -69,7 +69,7 @@ class ActivePanelServiceImpl(
             data3 = cmd.post.content
         ))
 
-    private fun doCommandExecute(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<Void> =
+    private fun doCommandExecute(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd).then()
 
     /*

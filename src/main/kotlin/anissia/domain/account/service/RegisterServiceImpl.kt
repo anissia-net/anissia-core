@@ -42,7 +42,7 @@ class RegisterServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): Mono<Void> =
+    override fun request(cmd: RequestRegisterCommand, sessionItem: SessionItem): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .filter { !sessionItem.isLogin }
@@ -79,7 +79,7 @@ class RegisterServiceImpl(
 
 
     @Transactional
-    override fun complete(cmd: CompleteRegisterCommand): Mono<Void> =
+    override fun complete(cmd: CompleteRegisterCommand): Mono<String> =
         Mono.just(cmd)
             .doOnNext { it.validate() }
             .flatMap { accountRegisterAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now()) }

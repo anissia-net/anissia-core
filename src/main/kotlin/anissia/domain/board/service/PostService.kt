@@ -7,7 +7,7 @@ import anissia.domain.session.model.SessionItem
 import reactor.core.publisher.Mono
 
 interface PostService{
-    fun add(cmd: NewPostCommand, sessionItem: SessionItem): Mono<Void>
-    fun edit(cmd: EditPostCommand, sessionItem: SessionItem): Mono<Void>
-    fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): Mono<Void>
+    fun add(cmd: NewPostCommand, sessionItem: SessionItem): Mono<String>
+    fun edit(cmd: EditPostCommand, sessionItem: SessionItem): Mono<String>
+    fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): Mono<String>
 }

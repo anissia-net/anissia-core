@@ -7,7 +7,7 @@ import anissia.domain.session.model.SessionItem
 import reactor.core.publisher.Mono
 
 interface RecoverPasswordService {
-    fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): Mono<Void>
-    fun validate(cmd: ValidateRecoverPasswordCommand): Mono<Void>
-    fun complete(cmd: CompleteRecoverPasswordCommand): Mono<Void>
+    fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): Mono<String>
+    fun validate(cmd: ValidateRecoverPasswordCommand): Mono<String>
+    fun complete(cmd: CompleteRecoverPasswordCommand): Mono<String>
 }

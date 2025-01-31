@@ -22,7 +22,7 @@ class JwtDecoderFilter(
     private val jwtService: JwtService
 ): WebFilter {
     // jud = json user detail
-    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> =
+    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<String> =
         Mono.fromCallable { exchange.request }
             .filter { (it.headers["jud"]?.size ?: 0) > 0 }
             .switchIfEmpty(Mono.error(ApiErrorException("jud header is banned")))
