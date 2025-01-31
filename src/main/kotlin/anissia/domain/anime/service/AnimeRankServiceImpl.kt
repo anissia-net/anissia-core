@@ -53,18 +53,20 @@ class AnimeRankServiceImpl(
             .subscribeOn(Schedulers.boundedElastic()).subscribe()
 
     @Transactional
-    override fun renew() {
+    override fun renew(): Mono<Void> =
+        animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(1000).format(DTF_RANK_HOUR).toLong())
+    {
         // step 1. remove hit history older then 1000 days
-        animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(1000).format(As.DTF_RANK_HOUR).toLong())
+
         // step 2. merge anime hits
         mergeAnimeHit()
         // step 3. extract and bind rank
         extractAllRank()
     }
 
-    private fun mergeAnimeHit() {
+    private fun mergeAnimeHit(): Mono<Void> {
         // merge by hour
-        val hour = LocalDateTime.now().format(As.DTF_RANK_HOUR)
+        val hour = LocalDateTime.now().format(DTF_RANK_HOUR)
         animeHitRepository.extractAllAnimeHitHour(hour.toLong())
             .map { r -> animeHitHourRepository.findById(r.key).map { it.hit += r.hit; it }.orElse(r) }
             .also { animeHitHourRepository.saveAll(it) }
@@ -84,18 +86,18 @@ class AnimeRankServiceImpl(
         val dt = LocalDateTime.now()
 
         // year rank (364 days, diff 392 days)
-        val day392List = extractRank(dt.minusDays(392).format(As.DTF_RANK_HOUR))
-        val day364List = extractRank(dt.minusDays(364).format(As.DTF_RANK_HOUR))
+        val day392List = extractRank(dt.minusDays(392).format(DTF_RANK_HOUR))
+        val day364List = extractRank(dt.minusDays(364).format(DTF_RANK_HOUR))
             .apply { calculateRankDiff(this, day392List) }
 
         // quarter rank (84 days, diff 112 days)
-        val day112List = extractRank(dt.minusDays(112).format(As.DTF_RANK_HOUR))
-        val day84List = extractRank(dt.minusDays(84).format(As.DTF_RANK_HOUR))
+        val day112List = extractRank(dt.minusDays(112).format(DTF_RANK_HOUR))
+        val day84List = extractRank(dt.minusDays(84).format(DTF_RANK_HOUR))
             .apply { calculateRankDiff(this, day112List) }
 
         // week rank (week 7 days, diff 14 days)
-        val day14List = extractRank(dt.minusDays(14).format(As.DTF_RANK_HOUR))
-        val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR))
+        val day14List = extractRank(dt.minusDays(14).format(DTF_RANK_HOUR))
+        val day7List = extractRank(dt.minusDays(7).format(DTF_RANK_HOUR))
             .apply { calculateRankDiff(this, day14List) }
 
         animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
@@ -104,9 +106,9 @@ class AnimeRankServiceImpl(
         clearCache()
     }
 
-    private fun toString(list: List<AnimeRankItem>): String = list.run { As.toJsonString(if (size > 30) list.subList(0, 30) else list) }
+    private fun toString(list: List<AnimeRankItem>): String = list.run { toJsonString(if (size > 30) list.subList(0, 30) else list) }
 
-    private fun extractRank(startHour: String): List<AnimeRankItem> =
+    private fun extractRank(startHour: String): Mono<List<AnimeRankItem> =
         animeHitHourRepository
             .extractAllAnimeRank(startHour.toLong())
             .filter { it.exist }
