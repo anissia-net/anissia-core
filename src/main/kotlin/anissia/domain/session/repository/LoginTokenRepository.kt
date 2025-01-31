@@ -15,5 +15,5 @@ interface LoginTokenRepository : ReactiveCrudRepository<LoginToken, Long> {
     @Transactional
     @Modifying
     @Query("DELETE FROM LoginToken WHERE expDt < :expDt")
-    fun deleteAllByExpDtBefore(expDt: OffsetDateTime = OffsetDateTime.now().minusDays(3))
+    fun deleteAllByExpDtBefore(expDt: OffsetDateTime = OffsetDateTime.now().minusDays(3)): Mono<Int>
 }

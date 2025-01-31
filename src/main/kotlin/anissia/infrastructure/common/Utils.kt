@@ -1,6 +1,7 @@
 package anissia.infrastructure.common
 
 import anissia.domain.session.model.SessionItem
+import anissia.shared.ApiErrorException
 import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -42,7 +43,10 @@ private val _log = logger<Utils>()
 inline fun <reified T> logger(): Logger = LoggerFactory.getLogger(T::class.java)
 
 fun <T, F> Mono<T>.doOnNextMono(call: (T) -> Mono<F>): Mono<T> = this.flatMap { call(it).thenReturn(it) }
-val <T> Mono<T>.toApiResponse: Mono<ApiResponse<T>> get() = this.map { ApiResponse.ok(it) }
+//val Mono<Any>.toApiResponse: Mono<ApiResponse<Any>> get() = this.switchIfEmpty(Mono.just("")).map { ApiResponse.ok(it) }
+val Mono<Any>.toApiResponse: Mono<ApiResponse<Any>> get() =
+    this.switchIfEmpty(Mono.error(ApiErrorException("체이닝 중 빈 값이 발견되었습니다.")))
+        .map { ApiResponse.ok(it) }
 
 fun <T> Page<T>.filterPage(filter: (T) -> Boolean): Page<T> = PageImpl(this.content.filter { filter(it) }, this.pageable, this.totalElements)
 fun <T, U> Page<U>.replacePage(list: List<T>): Page<T> = PageImpl(list, this.pageable, this.totalElements)

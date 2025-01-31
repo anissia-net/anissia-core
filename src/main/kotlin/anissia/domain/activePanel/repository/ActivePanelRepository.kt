@@ -17,5 +17,5 @@ interface ActivePanelRepository : ReactiveCrudRepository<ActivePanel, Long> {
     @Transactional
     @Modifying
     @Query("DELETE FROM ActivePanel WHERE regDt < :regDt")
-    fun deleteAllByRegDtBefore(regDt: OffsetDateTime = OffsetDateTime.now().minusDays(90))
+    fun deleteAllByRegDtBefore(regDt: OffsetDateTime = OffsetDateTime.now().minusDays(90)): Mono<Int>
 }

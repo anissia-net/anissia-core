@@ -17,5 +17,5 @@ interface AccountRecoverAuthRepository : ReactiveCrudRepository<AccountRecoverAu
     @Transactional
     @Modifying
     @Query("DELETE FROM AccountRecoverAuth WHERE expDt < :expDt")
-    fun deleteAllByExpDtBefore(expDt: OffsetDateTime = OffsetDateTime.now().minusDays(30))
+    fun deleteAllByExpDtBefore(expDt: OffsetDateTime = OffsetDateTime.now().minusDays(30)): Mono<Int>
 }

@@ -34,7 +34,7 @@ class AnimeDocumentRepository(
     fun deleteByAnimeNo(animeNo: Long): Mono<JsonNode> =
         elasticsearch.request(HttpMethod.DELETE, "/$index/_doc/$animeNo")
 
-    fun dropAndCreateIndex(): Mono<Void> =
+    fun dropAndCreateIndex(): Mono<Int> =
         elasticsearch.deleteIndexIfExists(index)
             .doOnNext { log.info("Dropped index: $index") }
             .flatMap {
@@ -49,5 +49,5 @@ class AnimeDocumentRepository(
                 }}}""".trimIndent())
             }
             .doOnNext { log.info("Created index: $index") }
-            .then()
+            .thenReturn(1)
 }

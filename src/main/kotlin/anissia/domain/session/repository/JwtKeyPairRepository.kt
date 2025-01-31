@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 
 interface JwtKeyPairRepository: ReactiveCrudRepository<JwtKeyPair, Long> {
@@ -16,5 +17,5 @@ interface JwtKeyPairRepository: ReactiveCrudRepository<JwtKeyPair, Long> {
     @Transactional
     @Modifying
     @Query("DELETE FROM JwtKeyPair WHERE kid < :kid")
-    fun deleteAllByKidBefore(kid: Long = OffsetDateTime.now().minusHours(3).toInstant().toEpochMilli())
+    fun deleteAllByKidBefore(kid: Long = OffsetDateTime.now().minusHours(3).toInstant().toEpochMilli()): Mono<Int>
 }

@@ -5,11 +5,12 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 
 interface LoginPassRepository : ReactiveCrudRepository<LoginPass, Long> {
     @Transactional
     @Modifying
     @Query("DELETE FROM LoginPass WHERE passDt < :passDt")
-    fun deleteAllByPassDtBefore(passDt: OffsetDateTime = OffsetDateTime.now().minusDays(90))
+    fun deleteAllByPassDtBefore(passDt: OffsetDateTime = OffsetDateTime.now().minusDays(90)): Mono<Int>
 }

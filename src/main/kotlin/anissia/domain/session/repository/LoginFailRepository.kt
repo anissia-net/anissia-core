@@ -19,5 +19,5 @@ interface LoginFailRepository : ReactiveCrudRepository<LoginFail, Long> {
     @Transactional
     @Modifying
     @Query("DELETE FROM LoginFail WHERE failDt < :failDt")
-    fun deleteAllByFailDtBefore(failDt: OffsetDateTime = OffsetDateTime.now().minusDays(90))
+    fun deleteAllByFailDtBefore(failDt: OffsetDateTime = OffsetDateTime.now().minusDays(90)): Mono<Int>
 }
