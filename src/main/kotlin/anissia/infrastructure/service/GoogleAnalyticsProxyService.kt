@@ -15,7 +15,7 @@ class GoogleAnalyticsProxyService(
 ) {
     private val apiClient = WebClient.builder().baseUrl("https://www.google-analytics.com/collect").build()
 
-    fun send(path: String, exchange: ServerWebExchange) =
+    fun send(path: String, exchange: ServerWebExchange): Disposable =
         Mono.just(exchange.request)
             .flatMap { request ->
                 val ip = request.remoteAddress?.address?.hostAddress!!

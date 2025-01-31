@@ -10,6 +10,9 @@ import anissia.domain.anime.repository.AnimeHitRepository
 import anissia.domain.anime.repository.AnimeStoreRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.As
+import anissia.infrastructure.common.DTF_RANK_HOUR
+import anissia.infrastructure.common.MonoCacheStore
+import anissia.infrastructure.common.toClassByJson
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.saro.kit.service.CacheStore
@@ -17,6 +20,9 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.Disposable
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
@@ -27,26 +33,24 @@ class AnimeRankServiceImpl(
     private val animeHitHourRepository: AnimeHitHourRepository,
 ): AnimeRankService {
 
-    private val rankCacheStore = CacheStore<String, List<Map<*,*>>>((5 * 60000).toLong())
-    private val objectMapper = ObjectMapper()
-    private val tr = object: TypeReference<List<Map<*, *>>>() {}
+    private val rankCacheStore = MonoCacheStore<String, List<Map<*,*>>>((5 * 60000).toLong())
+    private val trListMap = object: TypeReference<List<Map<*, *>>>() {}
 
-    override fun get(cmd: GetAnimeRankCommand): List<Map<*,*>> = rankCacheStore.find(cmd.type) { type ->
+    override fun get(cmd: GetAnimeRankCommand): Mono<List<Map<*,*>>> =
+        rankCacheStore.find(cmd.type) { type ->
         when (type) {
             "week", "quarter", "year" ->
-                objectMapper.readValue(animeStoreRepository.findByIdOrNull("rank.$type")?.data ?: "[]", tr)
-            else -> listOf()
+                animeStoreRepository.findById("rank.$type")
+                    .map { it.data }
+                    .switchIfEmpty(Mono.just("[]"))
+                    .map { it.toClassByJson(trListMap) }
+            else -> Mono.just(listOf())
         }
     }
 
-    @Async
-    override fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem) {
-        animeHitRepository.save(AnimeHit(animeNo = cmd.animeNo, ip = sessionItem.ip, hour = OffsetDateTime.now().format(As.DTF_RANK_HOUR).toLong()))
-    }
-
-    private fun clearCache() {
-        rankCacheStore.clear()
-    }
+    override fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem): Disposable =
+        animeHitRepository.save(AnimeHit(animeNo = cmd.animeNo, ip = sessionItem.ip, hour = OffsetDateTime.now().format(DTF_RANK_HOUR).toLong()))
+            .subscribeOn(Schedulers.boundedElastic()).subscribe()
 
     @Transactional
     override fun renew() {
@@ -73,6 +77,7 @@ class AnimeRankServiceImpl(
         // merge by month
         animeHitHourRepository.mergeByMonth(400)
         animeHitHourRepository.deleteMergedByMonth(400)
+        rankCacheStore.clear()
     }
 
     private fun extractAllRank() {
