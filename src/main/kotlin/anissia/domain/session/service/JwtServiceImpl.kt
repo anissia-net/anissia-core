@@ -77,7 +77,7 @@ class JwtServiceImpl(
         Mono.just(sessionItem)
             .filter { it.isLogin }
             .flatMap { accountRepository.findWithRolesByAn(it.an) }
-            .flatMap { getAuthInfo(GetJwtAuthInfoCommand(sessionItem = SessionItem.cast(this, sessionItem.ip), makeLoginToken = false)) }
+            .flatMap { getAuthInfo(GetJwtAuthInfoCommand(sessionItem = SessionItem.cast(it, sessionItem.ip), makeLoginToken = false)) }
             .switchIfEmpty(Mono.error(SecurityException("유효하지 않은 토큰 정보입니다.")))
 
     @Transactional
