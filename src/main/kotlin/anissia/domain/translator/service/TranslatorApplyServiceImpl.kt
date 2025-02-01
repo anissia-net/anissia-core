@@ -3,6 +3,7 @@ package anissia.domain.translator.service
 import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.AgendaPoll
 import anissia.domain.agenda.repository.AgendaPollRepository
@@ -14,13 +15,14 @@ import anissia.domain.translator.command.GetApplyListCommand
 import anissia.domain.translator.command.NewApplyPollCommand
 import anissia.domain.translator.infrastructure.ApplyValue
 import anissia.domain.translator.model.TranslatorApplyItem
-import anissia.shared.ApiResponse
 import anissia.shared.ApiFailException
+import anissia.shared.ApiResponse
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 
 @Service
@@ -28,94 +30,89 @@ class TranslatorApplyServiceImpl(
     private val agendaRepository: AgendaRepository,
     private val agendaPollRepository: AgendaPollRepository,
     private val accountRepository: AccountRepository,
-    private val activePanelLogService: ActivePanelLogService,
+    private val activePanelService: ActivePanelService,
 ): TranslatorApplyService {
-    override fun get(cmd: GetApplyCommand): TranslatorApplyItem {
-        cmd.validate()
-        return agendaRepository.findWithPollsByAgendaNoAndCode(cmd.applyNo, ApplyValue.CODE)
-            ?.let { TranslatorApplyItem(it, true) }
-            ?: TranslatorApplyItem()
-    }
+    override fun get(cmd: GetApplyCommand) =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .flatMap { agendaRepository.findWithPollsByAgendaNoAndCode(cmd.applyNo, ApplyValue.CODE) }
+            .map { TranslatorApplyItem(it, true) }
+            .switchIfEmpty(Mono.just(TranslatorApplyItem()))
 
-    override fun getList(cmd: GetApplyListCommand): Page<TranslatorApplyItem> {
-        cmd.validate()
-        return agendaRepository.findAllByCodeOrderByStatusAscAgendaNoDesc(ApplyValue.CODE, PageRequest.of(cmd.page, 30)).map { TranslatorApplyItem(it) }
-    }
 
-    override fun getApplyingCount(): Int =
+    override fun getList(cmd: GetApplyListCommand): Mono<Page<TranslatorApplyItem>> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .flatMap { agendaRepository.findAllByCodeOrderByStatusAscAgendaNoDesc(ApplyValue.CODE, PageRequest.of(cmd.page, 30)) }
+            .map { page -> page.map { TranslatorApplyItem(it) } }
+
+    override fun getApplyingCount(): Mono<Int> =
         agendaRepository.countByCodeAndStatus(ApplyValue.CODE, "ACT")
 
-    override fun getGrantedTime(an: Long): OffsetDateTime? =
-        agendaRepository.findPassedTranslatorApply(an).firstOrNull()?.updDt
+    override fun getGrantedTime(an: Long): Mono<OffsetDateTime> =
+        agendaRepository.findPassedTranslatorApply(an).map { it.updDt }
 
-    override fun isApplying(sessionItem: SessionItem): Boolean {
-        return agendaRepository.existsByCodeAndStatusAndAn(ApplyValue.CODE, "ACT", sessionItem.an)
-    }
-
-    @Transactional
-    override fun add(cmd: AddApplyCommand, sessionItem: SessionItem): ApiResponse<Long> {
-        cmd.validate()
-        sessionItem.validateLogin()
-
-        if (sessionItem.isAdmin) {
-            throw ApiFailException("이미 권한이 있습니다.")
-        }
-
-        if (isApplying(sessionItem)) {
-            throw ApiFailException("신청중인 진행사항이 있습니다.")
-        }
-
-        if (agendaRepository.existsByCodeAndStatusAndAnAndUpdDtAfter(ApplyValue.CODE, "DONE", sessionItem.an, OffsetDateTime.now().minusDays(7))) {
-            throw ApiFailException("심사완료 일주일 후부터 재심사를 요청할 수 있습니다.")
-        }
-
-        agendaRepository.saveAndFlush(
-            Agenda(
-                code = ApplyValue.CODE,
-                status = "ACT",
-                an = sessionItem.an,
-                data1 = "ACT",
-                data2 = sessionItem.name,
-                data3 = cmd.website,
-            )
-        ).run { return ApiResponse.ok(agendaNo) }
-    }
+    override fun isApplying(sessionItem: SessionItem): Mono<Boolean> =
+        agendaRepository.existsByCodeAndStatusAndAn(ApplyValue.CODE, "ACT", sessionItem.an)
 
     @Transactional
-    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ApiResponse<Void> {
-        cmd.validate()
-        sessionItem.validateAdmin()
-
-        var point = cmd.point.toInt()
-
-        val app = agendaRepository.findByIdOrNull(cmd.applyNo)?.takeIf { it.code == ApplyValue.CODE }
-            ?: return ApiResponse.fail("존재하지 않는 신청입니다.")
-
-        app.takeIf { it.status == "ACT" }
-            ?: return ApiResponse.fail("종료된 신청서입니다.")
-
-        val polls = app.polls
-        if (point != 0) {
-            if (polls.filter { it.an == sessionItem.an }.any { it.vote != 0 }) {
-                return ApiResponse.fail("찬성/반대는 한 신청처에 한번만 할 수 있습니다.")
+    override fun add(cmd: AddApplyCommand, sessionItem: SessionItem): Mono<Long> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .doOnNext { sessionItem.validateLogin() }
+            .filter { !sessionItem.isAdmin }
+            .switchIfEmpty(Mono.error(ApiFailException("이미 권한이 있습니다.")))
+            .filterWhen { isApplying(sessionItem).map { !it } }
+            .switchIfEmpty(Mono.error(ApiFailException("신청중인 진행사항이 있습니다.")))
+            .filterWhen { agendaRepository.existsByCodeAndStatusAndAnAndUpdDtAfter(ApplyValue.CODE, "DONE", sessionItem.an, OffsetDateTime.now().minusDays(7)).map { !it } }
+            .switchIfEmpty(Mono.error(ApiFailException("심사완료 일주일 후부터 재심사를 요청할 수 있습니다.")))
+            .flatMap {
+                agendaRepository.save(Agenda(
+                    code = ApplyValue.CODE,
+                    status = "ACT",
+                    an = sessionItem.an,
+                    data1 = "ACT",
+                    data2 = sessionItem.name,
+                    data3 = cmd.website,
+                ))
             }
-        }
+            .map { it.agendaNo }
 
-        if (sessionItem.isRoot) {
-            point *= 10
-        }
-        val poll = agendaPollRepository.save(
-            AgendaPoll(
-                agenda = app,
-                voteUp = if (point > 0) point else 0,
-                voteDown = if (point < 0) point else 0,
-                name = sessionItem.name,
-                an = sessionItem.an,
-                comment = cmd.comment
-            )
-        )
 
-        val vote = (polls + poll).sumOf { it.vote }
+    @Transactional
+    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): Mono<String> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .doOnNext { sessionItem.validateLogin() }
+            .flatMap { _ ->
+                val point = cmd.point.toInt() * if (sessionItem.isRoot) 10 else 1
+
+                agendaRepository.findById(cmd.applyNo)
+                    .flatMap<Agenda> { apply ->
+                        if (apply.code == ApplyValue.CODE) {
+                            Mono.error(ApiFailException("존재하지 않는 신청입니다."))
+                        } else if (apply.status == "ACT") {
+                            Mono.error(ApiFailException("종료된 신청서입니다."))
+                        } else if (apply.polls.filter { it.an == sessionItem.an }.sumOf { it.vote } != 0) {
+                            Mono.error(ApiFailException("찬성/반대는 한 신청처에 한번만 할 수 있습니다."))
+                        } else {
+                            Mono.just(apply)
+                        }
+                    }
+                    .flatMap {
+                        agendaPollRepository.save(
+                            AgendaPoll(
+                                agenda = it,
+                                voteUp = if (point > 0) point else 0,
+                                voteDown = if (point < 0) point else 0,
+                                name = sessionItem.name,
+                                an = sessionItem.an,
+                                comment = cmd.comment
+                            )
+                        )
+                    }.map {
+                        /*
+                        val vote = (polls + poll).sumOf { it.vote }
         if (vote >= 3) {
             app.status = "DONE"
             app.data1 = "PASS"
@@ -130,9 +127,10 @@ class TranslatorApplyServiceImpl(
             agendaPollRepository.save(toApplySystemPoll(app, "최종 반려되었습니다. (7일 후 재신청이 가능합니다.)"))
         }
         agendaRepository.save(app.apply { updDt = OffsetDateTime.now() })
-
-        return ApiResponse.ok()
-    }
+                         */
+                        ""
+                    }
+            }
 
     private fun toApplySystemPoll(agenda: Agenda, comment: String) = AgendaPoll(
         agenda = agenda,

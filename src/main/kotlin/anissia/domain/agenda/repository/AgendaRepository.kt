@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 
@@ -32,5 +31,5 @@ interface AgendaRepository : ReactiveCrudRepository<Agenda, Long> {
     fun findWithPollsByAgendaNoAndCode(agendaNo: Long, code: String): Mono<Agenda>
 
     @Query("SELECT a FROM Agenda a WHERE a.an = :an AND a.code = 'TRANSLATOR-APPLY' and a.status = 'DONE' ORDER BY a.agendaNo DESC")
-    fun findPassedTranslatorApply(an: Long): Flux<Agenda>
+    fun findPassedTranslatorApply(an: Long, page: Pageable = PageRequest.of(0, 1)): Mono<Agenda>
 }
