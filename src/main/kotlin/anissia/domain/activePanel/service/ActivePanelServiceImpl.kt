@@ -31,7 +31,7 @@ class ActivePanelServiceImpl(
                 } else {
                     addNotice(AddTextActivePanelCommand(it.published, it.text), sessionItem)
                 }
-            }.then()
+            }.map { "" }
 
     override fun addText(cmd: AddTextActivePanelCommand, sessionItem: SessionItem?): Mono<ActivePanel> =
         activePanelRepository.save(ActivePanel(
@@ -70,7 +70,7 @@ class ActivePanelServiceImpl(
         ))
 
     private fun doCommandExecute(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<String> =
-        Mono.just(cmd).then()
+        Mono.just(cmd).map { "" }
 
     /*
     @Transactional
