@@ -14,7 +14,7 @@ interface LoginFailRepository : ReactiveCrudRepository<LoginFail, Long> {
 
     @Modifying
     @Query("DELETE FROM LoginFail WHERE ip = :ip AND email = :email")
-    fun deleteByIpAndEmail(ip: String, email: String)
+    fun deleteByIpAndEmail(ip: String, email: String): Mono<Int>
 
     @Transactional
     @Modifying

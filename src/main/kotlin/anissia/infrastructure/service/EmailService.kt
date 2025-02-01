@@ -78,7 +78,8 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: String, subject: String, htmlContent: String): Disposable = send(listOf(to), listOf(), subject, htmlContent)
+    fun send(to: String, subject: String, htmlContent: String): Disposable =
+        send(listOf(to), listOf(), subject, htmlContent)
 
     /**
      * @param to receive to
