@@ -46,7 +46,7 @@ class UserServiceImpl(
             .flatMap { accountRepository.findById(sessionItem.an) }
             .filter { cmd.oldPassword.eqBCrypt(it.password) }
             .switchIfEmpty(Mono.error(ApiFailException("기존 암호가 일치하지 않습니다.")))
-            .flatMap { accountRepository.save(it.apply { password = cmd.newPassword.enBCrypt }) }.then()
+            .flatMap { accountRepository.save(it.apply { password = cmd.newPassword.enBCrypt }) }.map { "" }
 
     @Transactional
     override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<String> =
@@ -75,6 +75,6 @@ class UserServiceImpl(
                     .collectList()
             }
             .flatMap { activePanelService.addText(AddTextActivePanelCommand(false, "운영진 [${it.t2}]님의 닉네임이 [${it.t1.name}]님으로 변경되었습니다."), sessionItem) }
-            .then()
+            .map { "" }
 
 }

@@ -71,7 +71,7 @@ class RecoverPasswordServiceImpl(
                         .replace("[[url]]", "${host}/recover/${auth.no}-${auth.token}")
                 )
             }
-            .then()
+            .map { "" }
 
     @Transactional
     override fun complete(cmd: CompleteRecoverPasswordCommand): Mono<String> =
@@ -83,7 +83,7 @@ class RecoverPasswordServiceImpl(
             .switchIfEmpty(Mono.error(ApiException.fail("해당 메일인증에서 계정정보를 찾을 수 없습니다.")))
             .flatMap { auth -> accountRecoverAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() }).mapNotNull<Account> { auth.account } }
             .flatMap { account -> accountRepository.save(account.apply { password = cmd.password.enBCrypt }) }
-            .then()
+            .map { "" }
 
     @Transactional
     override fun validate(cmd: ValidateRecoverPasswordCommand): Mono<String> =
@@ -91,5 +91,5 @@ class RecoverPasswordServiceImpl(
             .doOnNext { cmd.validate() }
             .flatMap { accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now()) }
             .switchIfEmpty(Mono.error(ApiException.fail("이메일 인증이 만료되었습니다.")))
-            .then()
+            .map { "" }
 }

@@ -75,7 +75,7 @@ class RegisterServiceImpl(
                         .replace("[[url]]", "${host}/register/${auth.no}-${auth.token}")
                 )
             }
-            .then()
+            .map { "" }
 
 
     @Transactional
@@ -98,6 +98,6 @@ class RegisterServiceImpl(
                             name = requestRegisterCommand.name
                         )
                     ) }
-                    .then()
+                    .map { "" }
             }
 }
