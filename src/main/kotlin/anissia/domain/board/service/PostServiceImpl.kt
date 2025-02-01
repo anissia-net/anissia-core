@@ -34,7 +34,7 @@ class PostServiceImpl(
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없거나 존재하지 않는 게시판입니다.")))
             .flatMap { boardPostRepository.save(BoardPost.create(topicNo = cmd.topicNo, content = cmd.content, an = sessionItem.an)) }
             .flatMap { boardTopicRepository.updatePostCount(cmd.topicNo) }
-            .then()
+            .map { "" }
 
     @Transactional
     override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): Mono<String> =
@@ -45,7 +45,7 @@ class PostServiceImpl(
             .filter { it.an == sessionItem.an }
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")))
             .flatMap { boardPostRepository.save(it.apply { edit(cmd.content) }) }
-            .then()
+            .map { "" }
 
     @Transactional
     override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): Mono<String> =
@@ -62,7 +62,7 @@ class PostServiceImpl(
             }
             .doOnNextMono { boardPostRepository.delete(it) }
             .flatMap { boardTopicRepository.updatePostCount(it.topicNo) }
-            .then()
+            .map { "" }
 
     private fun validAddPermission(ticker: String, sessionItem: SessionItem): Mono<Boolean> =
         boardTickerRepository.findById(ticker)

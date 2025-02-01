@@ -77,7 +77,7 @@ class TopicServiceImpl(
             .flatMap { boardPostRepository.findWithAccountByTopicNoAndRootIsTrue(cmd.topicNo) }
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")))
             .flatMap { boardPostRepository.save(it.apply { edit(cmd.content) }) }
-            .then()
+            .map { "" }
 
     @Transactional
     override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<String> =
@@ -94,6 +94,5 @@ class TopicServiceImpl(
                     .flatMap { activePanelService.addDeleteTopic(AddDeleteTopicLogActivePanelCommand(topic, it, it.account), sessionItem) }
             }
             .flatMap { boardPostRepository.deleteAllByTopicNo(it.topicNo).thenReturn(it) }
-            .flatMap { boardTopicRepository.delete(it) }
-            .then()
+            .flatMap { boardTopicRepository.delete(it).thenReturn("") }
 }
