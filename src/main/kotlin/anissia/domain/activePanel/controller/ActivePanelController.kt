@@ -22,6 +22,6 @@ class ActivePanelController(
         activePanelService.getList(cmd, exchange.sessionItem).toApiResponse
 
     @PostMapping("/command")
-    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<Void>> =
+    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
         activePanelService.doCommand(cmd, exchange.sessionItem).toApiResponse
 }

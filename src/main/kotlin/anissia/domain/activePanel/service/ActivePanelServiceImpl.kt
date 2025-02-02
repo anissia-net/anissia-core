@@ -74,7 +74,7 @@ class ActivePanelServiceImpl(
 
     /*
     @Transactional
-    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<Void> {
+    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ApiResponse<String> {
         cmd.validate()
         sessionItem.validateAdmin()
 

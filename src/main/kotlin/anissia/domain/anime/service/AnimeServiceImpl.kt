@@ -289,7 +289,7 @@ class AnimeServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ApiResponse<Void> {
+    override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ApiResponse<String> {
         cmd.validate()
         sessionItem.validateAdmin()
         translatorApplyService.getGrantedTime(sessionItem.an)

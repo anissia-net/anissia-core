@@ -45,7 +45,7 @@ class AnimeController(
         ApiResponse.ok(animeRankService.get(cmd))
 
     @DeleteMapping("/{animeNo}")
-    fun deleteAnime(cmd: DeleteAnimeCommand, exchange: ServerWebExchange): ApiResponse<Void> =
+    fun deleteAnime(cmd: DeleteAnimeCommand, exchange: ServerWebExchange): ApiResponse<String> =
         animeService.delete(cmd, exchange.sessionItem)
 
     @PostMapping

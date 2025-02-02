@@ -51,7 +51,7 @@ fun <T> Mono<T>.subscribeBoundedElastic(): Disposable = this.subscribeOn(Schedul
 fun <T> Flux<T>.subscribeBoundedElastic(): Disposable = this.subscribeOn(Schedulers.boundedElastic()).subscribe()
 
 //val Mono<Any>.toApiResponse: Mono<ApiResponse<Any>> get() = this.switchIfEmpty(Mono.just("")).map { ApiResponse.ok(it) }
-val Mono<Any>.toApiResponse: Mono<ApiResponse<Any>> get() =
+val <T> Mono<T>.toApiResponse: Mono<ApiResponse<T>> get() =
     this.switchIfEmpty(Mono.error(ApiErrorException("체이닝 중 빈 값이 발견되었습니다.")))
         .map { ApiResponse.ok(it) }
 

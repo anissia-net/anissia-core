@@ -22,10 +22,10 @@ class AccountUserController(
         userService.get(exchange.sessionItem).toApiResponse
 
     @PutMapping("/password")
-    fun editUserPassword(@RequestBody cmd: EditUserPasswordCommand, exchange: ServerWebExchange): Mono<ApiResponse<Void>> =
+    fun editUserPassword(@RequestBody cmd: EditUserPasswordCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
         userService.editPassword(cmd, exchange.sessionItem).toApiResponse
 
     @PutMapping("/name")
-    fun editUserName(@RequestBody cmd: EditUserNameCommand, exchange: ServerWebExchange): Mono<ApiResponse<Void>> =
+    fun editUserName(@RequestBody cmd: EditUserNameCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
         userService.editName(cmd, exchange.sessionItem).toApiResponse
 }

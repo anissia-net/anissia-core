@@ -13,6 +13,6 @@ interface AnimeService {
     fun getAutocorrect(cmd: GetAutocorrectAnimeCommand): List<String>
     fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): ApiResponse<Long>
     fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): ApiResponse<Long>
-    fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ApiResponse<Void>
+    fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ApiResponse<String>
     fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): ApiResponse<Long>
 }

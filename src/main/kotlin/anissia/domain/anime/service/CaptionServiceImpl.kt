@@ -128,7 +128,7 @@ class CaptionServiceImpl(
 
 
     @Transactional
-    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<Void> {
+    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<String> {
         cmd.validate()
         sessionItem.validateAdmin()
 

@@ -62,7 +62,7 @@ class GlobalExceptionHandler : WebExceptionHandler {
             }
         }
 
-    fun ServerHttpResponse.write(apiResponse: ApiResponse<Void>, status: HttpStatusCode = HttpStatus.OK): Mono<Void> =
+    fun ServerHttpResponse.write(apiResponse: ApiResponse<String>, status: HttpStatusCode = HttpStatus.OK): Mono<Void> =
         also { it.statusCode = status }
             .writeWith(Mono.just(bufferFactory().wrap(apiResponse.toJsonBytes)))
 

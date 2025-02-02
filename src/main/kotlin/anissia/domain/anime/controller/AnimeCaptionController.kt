@@ -34,14 +34,14 @@ class AnimeCaptionController(
         ApiResponse.ok(captionService.getList(cmd))
 
     @DeleteMapping("/caption/{animeNo}")
-    fun deleteCaption(cmd: DeleteCaptionCommand, exchange: ServerWebExchange): ApiResponse<Void> =
+    fun deleteCaption(cmd: DeleteCaptionCommand, exchange: ServerWebExchange): ApiResponse<String> =
         captionService.delete(cmd, exchange.sessionItem)
 
     @PostMapping("/caption/{animeNo}")
-    fun newCaption(cmd: AddCaptionCommand, exchange: ServerWebExchange): ApiResponse<Void> =
+    fun newCaption(cmd: AddCaptionCommand, exchange: ServerWebExchange): ApiResponse<String> =
         captionService.add(cmd, exchange.sessionItem)
 
     @PutMapping("/caption/{animeNo}")
-    fun editCaption(@RequestBody cmd: EditCaptionCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): ApiResponse<Void> =
+    fun editCaption(@RequestBody cmd: EditCaptionCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): ApiResponse<String> =
         captionService.edit(cmd.apply { this.animeNo = animeNo }, exchange.sessionItem)
 }
