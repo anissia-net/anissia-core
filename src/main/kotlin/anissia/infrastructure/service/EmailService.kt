@@ -1,7 +1,6 @@
 package anissia.infrastructure.service
 
 import anissia.infrastructure.common.logger
-import anissia.infrastructure.common.subscribeBoundedElastic
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.mail.Message
@@ -10,9 +9,7 @@ import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.stereotype.Service
-import reactor.core.Disposable
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import java.io.File
 import java.util.*
 
@@ -79,7 +76,7 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: String, subject: String, htmlContent: String): Disposable =
+    fun send(to: String, subject: String, htmlContent: String): Mono<Void> =
         send(listOf(to), listOf(), subject, htmlContent)
 
     /**
@@ -88,7 +85,7 @@ class EmailService (
      * @param subject mail subject
      * @param htmlContent mail content (html)
      */
-    fun send(to: List<String>, cc: List<String>, subject: String, htmlContent: String): Disposable =
+    fun send(to: List<String>, cc: List<String>, subject: String, htmlContent: String): Mono<Void> =
         Mono.fromCallable<Void> {
             if (enable) {
                 sender.send {
@@ -105,6 +102,6 @@ class EmailService (
             null
         }.doOnError {
             log.info("EMAIL ERROR $to -> $cc -> $subject\n$htmlContent")
-        }.subscribeBoundedElastic()
+        }
 
 }

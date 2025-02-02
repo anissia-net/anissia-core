@@ -9,6 +9,7 @@ import anissia.domain.account.repository.AccountRecoverAuthRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.enBCrypt
+import anissia.infrastructure.common.subscribeBoundedElastic
 import anissia.infrastructure.common.toResource
 import anissia.infrastructure.service.EmailService
 import anissia.shared.ApiException
@@ -69,7 +70,7 @@ class RecoverPasswordServiceImpl(
                         .replace("[[ip]]", sessionItem.ip)
                         .replace("[[exp_dt]]", emailDateFormat.format(auth.expDt))
                         .replace("[[url]]", "${host}/recover/${auth.no}-${auth.token}")
-                )
+                ).subscribeBoundedElastic()
             }
             .map { "" }
 

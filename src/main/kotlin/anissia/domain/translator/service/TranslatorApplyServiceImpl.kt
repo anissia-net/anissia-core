@@ -1,8 +1,6 @@
 package anissia.domain.translator.service
 
-import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.AgendaPoll
@@ -16,10 +14,8 @@ import anissia.domain.translator.command.NewApplyPollCommand
 import anissia.domain.translator.infrastructure.ApplyValue
 import anissia.domain.translator.model.TranslatorApplyItem
 import anissia.shared.ApiFailException
-import anissia.shared.ApiResponse
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
@@ -38,7 +34,6 @@ class TranslatorApplyServiceImpl(
             .flatMap { agendaRepository.findWithPollsByAgendaNoAndCode(cmd.applyNo, ApplyValue.CODE) }
             .map { TranslatorApplyItem(it, true) }
             .switchIfEmpty(Mono.just(TranslatorApplyItem()))
-
 
     override fun getList(cmd: GetApplyListCommand): Mono<Page<TranslatorApplyItem>> =
         Mono.just(cmd)

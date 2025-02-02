@@ -17,6 +17,7 @@ import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.common.doOnNextMono
 import anissia.infrastructure.common.enBCrypt
 import anissia.infrastructure.common.eqBCrypt
+import anissia.infrastructure.common.subscribeBoundedElastic
 import anissia.shared.ApiFailException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -68,11 +69,11 @@ class UserServiceImpl(
             .flatMap { agendaRepository.save(Agenda.changeName(sessionItem.an, it.name, cmd.name)).thenReturn(it) }
             .flatMap { val oldName = it.name; accountRepository.save(it.apply { name = cmd.name }).zipWith(Mono.just(oldName)) }
             .filter { it.t1.roles.isNotEmpty() }
-            .doOnNextMono {
+            .doOnNext {
                 animeCaptionRepository.findAllWithAnimeByAn(sessionItem.an)
                     .mapNotNull<Anime> { it.anime }
                     .flatMap { anime -> animeDocumentService.update(anime, false) }
-                    .collectList()
+                    .subscribeBoundedElastic()
             }
             .flatMap { activePanelService.addText(AddTextActivePanelCommand(false, "운영진 [${it.t2}]님의 닉네임이 [${it.t1.name}]님으로 변경되었습니다."), sessionItem) }
             .map { "" }

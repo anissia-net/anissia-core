@@ -5,8 +5,6 @@ import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.activePanel.repository.ActivePanelRepository
 import anissia.domain.agenda.service.AgendaService
 import anissia.domain.anime.service.AnimeRankService
-import anissia.domain.session.JwtKeyPair
-import anissia.domain.session.model.JwtKeyItem
 import anissia.domain.session.repository.JwtKeyPairRepository
 import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginPassRepository

@@ -8,10 +8,7 @@ import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRegisterAuthRepository
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.session.model.SessionItem
-import anissia.infrastructure.common.enBCrypt
-import anissia.infrastructure.common.toClassByJson
-import anissia.infrastructure.common.toJson
-import anissia.infrastructure.common.toResource
+import anissia.infrastructure.common.*
 import anissia.infrastructure.service.EmailService
 import anissia.shared.ApiFailException
 import com.fasterxml.jackson.core.type.TypeReference
@@ -73,7 +70,7 @@ class RegisterServiceImpl(
                         .replace("[[ip]]", auth.ip)
                         .replace("[[exp_dt]]", auth.expDt.format(emailDateFormat))
                         .replace("[[url]]", "${host}/register/${auth.no}-${auth.token}")
-                )
+                ).subscribeBoundedElastic()
             }
             .map { "" }
 

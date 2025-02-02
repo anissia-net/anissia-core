@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.util.HtmlUtils
 import reactor.core.Disposable
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import java.net.URL
@@ -46,8 +47,8 @@ inline fun <reified T> logger(): Logger = LoggerFactory.getLogger(T::class.java)
 
 fun <T, F> Mono<T>.doOnNextMono(call: (T) -> Mono<F>): Mono<T> = this.flatMap { call(it).thenReturn(it) }
 
-fun <T> Mono<T>.subscribeBoundedElastic(): Disposable =
-    this.subscribeOn(Schedulers.boundedElastic()).subscribe()
+fun <T> Mono<T>.subscribeBoundedElastic(): Disposable = this.subscribeOn(Schedulers.boundedElastic()).subscribe()
+fun <T> Flux<T>.subscribeBoundedElastic(): Disposable = this.subscribeOn(Schedulers.boundedElastic()).subscribe()
 
 //val Mono<Any>.toApiResponse: Mono<ApiResponse<Any>> get() = this.switchIfEmpty(Mono.just("")).map { ApiResponse.ok(it) }
 val Mono<Any>.toApiResponse: Mono<ApiResponse<Any>> get() =
