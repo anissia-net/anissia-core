@@ -11,6 +11,7 @@ import anissia.domain.board.repository.BoardTickerRepository
 import anissia.domain.board.repository.BoardTopicRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.doOnNextMono
+import anissia.infrastructure.common.subscribeBoundedElastic
 import anissia.shared.ApiFailException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -33,7 +34,7 @@ class PostServiceImpl(
             .filterWhen { validAddPermission(it.ticker, sessionItem) }
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없거나 존재하지 않는 게시판입니다.")))
             .flatMap { boardPostRepository.save(BoardPost.create(topicNo = cmd.topicNo, content = cmd.content, an = sessionItem.an)) }
-            .flatMap { boardTopicRepository.updatePostCount(cmd.topicNo) }
+            .doOnNext { boardTopicRepository.updatePostCount(cmd.topicNo).subscribeBoundedElastic() }
             .map { "" }
 
     @Transactional
@@ -55,13 +56,13 @@ class PostServiceImpl(
             .flatMap { boardPostRepository.findById(cmd.postNo) }
             .filter { it.an == sessionItem.an || sessionItem.isAdmin }
             .switchIfEmpty(Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")))
-            .doOnNextMono { post ->
-                Mono.just(post)
-                    .filter { it.an != sessionItem.an }
-                    .flatMap { activePanelService.addDeletePost(AddDeletePostLogActivePanelCommand(post, post.account), sessionItem) }
+            .doOnNext { post ->
+                if (post.an != sessionItem.an) {
+                    activePanelService.addDeletePost(AddDeletePostLogActivePanelCommand(post, post.account), sessionItem).subscribeBoundedElastic()
+                }
             }
             .doOnNextMono { boardPostRepository.delete(it) }
-            .flatMap { boardTopicRepository.updatePostCount(it.topicNo) }
+            .doOnNext { boardTopicRepository.updatePostCount(it.topicNo).subscribeBoundedElastic() }
             .map { "" }
 
     private fun validAddPermission(ticker: String, sessionItem: SessionItem): Mono<Boolean> =
