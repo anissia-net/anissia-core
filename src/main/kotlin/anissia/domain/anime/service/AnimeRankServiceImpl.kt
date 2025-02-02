@@ -50,7 +50,7 @@ class AnimeRankServiceImpl(
 
     override fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem): Disposable =
         animeHitRepository.save(AnimeHit(animeNo = cmd.animeNo, ip = sessionItem.ip, hour = OffsetDateTime.now().format(DTF_RANK_HOUR).toLong()))
-            .subscribeOn(Schedulers.boundedElastic()).subscribe()
+            .subscribeBoundedElastic()
 
     @Transactional
     override fun renew(): Mono<String> =

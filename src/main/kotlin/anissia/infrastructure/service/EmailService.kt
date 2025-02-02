@@ -1,6 +1,7 @@
 package anissia.infrastructure.service
 
 import anissia.infrastructure.common.logger
+import anissia.infrastructure.common.subscribeBoundedElastic
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.mail.Message
@@ -104,6 +105,6 @@ class EmailService (
             null
         }.doOnError {
             log.info("EMAIL ERROR $to -> $cc -> $subject\n$htmlContent")
-        }.subscribeOn(Schedulers.boundedElastic()).subscribe()
+        }.subscribeBoundedElastic()
 
 }

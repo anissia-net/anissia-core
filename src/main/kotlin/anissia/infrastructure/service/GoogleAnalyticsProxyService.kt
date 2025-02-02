@@ -2,6 +2,7 @@ package anissia.infrastructure.service
 
 import anissia.infrastructure.common.encodeUrl
 import anissia.infrastructure.common.getHttp400
+import anissia.infrastructure.common.subscribeBoundedElastic
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -29,5 +30,5 @@ class GoogleAnalyticsProxyService(
                     .bodyValue("v=1&tid=$id&cid=$ip&t=pageview&dp=${path.encodeUrl}&uip=$ip&ua=$ua")
                     .exchangeToMono { Mono.just(it.statusCode().is2xxSuccessful) }
             }
-            .subscribeOn(Schedulers.boundedElastic()).subscribe()
+            .subscribeBoundedElastic()
 }

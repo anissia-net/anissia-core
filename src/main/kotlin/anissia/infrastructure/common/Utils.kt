@@ -15,7 +15,9 @@ import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.util.HtmlUtils
+import reactor.core.Disposable
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import java.net.URL
 import java.net.URLEncoder
 import java.time.LocalDate
@@ -43,6 +45,10 @@ private val _log = logger<Utils>()
 inline fun <reified T> logger(): Logger = LoggerFactory.getLogger(T::class.java)
 
 fun <T, F> Mono<T>.doOnNextMono(call: (T) -> Mono<F>): Mono<T> = this.flatMap { call(it).thenReturn(it) }
+
+fun <T> Mono<T>.subscribeBoundedElastic(): Disposable =
+    this.subscribeOn(Schedulers.boundedElastic()).subscribe()
+
 //val Mono<Any>.toApiResponse: Mono<ApiResponse<Any>> get() = this.switchIfEmpty(Mono.just("")).map { ApiResponse.ok(it) }
 val Mono<Any>.toApiResponse: Mono<ApiResponse<Any>> get() =
     this.switchIfEmpty(Mono.error(ApiErrorException("체이닝 중 빈 값이 발견되었습니다.")))

@@ -71,20 +71,36 @@ class CaptionServiceImpl(
             }
 
     @Transactional
-    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ApiResponse<Void> {
+    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): Mono<String> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .doOnNext { sessionItem.validateAdmin() }
+            .flatMap { animeRepository.findById(cmd.animeNo) }
+            .switchIfEmpty(Mono.error(ApiErrorException("존재하지 않는 애니메이션입니다.")))
+            .flatMap { anime ->
+                animeCaptionRepository.findById(AnimeCaption.Key(cmd.animeNo, sessionItem.an))
+                    .flatMap { Mono.error(ApiErrorException("이미 작업중인 작품입니다.")) }
+                    .switchIfEmpty(Mono.just(AnimeCaption(anime = anime, an = sessionItem.an)))
+                    .flatMap { animeCaptionRepository.save(it) }
+
+
+
+            }
+
+        {
         cmd.validate()
         sessionItem.validateAdmin()
 
         val animeNo = cmd.animeNo
 
-        val anime = animeRepository.findByIdOrNull(animeNo)
+        val anime =
             ?: return ApiResponse.fail("존재하지 않는 애니메이션입니다.")
 
         if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, sessionItem.an)).isPresent) {
             return ApiResponse.fail("이미 작업중인 작품입니다.")
         }
 
-        animeCaptionRepository.save(AnimeCaption(anime = anime, an = sessionItem.an))
+
         animeRepository.updateCaptionCount(animeNo)
         animeDocumentService.update(anime)
         activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime.subject}] 자막을 시작하였습니다.", true), null)
