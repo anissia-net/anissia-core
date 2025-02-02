@@ -2,6 +2,7 @@ package anissia.domain.anime.service
 
 import anissia.domain.account.Account
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.anime.AnimeCaption
 import anissia.domain.anime.command.*
 import anissia.domain.anime.model.CaptionItem
@@ -10,6 +11,9 @@ import anissia.domain.anime.model.MyCaptionItem
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.SessionItem
+import anissia.infrastructure.common.MonoCacheStore
+import anissia.infrastructure.common.mapPageItem
+import anissia.shared.ApiErrorException
 import anissia.shared.ApiResponse
 import me.saro.kit.service.CacheStore
 import org.springframework.data.domain.Page
@@ -17,6 +21,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.ZoneOffset
 
 @Service
@@ -24,42 +29,46 @@ class CaptionServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeRepository: AnimeRepository,
     private val animeDocumentService: AnimeDocumentService,
-    private val activePanelLogService: ActivePanelLogService,
+    private val activePanelService: ActivePanelService,
     private val animeRankService: AnimeRankService,
 ): CaptionService {
 
-    private val recentListStore = CacheStore<Int, Page<CaptionRecentItem>>(5 * 60000)
+    private val recentListStore = MonoCacheStore<Int, Page<CaptionRecentItem>>(5 * 60000)
 
-    override fun getList(cmd: GetListCaptionByAnimeNoCommand, sessionItem: SessionItem): List<CaptionItem> {
-        cmd.validate()
-        return animeCaptionRepository.findAllWithAccountByAnimeNoOrderByUpdDtDesc(cmd.animeNo).map { CaptionItem(it) }
-            .also { animeRankService.hit(HitAnimeCommand(cmd.animeNo), sessionItem) }
-    }
+    override fun getList(cmd: GetListCaptionByAnimeNoCommand, sessionItem: SessionItem): Mono<List<CaptionItem>> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .flatMapMany { animeCaptionRepository.findAllWithAccountByAnimeNoOrderByUpdDtDesc(cmd.animeNo) }
+            .map { CaptionItem(it) }
+            .collectList()
 
-    override fun getList(cmd: GetMyListCaptionCommand, sessionItem: SessionItem): Page<MyCaptionItem> {
-        cmd.validate()
-        sessionItem.validateAdmin()
-
-        return if (cmd.active == 1) {
-            animeCaptionRepository.findAllWithAnimeForAdminCaptionActiveList(sessionItem.an, PageRequest.of(cmd.page, 20))
-        } else {
-            animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(sessionItem.an, PageRequest.of(cmd.page, 20))
-        }.map { MyCaptionItem(it) }
-    }
-
-    override fun getList(cmd: GetRecentListCaptionCommand): Page<CaptionRecentItem> {
-        cmd.validate()
-
-        // page -1 인 경우 최근 12개만 가져온다.
-        // page 가 0 이상인 경우 20개 단위로 페이징하여 가져온다.
-        return if (cmd.page == -1) {
-            recentListStore.find(cmd.page) {
-                animeCaptionRepository.findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(PageRequest.of(0, 12)).map { CaptionRecentItem(it) }
+    override fun getList(cmd: GetMyListCaptionCommand, sessionItem: SessionItem): Mono<Page<MyCaptionItem>> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .doOnNext { sessionItem.validateAdmin() }
+            .flatMap {
+                if (it.active == 1) {
+                    animeCaptionRepository.findAllWithAnimeForAdminCaptionActiveList(sessionItem.an, PageRequest.of(cmd.page, 20))
+                } else {
+                    animeCaptionRepository.findAllWithAnimeForAdminCaptionEndList(sessionItem.an, PageRequest.of(cmd.page, 20))
+                }
             }
-        } else {
-            animeCaptionRepository.findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(PageRequest.of(cmd.page, 20)).map { CaptionRecentItem(it) }
-        }
-    }
+            .map { it.map { MyCaptionItem(it) } }
+
+    override fun getList(cmd: GetRecentListCaptionCommand): Mono<Page<CaptionRecentItem>> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .flatMap {
+                // page -1 인 경우 최근 12개만 가져온다.
+                // page 가 0 이상인 경우 20개 단위로 페이징하여 가져온다.
+                if (it.page == -1) {
+                    recentListStore.find(it.page) {
+                        animeCaptionRepository.findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(PageRequest.of(0, 12)).mapPageItem { CaptionRecentItem(it) }
+                    }
+                } else {
+                    animeCaptionRepository.findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(PageRequest.of(cmd.page, 20)).mapPageItem { CaptionRecentItem(it) }
+                }
+            }
 
     @Transactional
     override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ApiResponse<Void> {
@@ -84,25 +93,23 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ApiResponse<Void> {
-        cmd.validate()
-        sessionItem.validateAdmin()
+    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): Mono<String> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .doOnNext { sessionItem.validateAdmin() }
+            .flatMap { animeCaptionRepository.findById(AnimeCaption.Key(it.animeNo, sessionItem.an)) }
+            .switchIfEmpty(Mono.error(ApiErrorException("존재하지 않는 자막입니다.")))
+            .flatMap { caption ->
+                animeCaptionRepository.save(caption.apply {
+                    edit(
+                        episode = cmd.episode,
+                        updDt = cmd.updLdt.atOffset(ZoneOffset.ofHours(9)),
+                        website = cmd.website
+                    )
+                })
+            }
+            .map { "자막정보가 반영되었습니다." }
 
-        val animeNo = cmd.animeNo
-
-        val caption = animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, sessionItem.an))
-            ?: return ApiResponse.fail("존재하지 않는 자막입니다.")
-
-        animeCaptionRepository.save(caption.apply {
-            edit(
-                episode = cmd.episode,
-                updDt = cmd.updLdt.atOffset(ZoneOffset.ofHours(9)),
-                website = cmd.website
-            )
-        })
-
-        return ApiResponse.of("ok", "자막정보가 반영되었습니다.")
-    }
 
     @Transactional
     override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<Void> {

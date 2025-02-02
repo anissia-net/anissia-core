@@ -37,5 +37,5 @@ interface AnimeCaptionRepository : ReactiveCrudRepository<AnimeCaption, AnimeCap
     fun findAllWithAnimeByAn(an: Long): Flux<AnimeCaption>
 
     @EntityGraph(attributePaths = ["account", "anime"])
-    fun findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(pageable: Pageable, updDt: OffsetDateTime = OffsetDateTime.now().minusDays(90), website: String = ""): Flux<Page<AnimeCaption>>
+    fun findAllByUpdDtAfterAndWebsiteNotOrderByUpdDtDesc(pageable: Pageable, updDt: OffsetDateTime = OffsetDateTime.now().minusDays(90), website: String = ""): Mono<Page<AnimeCaption>>
 }

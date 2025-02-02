@@ -29,7 +29,7 @@ class AnimeDocumentServiceImpl(
                 }
             }
             .flatMap { update(it, cmd.isDelete) }
-            .then()
+            .thenReturn("")
 
     @Transactional
     override fun update(anime: Anime, isDelete: Boolean): Mono<String> =
@@ -40,7 +40,7 @@ class AnimeDocumentServiceImpl(
                 animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo).collectList()
                     .flatMap { translators -> animeDocumentRepository.update(anime, translators) }
             }
-        }.then()
+        }.thenReturn("")
 
 
     @Transactional
@@ -55,5 +55,5 @@ class AnimeDocumentServiceImpl(
             .flatMap { animeRepository.updateCaptionCountAll() }
             .flatMapMany { animeRepository.findAll() }
             .flatMap { update(it, false) }
-            .collectList().then()
+            .collectList().thenReturn("")
 }
