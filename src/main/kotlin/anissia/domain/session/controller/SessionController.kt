@@ -5,10 +5,12 @@ import anissia.domain.session.command.DoUserLoginCommand
 import anissia.domain.session.model.JwtAuthInfoItem
 import anissia.domain.session.service.JwtService
 import anissia.domain.session.service.LoginService
-import anissia.infrastructure.common.As
+import anissia.infrastructure.common.sessionItem
+import anissia.infrastructure.common.toApiResponse
 import anissia.shared.ApiResponse
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/session")
@@ -17,14 +19,14 @@ class SessionController(
     private val jwtService: JwtService,
 ) {
     @PostMapping
-    fun doLogin(@RequestBody cmd: DoUserLoginCommand, exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
-        loginService.doUserLogin(cmd, exchange.sessionItem)
+    fun doLogin(@RequestBody cmd: DoUserLoginCommand, exchange: ServerWebExchange): Mono<ApiResponse<JwtAuthInfoItem>> =
+        loginService.doUserLogin(cmd, exchange.sessionItem).toApiResponse
 
     @PostMapping("/token")
-    fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
-        loginService.doTokenLogin(cmd, exchange.sessionItem)
+    fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): Mono<ApiResponse<JwtAuthInfoItem>> =
+        loginService.doTokenLogin(cmd, exchange.sessionItem).toApiResponse
 
     @PutMapping()
-    fun updateAuthInfo(exchange: ServerWebExchange): ApiResponse<JwtAuthInfoItem> =
-        jwtService.updateAuthInfo(exchange.sessionItem)
+    fun updateAuthInfo(exchange: ServerWebExchange): Mono<ApiResponse<JwtAuthInfoItem>> =
+        jwtService.updateAuthInfo(exchange.sessionItem).toApiResponse
 }

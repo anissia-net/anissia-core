@@ -5,8 +5,8 @@ import anissia.domain.account.command.EditUserNameCommand
 import anissia.domain.account.command.EditUserPasswordCommand
 import anissia.domain.account.model.AccountUserItem
 import anissia.domain.account.service.UserService
-import anissia.infrastructure.common.As.Companion.sessionItem
-import anissia.infrastructure.common.As.Companion.toApiResponse
+import anissia.infrastructure.common.sessionItem
+import anissia.infrastructure.common.toApiResponse
 import anissia.shared.ApiResponse
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange

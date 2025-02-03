@@ -6,8 +6,8 @@ import anissia.domain.board.model.BoardTopicItem
 import anissia.domain.board.service.BoardService
 import anissia.domain.board.service.PostService
 import anissia.domain.board.service.TopicService
-import anissia.infrastructure.common.As.Companion.sessionItem
-import anissia.infrastructure.common.As.Companion.toApiResponse
+import anissia.infrastructure.common.sessionItem
+import anissia.infrastructure.common.toApiResponse
 import anissia.shared.ApiResponse
 import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.*

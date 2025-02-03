@@ -17,7 +17,6 @@ import anissia.domain.anime.repository.AnimeGenreRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.TranslatorApplyService
-import anissia.infrastructure.common.As
 import anissia.infrastructure.common.MonoCacheStore
 import anissia.infrastructure.common.logger
 import anissia.infrastructure.common.subscribeBoundedElastic
@@ -25,7 +24,6 @@ import anissia.infrastructure.service.ElasticsearchService
 import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
 import me.saro.kit.lang.KoreanKit
-import me.saro.kit.service.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -60,7 +58,7 @@ class AnimeServiceImpl(
             .doOnNext { animeRankService.hit(HitAnimeCommand(cmd.animeNo), sessionItem).subscribeBoundedElastic() }
             .switchIfEmpty(Mono.just(AnimeItem()))
 
-    override fun getList(cmd: GetAnimeListCommand): Page<AnimeItem> {
+    override fun getList(cmd: GetAnimeListCommand): Mono<Page<AnimeItem>> {
         val q = cmd.q
         val page = cmd.page
 

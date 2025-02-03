@@ -1,6 +1,6 @@
 package anissia.domain.session.command
 
-import anissia.infrastructure.common.As
+import anissia.infrastructure.common.REGEX_MAIL
 import anissia.shared.ApiFailException
 
 class DoUserLoginCommand(
@@ -9,7 +9,7 @@ class DoUserLoginCommand(
     val makeLoginToken: Boolean = false
 ) {
     fun validate() {
-        if (email.length < 4 || email.length > 64 || !As.IS_MAIL_REGEX.matches(email))
+        if (email.length < 4 || email.length > 64 || !REGEX_MAIL.matches(email))
             throw ApiFailException("아이디는 E-MAIL 형식입니다.")
 
         if (password.length < 8 || password.length > 128)
