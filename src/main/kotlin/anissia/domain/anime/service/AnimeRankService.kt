@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono
 
 interface AnimeRankService {
     fun get(cmd: GetAnimeRankCommand): Mono<List<Map<*, *>>>
-    fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem): Disposable
+    fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem): Mono<String>
     fun renew(): Mono<String>
 }

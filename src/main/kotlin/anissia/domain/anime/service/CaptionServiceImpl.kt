@@ -3,6 +3,7 @@ package anissia.domain.anime.service
 import anissia.domain.account.Account
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.service.ActivePanelService
+import anissia.domain.anime.Anime
 import anissia.domain.anime.AnimeCaption
 import anissia.domain.anime.command.*
 import anissia.domain.anime.model.CaptionItem
@@ -12,7 +13,9 @@ import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.MonoCacheStore
+import anissia.infrastructure.common.doOnNextMono
 import anissia.infrastructure.common.mapPageItem
+import anissia.infrastructure.common.subscribeBoundedElastic
 import anissia.shared.ApiErrorException
 import anissia.shared.ApiResponse
 import me.saro.kit.service.CacheStore
@@ -128,33 +131,27 @@ class CaptionServiceImpl(
 
 
     @Transactional
-    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ApiResponse<String> {
-        cmd.validate()
-        sessionItem.validateAdmin()
-
-        val animeNo = cmd.animeNo
-
-        return animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, sessionItem.an))
-            ?.run {
-                animeCaptionRepository.delete(this)
-                animeRepository.updateCaptionCount(animeNo)
-                animeDocumentService.update(UpdateAnimeDocumentCommand(animeNo))
-                activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
-                ApiResponse.ok()
-            }
-            ?: ApiResponse.fail("이미 삭제되었습니다.")
-    }
+    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): Mono<String> =
+        Mono.just(cmd)
+            .doOnNext { it.validate() }
+            .doOnNext { sessionItem.validateAdmin() }
+            .flatMap { animeCaptionRepository.findById(AnimeCaption.Key(cmd.animeNo, sessionItem.an)).zipWhen { Mono.just(it.anime!!) } }
+            .flatMap { zip -> activePanelService.addText(AddTextActivePanelCommand(true, "[${sessionItem.name}]님이 [${zip.t2.subject}] 자막을 종료하였습니다."), null).thenReturn(zip.t1) }
+            .flatMap { animeCaptionRepository.delete(it).thenReturn(it) }
+            .flatMap { animeRepository.updateCaptionCount(cmd.animeNo) }
+            .flatMap { animeDocumentService.update(UpdateAnimeDocumentCommand(cmd.animeNo)).map { "" } }
+            .switchIfEmpty(Mono.error(ApiErrorException("이미 삭제되었습니다.")))
 
     @Transactional
-    override fun delete(account: Account, sessionItem: SessionItem): Int {
-        sessionItem.validateRoot()
-        val captionList: List<AnimeCaption> = animeCaptionRepository.findAllByAn(account.an)
-        val animeNoList: List<Long> = captionList.map { it.anime!!.animeNo }
-        val animeList = animeRepository.findAllByIds(animeNoList)
-        animeCaptionRepository.deleteAll(captionList)
-        animeCaptionRepository.flush()
-        animeRepository.updateCaptionCountByIds(animeNoList)
-        animeList.parallelStream().forEach { animeDocumentService.update(it) }
-        return captionList.count()
-    }
+    override fun delete(account: Account, sessionItem: SessionItem): Mono<Int> =
+        Mono.just(sessionItem)
+            .doOnNext { it.validateAdmin() }
+            .flatMap {
+                animeCaptionRepository.findAllWithAnimeByAn(account.an).collectList()
+                    .flatMap { captionList -> animeCaptionRepository.deleteAll(captionList).thenReturn(captionList.map { it.anime }) }
+                    .doOnNextMono { animeList ->
+                        animeRepository.updateCaptionCountByIds(animeList.mapNotNull { it?.animeNo })
+                            .doOnNext { animeList.forEach { anime -> animeDocumentService.update(anime!!, false).subscribeBoundedElastic() } }
+                    }
+                    .map { it.count() }
 }

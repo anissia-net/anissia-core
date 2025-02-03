@@ -4,6 +4,7 @@ import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.ActivePanel
 import anissia.domain.activePanel.command.AddTextActivePanelCommand
 import anissia.domain.activePanel.repository.ActivePanelRepository
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.Anime
@@ -17,6 +18,9 @@ import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.common.As
+import anissia.infrastructure.common.MonoCacheStore
+import anissia.infrastructure.common.logger
+import anissia.infrastructure.common.subscribeBoundedElastic
 import anissia.infrastructure.service.ElasticsearchService
 import anissia.shared.ApiResponse
 import com.fasterxml.jackson.core.type.TypeReference
@@ -28,6 +32,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -37,7 +42,7 @@ class AnimeServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeDocumentService: AnimeDocumentService,
     private val animeRankService: AnimeRankService,
-    private val activePanelLogService: ActivePanelLogService,
+    private val activePanelService: ActivePanelService,
     private val agendaRepository: AgendaRepository,
     private val translatorApplyService: TranslatorApplyService,
     private val animeGenreRepository: AnimeGenreRepository,
@@ -46,16 +51,14 @@ class AnimeServiceImpl(
     private val accountRepository: AccountRepository,
 ): AnimeService {
 
-    private val log = As.logger<AnimeServiceImpl>()
-    private val mapper = As.OBJECT_MAPPER
+    private val log = logger<AnimeServiceImpl>()
+    private val autocorrectStore = MonoCacheStore<String, List<String>>(60 * 60000)
 
-    private val autocorrectStore = CacheStore<String, List<String>>(60 * 60000)
-
-    override fun get(cmd: GetAnimeCommand, sessionItem: SessionItem): AnimeItem =
+    override fun get(cmd: GetAnimeCommand, sessionItem: SessionItem): Mono<AnimeItem> =
         animeRepository.findWithCaptionsByAnimeNo(cmd.animeNo)
-            ?.let { AnimeItem(it, true) }
-            ?.also { animeRankService.hit(HitAnimeCommand(cmd.animeNo), sessionItem) }
-            ?: AnimeItem()
+            .map { AnimeItem(it, true) }
+            .doOnNext { animeRankService.hit(HitAnimeCommand(cmd.animeNo), sessionItem).subscribeBoundedElastic() }
+            .switchIfEmpty(Mono.just(AnimeItem()))
 
     override fun getList(cmd: GetAnimeListCommand): Page<AnimeItem> {
         val q = cmd.q
