@@ -6,6 +6,7 @@ import anissia.domain.session.model.JwtAuthInfoItem
 import anissia.domain.session.service.JwtService
 import anissia.domain.session.service.LoginService
 import anissia.infrastructure.common.sessionItem
+import anissia.infrastructure.common.toApiResponse
 import anissia.shared.ApiResponse
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
@@ -27,5 +28,5 @@ class SessionController(
 
     @PutMapping()
     fun updateAuthInfo(exchange: ServerWebExchange): Mono<ApiResponse<JwtAuthInfoItem>> =
-        jwtService.updateAuthInfo(exchange.sessionItem)
+        jwtService.updateAuthInfo(exchange.sessionItem).toApiResponse
 }

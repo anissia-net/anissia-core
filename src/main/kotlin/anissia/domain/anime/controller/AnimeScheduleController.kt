@@ -6,7 +6,6 @@ import anissia.domain.anime.command.GetScheduleSvgCommand
 import anissia.domain.anime.model.AnimeScheduleItem
 import anissia.domain.anime.service.AnimeScheduleService
 import anissia.shared.ApiResponse
-import anissia.shared.ResultWrapper
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
