@@ -8,6 +8,8 @@ import anissia.domain.anime.repository.AnimeRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Service
 class AnimeDocumentServiceImpl(
@@ -15,34 +17,45 @@ class AnimeDocumentServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeDocumentRepository: AnimeDocumentRepository,
 ): AnimeDocumentService {
-    private val index = "anissia_anime"
+    @Transactional
+    override fun update(cmd: UpdateAnimeDocumentCommand): Mono<String> =
+        Mono.defer {
+            cmd.validate()
+            if (!cmd.isDelete) {
+                val anime = animeRepository.findByIdOrNull(cmd.animeNo)
+                if (anime != null) {
+                    return@defer update(anime, false)
+                }
+            }
+            return@defer update(Anime(animeNo = cmd.animeNo), true)
+        }
 
     @Transactional
-    override fun update(cmd: UpdateAnimeDocumentCommand) {
-        if (cmd.isDelete) {
-            update(Anime(animeNo = cmd.animeNo), true)
-        } else {
-            animeRepository.findByIdOrNull(cmd.animeNo)
-                ?.let { update(it) }
-                ?: update(Anime(animeNo = cmd.animeNo), true)
+    override fun update(anime: Anime, isDelete: Boolean): Mono<String> =
+        Mono.defer {
+            if (isDelete) {
+                animeDocumentRepository.deleteByAnimeNo(anime.animeNo)
+                return@defer Mono.just("")
+            } else {
+                val translators = animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo)
+                return@defer animeDocumentRepository.update(anime, translators).thenReturn("")
+            }
         }
-    }
+
 
     @Transactional
-    override fun update(anime: Anime, isDelete: Boolean) {
-        if (isDelete) {
-            animeDocumentRepository.deleteByAnimeNo(anime.animeNo)
-        } else {
-            animeDocumentRepository.update(anime, animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo))
+    override fun reset(drop: Boolean): Mono<String> =
+        Mono.defer {
+            if (drop) {
+                animeDocumentRepository.dropAndCreateIndex().thenReturn("")
+            } else {
+                Mono.just("")
+            }
         }
-    }
-
-    @Transactional
-    override fun reset(drop: Boolean) {
-        if (drop) {
-            animeDocumentRepository.dropAndCreateIndex()
-        }
-        animeRepository.updateCaptionCountAll()
-        animeRepository.findAll().parallelStream().forEach { update(it) }
-    }
+            .flatMapMany {
+                animeRepository.updateCaptionCountAll()
+                Flux.just(*animeRepository.findAll().toTypedArray())
+            }
+            .flatMap { anime -> update(anime, false) }
+            .collectList().thenReturn("")
 }

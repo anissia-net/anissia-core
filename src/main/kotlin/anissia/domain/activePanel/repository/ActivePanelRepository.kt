@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
 
-interface ActivePanelRepository : JpaRepository<ActivePanel, Long> { //, QuerydslPredicateExecutor<ActivePanel> {
+interface ActivePanelRepository : JpaRepository<ActivePanel, Long> {
 
     fun findAllByOrderByApNoDesc(pageable: Pageable): Page<ActivePanel>
 

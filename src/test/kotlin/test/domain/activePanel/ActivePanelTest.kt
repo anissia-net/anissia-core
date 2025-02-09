@@ -1,7 +1,5 @@
 package test.domain.activePanel
 
-import anissia.domain.activePanel.service.ActivePanelLogService
-
 class ActivePanelTest(
     private val activePanelLogService: ActivePanelLogService,
 

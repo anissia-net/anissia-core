@@ -5,8 +5,6 @@ import anissia.domain.account.command.EditUserPasswordCommand
 import anissia.domain.account.model.AccountUserItem
 import anissia.domain.account.repository.AccountBanNameRepository
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.activePanel.command.AddTextActivePanelCommand
-import anissia.domain.activePanel.service.ActivePanelLogService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.command.UpdateAnimeDocumentCommand

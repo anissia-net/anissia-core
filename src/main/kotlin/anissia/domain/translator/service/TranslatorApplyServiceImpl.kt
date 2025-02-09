@@ -2,8 +2,6 @@ package anissia.domain.translator.service
 
 import anissia.domain.account.AccountRole
 import anissia.domain.account.repository.AccountRepository
-import anissia.domain.activePanel.command.AddTextActivePanelCommand
-import anissia.domain.activePanel.service.ActivePanelLogService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.AgendaPoll
 import anissia.domain.agenda.repository.AgendaPollRepository
