@@ -56,7 +56,7 @@ java -jar anissia-core-1.0.jar --spring.profiles.active=prod
 ```
 
 ### 로컬 기본 데이터 생성
-- http://localhost:8080/install
+- http://localhost:8080/install (다시 작성할 예정)
 
 
 ## 참고 
