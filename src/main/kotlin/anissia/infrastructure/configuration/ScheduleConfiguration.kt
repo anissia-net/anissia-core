@@ -54,8 +54,9 @@ class ScheduleConfiguration(
     // 오래된 jwt 키 삭제
     // 매시간 2분에 실행
     @Scheduled(cron = "0 2 * * * ?")
-    fun deleteOldJwtKey(): Mono<Int> =
+    fun deleteOldJwtKey() {
         jwtKeyPairRepository.deleteAllByKidBefore()
+    }
 
     // 삭제 예정 애니메이션 삭제
     // 매일 20시에 실행
@@ -66,17 +67,18 @@ class ScheduleConfiguration(
     // 오래된 활동이력 삭제
     // 매일 10시에 실행
     @Scheduled(cron = "0 0 10 * * ?")
-    fun deleteOldActivePanelList(): Mono<Int> =
+    fun deleteOldActivePanelList() {
         activePanelRepository.deleteAllByRegDtBefore()
+    }
 
     // 오래된 로그인 이력 삭제
     // 매일 10시 30분에 실행
     @Scheduled(cron = "0 30 10 * * ?")
-    fun deleteOldLoginHistory(): Mono<String> =
+    fun deleteOldLoginHistory() {
         loginPassRepository.deleteAllByPassDtBefore()
-            .flatMap { loginFailRepository.deleteAllByFailDtBefore() }
-            .flatMap { loginTokenRepository.deleteAllByExpDtBefore() }
-            .flatMap { accountRecoverAuthRepository.deleteAllByExpDtBefore() }
-            .flatMap { accountRegisterAuthRepository.deleteAllByExpDtBefore() }
-            .map { "" }
+        loginFailRepository.deleteAllByFailDtBefore()
+        loginTokenRepository.deleteAllByExpDtBefore()
+        accountRecoverAuthRepository.deleteAllByExpDtBefore()
+        accountRegisterAuthRepository.deleteAllByExpDtBefore()
+    }
 }
