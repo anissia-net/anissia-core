@@ -27,25 +27,25 @@ class BoardTest(
 //
 //    @PostMapping("/topic/{ticker}")
 //    fun newTopic(@RequestBody cmd: NewTopicCommand, @PathVariable ticker: String, exchange: ServerWebExchange): ResultWrapper<Long> =
-//        newTopic.handle(cmd.apply { this.ticker = ticker }, As.toSession(exchange))
+//        newTopic.handle(cmd.apply { this.ticker = ticker }, exchange.sessionItem)
 //
 //    @PutMapping("/topic/{topicNo}")
 //    fun editTopic(@RequestBody cmd: EditTopicCommand, @PathVariable topicNo: Long, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        editTopic.handle(cmd.apply { this.topicNo = topicNo }, As.toSession(exchange))
+//        editTopic.handle(cmd.apply { this.topicNo = topicNo }, exchange.sessionItem)
 //
 //    @DeleteMapping("/topic/{topicNo}")
 //    fun deleteTopic(cmd: DeleteTopicCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        deleteTopic.handle(cmd, As.toSession(exchange))
+//        deleteTopic.handle(cmd, exchange.sessionItem)
 //
 //    @PostMapping("/post/{topicNo}")
 //    fun newPost(@RequestBody cmd: NewPostCommand, @PathVariable topicNo: Long, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        newPost.handle(cmd.apply { this.topicNo = topicNo }, As.toSession(exchange))
+//        newPost.handle(cmd.apply { this.topicNo = topicNo }, exchange.sessionItem)
 //
 //    @PutMapping("/post/{postNo}")
 //    fun editPost(@RequestBody cmd: EditPostCommand, @PathVariable postNo: Long, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        editPost.handle(cmd.apply { this.postNo = postNo }, As.toSession(exchange))
+//        editPost.handle(cmd.apply { this.postNo = postNo }, exchange.sessionItem)
 //
 //    @DeleteMapping("/post/{postNo}")
 //    fun deletePost(cmd: DeletePostCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        deletePost.handle(cmd, As.toSession(exchange))
+//        deletePost.handle(cmd, exchange.sessionItem)
 }

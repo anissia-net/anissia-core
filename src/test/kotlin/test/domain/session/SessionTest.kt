@@ -7,13 +7,13 @@ class SessionTest(
 ) {
 //    @PostMapping
 //    fun doLogin(@RequestBody cmd: DoLoginCommand, exchange: ServerWebExchange): ResultWrapper<LoginInfoItem> =
-//        doLogin.handle(cmd, As.toSession(exchange))
+//        doLogin.handle(cmd, exchange.sessionItem)
 //
 //    @PostMapping("/token")
 //    fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): ResultWrapper<LoginInfoItem> =
-//        doTokenLogin.handle(cmd, As.toSession(exchange))
+//        doTokenLogin.handle(cmd, exchange.sessionItem)
 //
 //    @PutMapping()
 //    fun updateJwt(exchange: ServerWebExchange): ResultWrapper<LoginInfoItem> =
-//        updateJwt.handle(As.toSession(exchange))
+//        updateJwt.handle(exchange.sessionItem)
 }

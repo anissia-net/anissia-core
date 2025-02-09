@@ -19,9 +19,9 @@ class TranslatorTest(
 //
 //    @PostMapping("/apply")
 //    fun newApply(@RequestBody cmd: NewApplyCommand, exchange: ServerWebExchange): ResultWrapper<Long> =
-//        newApply.handle(cmd, As.toSession(exchange))
+//        newApply.handle(cmd, exchange.sessionItem)
 //
 //    @PostMapping("/apply/{applyNo:\\d+}/poll")
 //    fun newApplyPoll(@RequestBody cmd: NewApplyPollCommand, @PathVariable applyNo: Long, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        newApplyPoll.handle(cmd.apply { this.applyNo = applyNo }, As.toSession(exchange))
+//        newApplyPoll.handle(cmd.apply { this.applyNo = applyNo }, exchange.sessionItem)
 }

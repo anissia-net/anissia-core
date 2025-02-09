@@ -8,11 +8,11 @@ class AnimeCaptionTest(
 ) {
 //    @GetMapping("/caption/animeNo/{animeNo:\\d+}")
 //    fun getCaptionListByAnimeNo(cmd: GetCaptionListByAnimeNoCommand, exchange: ServerWebExchange): ResultWrapper<List<CaptionItem>> =
-//        ResultWrapper.ok(getCaptionListByAnimeNo.handle(cmd, As.toSession(exchange)))
+//        ResultWrapper.ok(getCaptionListByAnimeNo.handle(cmd, exchange.sessionItem))
 //
 //    @GetMapping("/caption/myList/{active}/{page}")
 //    fun getMyCaptionList(cmd: GetMyCaptionListCommand, exchange: ServerWebExchange): ResultWrapper<Page<MyCaptionItem>> =
-//        ResultWrapper.ok(getMyCaptionList.handle(cmd, As.toSession(exchange)))
+//        ResultWrapper.ok(getMyCaptionList.handle(cmd, exchange.sessionItem))
 //
 //    @GetMapping("/caption/recent")
 //    fun getCaptionRecent(exchange: ServerWebExchange): ResultWrapper<List<CaptionRecentItem>> =
@@ -24,13 +24,13 @@ class AnimeCaptionTest(
 //
 //    @DeleteMapping("/caption/{animeNo}")
 //    fun deleteCaption(cmd: DeleteCaptionCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        deleteCaption.handle(cmd, As.toSession(exchange))
+//        deleteCaption.handle(cmd, exchange.sessionItem)
 //
 //    @PostMapping("/caption/{animeNo}")
 //    fun newCaption(cmd: NewCaptionCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        newCaption.handle(cmd, As.toSession(exchange))
+//        newCaption.handle(cmd, exchange.sessionItem)
 //
 //    @PutMapping("/caption/{animeNo}")
 //    fun editCaption(@RequestBody cmd: EditCaptionCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        editCaption.handle(cmd.apply { this.animeNo = animeNo }, As.toSession(exchange))
+//        editCaption.handle(cmd.apply { this.animeNo = animeNo }, exchange.sessionItem)
 }

@@ -6,10 +6,12 @@ import anissia.domain.activePanel.model.ActivePanelItem
 import anissia.domain.activePanel.service.ActivePanelCommandService
 import anissia.domain.activePanel.service.ActivePanelLogService
 import anissia.infrastructure.common.As
+import anissia.shared.ApiResponse
 import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/active-panel")
@@ -18,10 +20,10 @@ class ActivePanelController(
     private val activePanelCommandService: ActivePanelCommandService,
 ) {
     @GetMapping("/list/{page:[\\d]+}")
-    fun getList(cmd: GetListActivePanelCommand, exchange: ServerWebExchange): ResultWrapper<Page<ActivePanelItem>> =
-        ResultWrapper.ok(activePanelLogService.getList(cmd, As.toSession(exchange)))
+    fun getList(cmd: GetListActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<ActivePanelItem>>> =
+        ResultWrapper.ok(activePanelLogService.getList(cmd, exchange.sessionItem))
 
     @PostMapping("/command")
-    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-        activePanelCommandService.doCommand(cmd, As.toSession(exchange))
+    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<Unit>> =
+        activePanelCommandService.doCommand(cmd, exchange.sessionItem)
 }

@@ -16,7 +16,7 @@ class AnimeTest(
 //
 //    @GetMapping("/delist")
 //    fun getAnimeDelist(exchange: ServerWebExchange): ResultWrapper<Page<AnimeItem>> =
-//        ResultWrapper.ok(getAnimeDelist.handle(As.toSession(exchange)))
+//        ResultWrapper.ok(getAnimeDelist.handle(exchange.sessionItem))
 //
 //    @GetMapping("/animeNo/{animeNo:\\d+}")
 //    fun getAnime(cmd: GetAnimeCommand, session: Session, exchange: ServerWebExchange): ResultWrapper<AnimeItem> =
@@ -36,17 +36,17 @@ class AnimeTest(
 //
 //    @DeleteMapping("/{animeNo}")
 //    fun deleteAnime(cmd: DeleteAnimeCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
-//        deleteAnime.handle(cmd, As.toSession(exchange))
+//        deleteAnime.handle(cmd, exchange.sessionItem)
 //
 //    @PostMapping
 //    fun newAnime(@RequestBody cmd: NewAnimeCommand, exchange: ServerWebExchange): ResultWrapper<Long> =
-//        newAnime.handle(cmd, As.toSession(exchange))
+//        newAnime.handle(cmd, exchange.sessionItem)
 //
 //    @PutMapping("/{animeNo}")
 //    fun editAnime(@RequestBody cmd: EditAnimeCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): ResultWrapper<Long> =
-//        editAnime.handle(cmd.apply { this.animeNo = animeNo }, As.toSession(exchange))
+//        editAnime.handle(cmd.apply { this.animeNo = animeNo }, exchange.sessionItem)
 //
 //    @PostMapping("/recover/{agendaNo}")
 //    fun recoverAnime(cmd: RecoverAnimeCommand, exchange: ServerWebExchange): ResultWrapper<Long> =
-//        recoverAnime.handle(cmd, As.toSession(exchange))
+//        recoverAnime.handle(cmd, exchange.sessionItem)
 }
