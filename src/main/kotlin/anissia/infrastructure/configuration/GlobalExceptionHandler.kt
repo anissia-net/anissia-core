@@ -21,13 +21,13 @@ class GlobalExceptionHandler {
     private val log = As.logger<GlobalExceptionHandler>()
 
     @ExceptionHandler(Error::class)
-    fun handleNotImplementedError(ex: Error, exchange: ServerWebExchange): ResponseEntity<ResultWrapper<Unit>> {
+    fun handleNotImplementedError(ex: Error, exchange: ServerWebExchange): ResponseEntity<Mono<String>> {
         return ResponseEntity.status(HttpStatus.OK).body(ResultWrapper.error("알수없는 오류 입니다."))
             .also { log(ex, exchange) }
     }
 
     @ExceptionHandler(Exception::class)
-    fun other(exception: Exception, exchange: ServerWebExchange): ResponseEntity<ResultWrapper<Unit>> {
+    fun other(exception: Exception, exchange: ServerWebExchange): ResponseEntity<Mono<String>> {
         return when (exception) {
             is ServerWebInputException -> {
                 ResponseEntity.status(HttpStatus.OK).body(ResultWrapper.error("입력값이 잘못되었습니다."))

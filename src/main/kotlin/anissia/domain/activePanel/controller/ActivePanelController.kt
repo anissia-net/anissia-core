@@ -21,9 +21,9 @@ class ActivePanelController(
 ) {
     @GetMapping("/list/{page:[\\d]+}")
     fun getList(cmd: GetListActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<ActivePanelItem>>> =
-        ResultWrapper.ok(activePanelLogService.getList(cmd, exchange.sessionItem))
+        activePanelLogService.getList(cmd, exchange.sessionItem))
 
     @PostMapping("/command")
-    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<Unit>> =
+    fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
         activePanelCommandService.doCommand(cmd, exchange.sessionItem)
 }

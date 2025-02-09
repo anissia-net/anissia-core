@@ -178,7 +178,7 @@ class AnimeServiceImpl(
             ?: listOf()
 
     @Transactional
-    override fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): Mono<ApiResponse<Long> {
         cmd.validate()
         sessionItem.validateAdmin()
         translatorApplyService.getGrantedTime(sessionItem.an)
@@ -219,11 +219,11 @@ class AnimeServiceImpl(
         activePanelRepository.save(activePanel)
         animeDocumentService.update(anime)
 
-        return ResultWrapper.ok(anime.animeNo)
+        return anime.animeNo)
     }
 
     @Transactional
-    override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): Mono<ApiResponse<Long> {
         cmd.validate()
         sessionItem.validateAdmin()
         translatorApplyService.getGrantedTime(sessionItem.an)
@@ -290,7 +290,7 @@ class AnimeServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateAdmin()
         translatorApplyService.getGrantedTime(sessionItem.an)
@@ -311,11 +311,11 @@ class AnimeServiceImpl(
         animeDocumentService.update(anime)
         agendaRepository.save(agenda)
 
-        return ResultWrapper.ok()
+        return )
     }
 
     @Transactional
-    override fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): Mono<ApiResponse<Long> {
         cmd.validate()
         sessionItem.validateAdmin()
 

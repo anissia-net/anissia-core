@@ -11,8 +11,8 @@ interface AnimeService {
     fun getList(cmd: GetAnimeListCommand): Page<AnimeItem>
     fun getDelist(sessionItem: SessionItem): Page<AnimeItem>
     fun getAutocorrect(cmd: GetAutocorrectAnimeCommand): List<String>
-    fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long>
-    fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long>
-    fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): ResultWrapper<Unit>
-    fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): ResultWrapper<Long>
+    fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): Mono<ApiResponse<Long>
+    fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): Mono<ApiResponse<Long>
+    fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): Mono<String>
+    fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): Mono<ApiResponse<Long>
 }

@@ -8,6 +8,6 @@ import anissia.shared.ResultWrapper
 
 interface UserService {
     fun get(sessionItem: SessionItem): AccountUserItem
-    fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ResultWrapper<Unit>
-    fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ResultWrapper<Unit>
+    fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<String>
+    fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): Mono<String>
 }

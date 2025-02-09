@@ -6,22 +6,22 @@ class TranslatorTest(
     private val translatorApplyService: TranslatorApplyService,
 ) {
 //    @GetMapping("/apply/list/{page:\\d+}")
-//    fun getApplyList(cmd: GetApplyListCommand, exchange: ServerWebExchange): ResultWrapper<Page<TranslatorApplyItem>> =
-//        ResultWrapper.ok(getApplyList.handle(cmd))
+//    fun getApplyList(cmd: GetApplyListCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<TranslatorApplyItem>> =
+//        getApplyList.handle(cmd))
 //
 //    @GetMapping("/apply/{applyNo:\\d+}")
-//    fun getApply(cmd: GetApplyCommand, exchange: ServerWebExchange): ResultWrapper<TranslatorApplyItem> =
-//        ResultWrapper.ok(getApply.handle(cmd))
+//    fun getApply(cmd: GetApplyCommand, exchange: ServerWebExchange): Mono<ApiResponse<TranslatorApplyItem> =
+//        getApply.handle(cmd))
 //
 //    @GetMapping("/apply/count")
-//    fun getNewTranslatorApplyCount(exchange: ServerWebExchange): ResultWrapper<Int> =
-//        ResultWrapper.ok(getNewTranslatorApplyCount.handle())
+//    fun getNewTranslatorApplyCount(exchange: ServerWebExchange): Mono<ApiResponse<Int> =
+//        getNewTranslatorApplyCount.handle())
 //
 //    @PostMapping("/apply")
-//    fun newApply(@RequestBody cmd: NewApplyCommand, exchange: ServerWebExchange): ResultWrapper<Long> =
+//    fun newApply(@RequestBody cmd: NewApplyCommand, exchange: ServerWebExchange): Mono<ApiResponse<Long> =
 //        newApply.handle(cmd, exchange.sessionItem)
 //
 //    @PostMapping("/apply/{applyNo:\\d+}/poll")
-//    fun newApplyPoll(@RequestBody cmd: NewApplyPollCommand, @PathVariable applyNo: Long, exchange: ServerWebExchange): ResultWrapper<Unit> =
+//    fun newApplyPoll(@RequestBody cmd: NewApplyPollCommand, @PathVariable applyNo: Long, exchange: ServerWebExchange): Mono<String> =
 //        newApplyPoll.handle(cmd.apply { this.applyNo = applyNo }, exchange.sessionItem)
 }

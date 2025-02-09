@@ -49,7 +49,7 @@ class TopicServiceImpl(
             ) }
 
     @Transactional
-    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): Mono<ApiResponse<Long> {
         if (!sessionItem.isLogin) {
             return ResultWrapper.fail("로그인이 필요합니다.", 0)
         }
@@ -71,7 +71,7 @@ class TopicServiceImpl(
                         an = sessionItem.an,
                     )
                 )
-                ResultWrapper.ok(topic.topicNo)
+                topic.topicNo)
             }
             ?: ResultWrapper.fail("권한이 없습니다.", -1)
     }
@@ -82,7 +82,7 @@ class TopicServiceImpl(
         } ?: false
 
     @Transactional
-    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -95,13 +95,13 @@ class TopicServiceImpl(
                     ?.also { boardPostRepository.save(it.apply { edit(cmd.content) }) }
                     ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.", null)
                 boardTopicRepository.save(node.apply { edit(cmd.topic) })
-                ResultWrapper.ok()
+                )
             }
             ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
     }
 
     @Transactional
-    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -123,7 +123,7 @@ class TopicServiceImpl(
                 }
                 boardPostRepository.deleteAllByTopicNo(cmd.topicNo)
                 boardTopicRepository.delete(it)
-                ResultWrapper.ok()
+                )
             }
             ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
     }

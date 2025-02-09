@@ -25,30 +25,30 @@ class AnimeController(
 ) {
     @GetMapping("/list/{page:\\d+}")
     fun getAnimeList(cmd: GetAnimeListCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<AnimeItem>>> =
-        ResultWrapper.ok(animeService.getList(cmd))
+        animeService.getList(cmd))
 
     @GetMapping("/delist")
     fun getAnimeDelist(exchange: ServerWebExchange): Mono<ApiResponse<Page<AnimeItem>>> =
-        ResultWrapper.ok(animeService.getDelist(exchange.sessionItem))
+        animeService.getDelist(exchange.sessionItem))
 
     @GetMapping("/animeNo/{animeNo:\\d+}")
     fun getAnime(cmd: GetAnimeCommand, sessionItem: SessionItem, exchange: ServerWebExchange): Mono<ApiResponse<AnimeItem>> =
-        ResultWrapper.ok(animeService.get(cmd, sessionItem))
+        animeService.get(cmd, sessionItem))
 
     @GetMapping("/autocorrect")
     fun getAnimeAutocorrect(cmd: GetAutocorrectAnimeCommand, exchange: ServerWebExchange): Mono<ApiResponse<List<String>>> =
-        ResultWrapper.ok(animeService.getAutocorrect(cmd))
+        animeService.getAutocorrect(cmd))
 
     @GetMapping("/genres")
     fun getGenres(exchange: ServerWebExchange): Mono<ApiResponse<List<String>>> =
-        ResultWrapper.ok(animeGenreGenres.get())
+        animeGenreGenres.get())
 
     @GetMapping("/rank/{type}")
     fun getAnimeRank(cmd: GetAnimeRankCommand, exchange: ServerWebExchange): Mono<ApiResponse<List<Map<*,*>>>> =
-        ResultWrapper.ok(animeRankService.get(cmd))
+        animeRankService.get(cmd))
 
     @DeleteMapping("/{animeNo}")
-    fun deleteAnime(cmd: DeleteAnimeCommand, exchange: ServerWebExchange): Mono<ApiResponse<Unit>> =
+    fun deleteAnime(cmd: DeleteAnimeCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
         animeService.delete(cmd, exchange.sessionItem)
 
     @PostMapping

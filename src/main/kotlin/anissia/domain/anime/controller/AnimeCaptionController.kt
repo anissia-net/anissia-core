@@ -6,10 +6,9 @@ import anissia.domain.anime.model.CaptionItem
 import anissia.domain.anime.model.CaptionRecentItem
 import anissia.domain.anime.model.MyCaptionItem
 import anissia.domain.anime.service.CaptionService
-import anissia.infrastructure.common.As
 import anissia.infrastructure.common.sessionItem
+import anissia.infrastructure.common.toApiResponse
 import anissia.shared.ApiResponse
-import anissia.shared.ResultWrapper
 import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
@@ -22,29 +21,29 @@ class AnimeCaptionController(
 ) {
     @GetMapping("/caption/animeNo/{animeNo:\\d+}")
     fun getCaptionListByAnimeNo(cmd: GetListCaptionByAnimeNoCommand, exchange: ServerWebExchange): Mono<ApiResponse<List<CaptionItem>>> =
-        ResultWrapper.ok(captionService.getList(cmd, exchange.sessionItem))
+        captionService.getList(cmd, exchange.sessionItem).toApiResponse
 
     @GetMapping("/caption/myList/{active}/{page}")
     fun getMyCaptionList(cmd: GetMyListCaptionCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<MyCaptionItem>>> =
-        ResultWrapper.ok(captionService.getList(cmd, exchange.sessionItem))
+        captionService.getList(cmd, exchange.sessionItem).toApiResponse
 
     @GetMapping("/caption/recent")
     fun getCaptionRecent(exchange: ServerWebExchange): Mono<ApiResponse<List<CaptionRecentItem>>> =
-        ResultWrapper.ok(captionService.getList(GetRecentListCaptionCommand(page = -1)).content)
+        captionService.getList(GetRecentListCaptionCommand(page = -1)).map { it.content }.toApiResponse
 
     @GetMapping("/caption/recent/{page:\\d+}")
     fun getCaptionRecent(cmd: GetRecentListCaptionCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<CaptionRecentItem>>> =
-        ResultWrapper.ok(captionService.getList(cmd))
+        captionService.getList(cmd).toApiResponse
 
     @DeleteMapping("/caption/{animeNo}")
-    fun deleteCaption(cmd: DeleteCaptionCommand, exchange: ServerWebExchange): Mono<ApiResponse<Unit>> =
-        captionService.delete(cmd, exchange.sessionItem)
+    fun deleteCaption(cmd: DeleteCaptionCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
+        captionService.delete(cmd, exchange.sessionItem).toApiResponse
 
     @PostMapping("/caption/{animeNo}")
-    fun newCaption(cmd: AddCaptionCommand, exchange: ServerWebExchange): Mono<ApiResponse<Unit>> =
-        captionService.add(cmd, exchange.sessionItem)
+    fun newCaption(cmd: AddCaptionCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
+        captionService.add(cmd, exchange.sessionItem).toApiResponse
 
     @PutMapping("/caption/{animeNo}")
-    fun editCaption(@RequestBody cmd: EditCaptionCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): Mono<ApiResponse<Unit>> =
-        captionService.edit(cmd.apply { this.animeNo = animeNo }, exchange.sessionItem)
+    fun editCaption(@RequestBody cmd: EditCaptionCommand, @PathVariable animeNo: Long, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
+        captionService.edit(cmd.apply { this.animeNo = animeNo }, exchange.sessionItem).toApiResponse
 }

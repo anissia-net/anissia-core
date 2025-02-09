@@ -19,7 +19,7 @@ class ActivePanelCommandServiceImpl(
     private val captionService: CaptionService,
 ) : ActivePanelCommandService {
     @Transactional
-    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -59,7 +59,7 @@ class ActivePanelCommandServiceImpl(
         } else { // notice
             return sessionItem.addNotice(cmd)
         }
-        return ResultWrapper.ok()
+        return )
     }
 
     private fun SessionItem.addText(text: String) =

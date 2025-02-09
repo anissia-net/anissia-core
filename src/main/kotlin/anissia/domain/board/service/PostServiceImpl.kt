@@ -24,7 +24,7 @@ class PostServiceImpl(
 ): PostService {
 
     @Transactional
-    override fun add(cmd: NewPostCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun add(cmd: NewPostCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -40,13 +40,13 @@ class PostServiceImpl(
                     )
                 )
                 boardTopicRepository.updatePostCount(cmd.topicNo)
-                ResultWrapper.ok()
+                )
             }
             ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글 혹은 게시판입니다.")
     }
 
     @Transactional
-    override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun edit(cmd: EditPostCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -55,13 +55,13 @@ class PostServiceImpl(
             ?.takeIf { !it.root && it.an == sessionItem.an }
             ?.let {
                 boardPostRepository.save(it.apply { edit(cmd.content) })
-                ResultWrapper.ok()
+                )
             }
             ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
     }
 
     @Transactional
-    override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -83,7 +83,7 @@ class PostServiceImpl(
                 }
                 boardPostRepository.delete(it)
                 boardTopicRepository.updatePostCount(it.topicNo)
-                ResultWrapper.ok()
+                )
             }
             ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
     }

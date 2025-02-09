@@ -39,7 +39,7 @@ class UserServiceImpl(
     override fun get(sessionItem: SessionItem): AccountUserItem =
         AccountUserItem.cast(accountRepository.findWithRolesByAn(sessionItem.an)!!)
 
-    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun editPassword(cmd: EditUserPasswordCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -49,11 +49,11 @@ class UserServiceImpl(
 
         account.password = bCryptService.encode(cmd.newPassword)
         accountRepository.save(account)
-        return ResultWrapper.ok()
+        return )
     }
 
     @Transactional
-    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun editName(cmd: EditUserNameCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -101,7 +101,7 @@ class UserServiceImpl(
             activePanelLogService.addText(AddTextActivePanelCommand("운영진 [$oldName]님의 닉네임이 [$newName]님으로 변경되었습니다."), null)
         }
 
-        return ResultWrapper.ok()
+        return )
     }
 
     private fun getUserTakeIfPassword(password: String, sessionItem: SessionItem) =

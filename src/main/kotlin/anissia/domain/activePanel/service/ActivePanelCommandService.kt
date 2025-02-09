@@ -6,5 +6,5 @@ import anissia.domain.session.model.SessionItem
 import anissia.shared.ResultWrapper
 
 interface ActivePanelCommandService {
-    fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): ResultWrapper<Unit>
+    fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<String>
 }

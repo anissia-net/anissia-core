@@ -39,13 +39,13 @@ class RecoverPasswordServiceImpl(
     }
 
     @Transactional
-    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun request(cmd: RequestRecoverPasswordCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
 
         var account: Account = accountRepository.findByEmailAndName(cmd.email, cmd.name)
         // not exist match info is secret for protect personal information
         // 개인정보보호를 위해 일치 하지 않는경우에도 일치하는 것과 같은 정보를 내보낸다.
-            ?: return ResultWrapper.ok()
+            ?: return )
 
         if (accountRecoverAuthRepository.existsByAnAndExpDtAfter(account.an, OffsetDateTime.now())) {
             return ResultWrapper.fail("인증을 시도한 계정은 ${EXP_HOUR}시간동안 인증을 할 수 없습니다.")
@@ -73,12 +73,12 @@ class RecoverPasswordServiceImpl(
             )
         }
 
-        return ResultWrapper.ok()
+        return )
     }
 
 
     @Transactional
-    override fun complete(cmd: CompleteRecoverPasswordCommand): ResultWrapper<Unit> {
+    override fun complete(cmd: CompleteRecoverPasswordCommand): Mono<String> {
         cmd.validate()
 
         val auth = accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
@@ -90,15 +90,15 @@ class RecoverPasswordServiceImpl(
         accountRecoverAuthRepository.save(auth.apply { usedDt = OffsetDateTime.now() })
         accountRepository.save(account.apply { password = bCryptService.encode(cmd.password) })
 
-        return ResultWrapper.ok()
+        return )
     }
 
     @Transactional
-    override fun validate(cmd: ValidateRecoverPasswordCommand): ResultWrapper<Unit> {
+    override fun validate(cmd: ValidateRecoverPasswordCommand): Mono<String> {
         cmd.validate()
 
         return accountRecoverAuthRepository.findByNoAndTokenAndExpDtAfterAndUsedDtNull(cmd.tn, cmd.token, OffsetDateTime.now())
-            ?.let { ResultWrapper.ok() }
+            ?.let { ) }
             ?: ResultWrapper.fail("")
     }
 

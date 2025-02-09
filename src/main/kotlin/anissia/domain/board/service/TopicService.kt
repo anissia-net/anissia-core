@@ -10,7 +10,7 @@ interface TopicService {
     fun get(cmd: GetTopicCommand): BoardTopicItem
     fun getList(cmd: GetTopicListCommand): Page<BoardTopicItem>
     fun getMainRecent(): Map<String, List<Map<String, Any>>>
-    fun add(cmd: NewTopicCommand, sessionItem: SessionItem): ResultWrapper<Long>
-    fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): ResultWrapper<Unit>
-    fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): ResultWrapper<Unit>
+    fun add(cmd: NewTopicCommand, sessionItem: SessionItem): Mono<ApiResponse<Long>
+    fun edit(cmd: EditTopicCommand, sessionItem: SessionItem): Mono<String>
+    fun delete(cmd: DeleteTopicCommand, sessionItem: SessionItem): Mono<String>
 }

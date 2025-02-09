@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 
 @Service
@@ -31,30 +32,30 @@ class TranslatorApplyServiceImpl(
     private val accountRepository: AccountRepository,
     private val activePanelLogService: ActivePanelLogService,
 ): TranslatorApplyService {
-    override fun get(cmd: GetApplyCommand): TranslatorApplyItem {
+    override fun get(cmd: GetApplyCommand): Mono<TranslatorApplyItem> {
         cmd.validate()
         return agendaRepository.findWithPollsByAgendaNoAndCode(cmd.applyNo, ApplyValue.CODE)
             ?.let { TranslatorApplyItem(it, true) }
             ?: TranslatorApplyItem()
     }
 
-    override fun getList(cmd: GetApplyListCommand): Page<TranslatorApplyItem> {
+    override fun getList(cmd: GetApplyListCommand): Mono<Page<TranslatorApplyItem>> {
         cmd.validate()
         return agendaRepository.findAllByCodeOrderByStatusAscAgendaNoDesc(ApplyValue.CODE, PageRequest.of(cmd.page, 30)).map { TranslatorApplyItem(it) }
     }
 
-    override fun getApplyingCount(): Int =
+    override fun getApplyingCount(): Mono<Int> =
         agendaRepository.countByCodeAndStatus(ApplyValue.CODE, "ACT")
 
-    override fun getGrantedTime(an: Long): OffsetDateTime? =
+    override fun getGrantedTime(an: Long): Mono<OffsetDateTime> =
         agendaRepository.findPassedTranslatorApply(an).firstOrNull()?.updDt
 
-    override fun isApplying(sessionItem: SessionItem): Boolean {
+    override fun isApplying(sessionItem: SessionItem): Mono<Boolean> {
         return agendaRepository.existsByCodeAndStatusAndAn(ApplyValue.CODE, "ACT", sessionItem.an)
     }
 
     @Transactional
-    override fun add(cmd: AddApplyCommand, sessionItem: SessionItem): ResultWrapper<Long> {
+    override fun add(cmd: AddApplyCommand, sessionItem: SessionItem): Mono<Long> {
         cmd.validate()
         sessionItem.validateLogin()
 
@@ -79,11 +80,11 @@ class TranslatorApplyServiceImpl(
                 data2 = sessionItem.name,
                 data3 = cmd.website,
             )
-        ).run { return ResultWrapper.ok(agendaNo) }
+        ).run { return agendaNo) }
     }
 
     @Transactional
-    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun addPoll(cmd: NewApplyPollCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -132,7 +133,7 @@ class TranslatorApplyServiceImpl(
         }
         agendaRepository.save(app.apply { updDt = OffsetDateTime.now() })
 
-        return ResultWrapper.ok()
+        return )
     }
 
     private fun toApplySystemPoll(agenda: Agenda, comment: String) = AgendaPoll(

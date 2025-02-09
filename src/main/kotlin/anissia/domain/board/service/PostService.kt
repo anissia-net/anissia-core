@@ -7,7 +7,7 @@ import anissia.domain.session.model.SessionItem
 import anissia.shared.ResultWrapper
 
 interface PostService{
-    fun add(cmd: NewPostCommand, sessionItem: SessionItem): ResultWrapper<Unit>
-    fun edit(cmd: EditPostCommand, sessionItem: SessionItem): ResultWrapper<Unit>
-    fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): ResultWrapper<Unit>
+    fun add(cmd: NewPostCommand, sessionItem: SessionItem): Mono<String>
+    fun edit(cmd: EditPostCommand, sessionItem: SessionItem): Mono<String>
+    fun delete(cmd: DeletePostCommand, sessionItem: SessionItem): Mono<String>
 }

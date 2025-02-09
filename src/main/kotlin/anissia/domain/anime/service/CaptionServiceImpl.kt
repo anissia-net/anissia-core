@@ -63,7 +63,7 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun add(cmd: AddCaptionCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -85,7 +85,7 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun edit(cmd: EditCaptionCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -106,7 +106,7 @@ class CaptionServiceImpl(
     }
 
     @Transactional
-    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): ResultWrapper<Unit> {
+    override fun delete(cmd: DeleteCaptionCommand, sessionItem: SessionItem): Mono<String> {
         cmd.validate()
         sessionItem.validateAdmin()
 
@@ -118,7 +118,7 @@ class CaptionServiceImpl(
                 animeRepository.updateCaptionCount(animeNo)
                 animeDocumentService.update(UpdateAnimeDocumentCommand(animeNo))
                 activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
-                ResultWrapper.ok()
+                )
             }
             ?: ResultWrapper.fail("이미 삭제되었습니다.")
     }

@@ -7,10 +7,10 @@ class ActivePanelTest(
 
     ) {
 //    @GetMapping("/list/{page:[\\d]+}")
-//    fun getList(cmd: GetActivePanelListCommand, exchange: ServerWebExchange): ResultWrapper<Page<ActivePanelItem>> =
-//        ResultWrapper.ok(getActivePanelList.handle(cmd, exchange.sessionItem))
+//    fun getList(cmd: GetActivePanelListCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<ActivePanelItem>> =
+//        getActivePanelList.handle(cmd, exchange.sessionItem))
 //
 //    @PostMapping("/notice")
-//    fun newNotice(@RequestBody cmd: NewActivePanelNoticeCommand, exchange: ServerWebExchange): ResultWrapper<Unit> =
+//    fun newNotice(@RequestBody cmd: NewActivePanelNoticeCommand, exchange: ServerWebExchange): Mono<String> =
 //        newActivePanelNotice.handle(cmd, exchange.sessionItem)
 }

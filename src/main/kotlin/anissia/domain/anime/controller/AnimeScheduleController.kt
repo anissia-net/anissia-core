@@ -20,7 +20,7 @@ class AnimeScheduleController(
 ) {
     @GetMapping("/schedule/{week:[0-8]}")
     fun getSchedule(cmd: GetScheduleCommand, exchange: ServerWebExchange): Mono<ApiResponse<List<AnimeScheduleItem>>> =
-        ResultWrapper.ok(animeScheduleService.get(cmd, exchange))
+        animeScheduleService.get(cmd, exchange))
 
     // 포멧이 svg 이기 때문에 ResultWrapper 를 사용하지 않는다.
     @GetMapping("/schedule/svg/{width:\\d{3}}/{color:[a-f\\d]{36}}", produces = ["image/svg+xml;charset=utf-8"])
