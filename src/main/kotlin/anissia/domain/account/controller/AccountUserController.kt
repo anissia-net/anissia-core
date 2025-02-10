@@ -6,6 +6,7 @@ import anissia.domain.account.command.EditUserPasswordCommand
 import anissia.domain.account.model.AccountUserItem
 import anissia.domain.account.service.UserService
 import anissia.infrastructure.common.sessionItem
+import anissia.infrastructure.common.toApiResponse
 import anissia.shared.ApiResponse
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
@@ -18,13 +19,13 @@ class AccountUserController(
 ) {
     @GetMapping
     fun getUser(exchange: ServerWebExchange): Mono<ApiResponse<AccountUserItem>> =
-        userService.get(exchange.sessionItem)
+        userService.get(exchange.sessionItem).toApiResponse
 
     @PutMapping("/password")
     fun editUserPassword(@RequestBody cmd: EditUserPasswordCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
-        userService.editPassword(cmd, exchange.sessionItem)
+        userService.editPassword(cmd, exchange.sessionItem).toApiResponse
 
     @PutMapping("/name")
     fun editUserName(@RequestBody cmd: EditUserNameCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
-        userService.editName(cmd, exchange.sessionItem)
+        userService.editName(cmd, exchange.sessionItem).toApiResponse
 }

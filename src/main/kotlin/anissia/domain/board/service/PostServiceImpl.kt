@@ -42,7 +42,7 @@ class PostServiceImpl(
                 boardTopicRepository.updatePostCount(cmd.topicNo)
                 )
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글 혹은 게시판입니다.")
+            ?: Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글 혹은 게시판입니다.")
     }
 
     @Transactional
@@ -57,7 +57,7 @@ class PostServiceImpl(
                 boardPostRepository.save(it.apply { edit(cmd.content) })
                 )
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
+            ?: Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")
     }
 
     @Transactional
@@ -85,7 +85,7 @@ class PostServiceImpl(
                 boardTopicRepository.updatePostCount(it.topicNo)
                 )
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
+            ?: Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")
     }
 
     private fun validAddPermission(ticker: String, sessionItem: SessionItem): Boolean =

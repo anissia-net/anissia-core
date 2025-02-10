@@ -51,7 +51,7 @@ class TopicServiceImpl(
     @Transactional
     override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): Mono<ApiResponse<Long> {
         if (!sessionItem.isLogin) {
-            return ResultWrapper.fail("로그인이 필요합니다.", 0)
+            return Mono.error(ApiFailException("로그인이 필요합니다.", 0)
         }
 
         return cmd.ticker
@@ -73,7 +73,7 @@ class TopicServiceImpl(
                 )
                 topic.topicNo)
             }
-            ?: ResultWrapper.fail("권한이 없습니다.", -1)
+            ?: Mono.error(ApiFailException("권한이 없습니다.", -1)
     }
 
     private fun permission(ticker: String, sessionItem: SessionItem): Boolean =
@@ -93,11 +93,11 @@ class TopicServiceImpl(
                 boardPostRepository
                     .findWithAccountByTopicNoAndRootIsTrue(cmd.topicNo)
                     ?.also { boardPostRepository.save(it.apply { edit(cmd.content) }) }
-                    ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.", null)
+                    ?: Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.", null)
                 boardTopicRepository.save(node.apply { edit(cmd.topic) })
                 )
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
+            ?: Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")
     }
 
     @Transactional
@@ -125,6 +125,6 @@ class TopicServiceImpl(
                 boardTopicRepository.delete(it)
                 )
             }
-            ?: ResultWrapper.fail("권한이 없거나 존재하지 않는 글입니다.")
+            ?: Mono.error(ApiFailException("권한이 없거나 존재하지 않는 글입니다.")
     }
 }

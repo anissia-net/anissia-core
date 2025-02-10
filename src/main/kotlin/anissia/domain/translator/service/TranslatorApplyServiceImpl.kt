@@ -89,15 +89,15 @@ class TranslatorApplyServiceImpl(
         var point = cmd.point.toInt()
 
         val app = agendaRepository.findByIdOrNull(cmd.applyNo)?.takeIf { it.code == ApplyValue.CODE }
-            ?: return ResultWrapper.fail("존재하지 않는 신청입니다.")
+            ?: return Mono.error(ApiFailException("존재하지 않는 신청입니다.")
 
         app.takeIf { it.status == "ACT" }
-            ?: return ResultWrapper.fail("종료된 신청서입니다.")
+            ?: return Mono.error(ApiFailException("종료된 신청서입니다.")
 
         val polls = app.polls
         if (point != 0) {
             if (polls.filter { it.an == sessionItem.an }.any { it.vote != 0 }) {
-                return ResultWrapper.fail("찬성/반대는 한 신청처에 한번만 할 수 있습니다.")
+                return Mono.error(ApiFailException("찬성/반대는 한 신청처에 한번만 할 수 있습니다.")
             }
         }
 

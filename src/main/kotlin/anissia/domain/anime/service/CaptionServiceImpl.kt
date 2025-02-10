@@ -68,10 +68,10 @@ class CaptionServiceImpl(
         val animeNo = cmd.animeNo
 
         val anime = animeRepository.findByIdOrNull(animeNo)
-            ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.")
+            ?: return Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.")
 
         if (animeCaptionRepository.findById(AnimeCaption.Key(animeNo, sessionItem.an)).isPresent) {
-            return ResultWrapper.fail("이미 작업중인 작품입니다.")
+            return Mono.error(ApiFailException("이미 작업중인 작품입니다.")
         }
 
         animeCaptionRepository.save(AnimeCaption(anime = anime, an = sessionItem.an))
@@ -90,7 +90,7 @@ class CaptionServiceImpl(
         val animeNo = cmd.animeNo
 
         val caption = animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, sessionItem.an))
-            ?: return ResultWrapper.fail("존재하지 않는 자막입니다.")
+            ?: return Mono.error(ApiFailException("존재하지 않는 자막입니다.")
 
         animeCaptionRepository.save(caption.apply {
             edit(
@@ -118,7 +118,7 @@ class CaptionServiceImpl(
                 activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
                 )
             }
-            ?: ResultWrapper.fail("이미 삭제되었습니다.")
+            ?: Mono.error(ApiFailException("이미 삭제되었습니다.")
     }
 
     @Transactional
