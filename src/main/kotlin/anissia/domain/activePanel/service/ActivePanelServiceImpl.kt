@@ -63,10 +63,12 @@ class ActivePanelServiceImpl(
 
                         if (user.isTranslator) {
                             accountRepository.save(user.apply { roles.removeIf { it == AccountRole.TRANSLATOR } })
-                            val deleteCount = captionService.delete(user, sessionItem)
-                            addText(false, "[${user.name}]님의 자막제작자 권한이 해지되었습니다.", sessionItem)
-                                .flatMap { addText(false, "[${user.name}]님의 모든 작품 ${deleteCount}개가 삭제되었습니다.", sessionItem) }
-                                .thenReturn("")
+                            captionService.delete(user, sessionItem)
+                                .flatMap { deleteCount ->
+                                    addText(false, "[${user.name}]님의 자막제작자 권한이 해지되었습니다.", sessionItem)
+                                        .flatMap { addText(false, "[${user.name}]님의 모든 작품 ${deleteCount}개가 삭제되었습니다.", sessionItem) }
+                                        .thenReturn("")
+                                }
                         } else {
                             Mono.error(ApiFailException("${user.name}님은 자막제작자 권한을 가지고 있지 않습니다."))
                         }

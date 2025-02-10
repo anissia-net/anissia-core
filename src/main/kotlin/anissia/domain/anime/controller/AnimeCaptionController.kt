@@ -2,9 +2,7 @@ package anissia.domain.anime.controller
 
 
 import anissia.domain.anime.command.*
-import anissia.domain.anime.model.CaptionItem
 import anissia.domain.anime.model.CaptionRecentItem
-import anissia.domain.anime.model.MyCaptionItem
 import anissia.domain.anime.service.CaptionService
 import anissia.infrastructure.common.sessionItem
 import anissia.infrastructure.common.toApiResponse
@@ -20,15 +18,15 @@ class AnimeCaptionController(
     private val captionService: CaptionService,
 ) {
     @GetMapping("/caption/animeNo/{animeNo:\\d+}")
-    fun getCaptionListByAnimeNo(cmd: GetListCaptionByAnimeNoCommand, exchange: ServerWebExchange): Mono<ApiResponse<List<CaptionItem>>> =
+    fun getCaptionListByAnimeNo(cmd: GetListCaptionByAnimeNoCommand, exchange: ServerWebExchange) =
         captionService.getList(cmd, exchange.sessionItem).toApiResponse
 
     @GetMapping("/caption/myList/{active}/{page}")
-    fun getMyCaptionList(cmd: GetMyListCaptionCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<MyCaptionItem>>> =
+    fun getMyCaptionList(cmd: GetMyListCaptionCommand, exchange: ServerWebExchange) =
         captionService.getList(cmd, exchange.sessionItem).toApiResponse
 
     @GetMapping("/caption/recent")
-    fun getCaptionRecent(exchange: ServerWebExchange): Mono<ApiResponse<List<CaptionRecentItem>>> =
+    fun getCaptionRecent(exchange: ServerWebExchange): Mono<ApiResponse<MutableList<CaptionRecentItem>>> =
         captionService.getList(GetRecentListCaptionCommand(page = -1)).map { it.content }.toApiResponse
 
     @GetMapping("/caption/recent/{page:\\d+}")

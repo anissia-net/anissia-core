@@ -16,6 +16,7 @@ import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.common.enBCrypt
 import anissia.infrastructure.common.eqBCrypt
+import anissia.infrastructure.common.subscribeBoundedElastic
 import anissia.shared.ApiFailException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -100,10 +101,11 @@ class UserServiceImpl(
                 // 운영진
                 if (account.roles.isNotEmpty()) {
                     animeCaptionRepository.findAllByAn(sessionItem.an).mapNotNull { it.anime?.animeNo }.forEach{
-                        animeDocumentService.update(UpdateAnimeDocumentCommand(it))
+                        animeDocumentService.update(UpdateAnimeDocumentCommand(it)).subscribeBoundedElastic()
                     }
-                    activePanelService.addText(false, "운영진 [$oldName]님의 닉네임이 [$newName]님으로 변경되었습니다.", null)
+                    activePanelService.addText(false, "운영진 [$oldName]님의 닉네임이 [$newName]님으로 변경되었습니다.", null).map { "" }
+                } else {
+                    Mono.just("")
                 }
-                Mono.just("")
             }
 }

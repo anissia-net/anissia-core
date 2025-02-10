@@ -34,8 +34,7 @@ class AnimeDocumentServiceImpl(
     override fun update(anime: Anime, isDelete: Boolean): Mono<String> =
         Mono.defer {
             if (isDelete) {
-                animeDocumentRepository.deleteByAnimeNo(anime.animeNo)
-                return@defer Mono.just("")
+                return@defer animeDocumentRepository.deleteByAnimeNo(anime.animeNo).map { "" }
             } else {
                 val translators = animeCaptionRepository.findAllTranslatorByAnimeNo(anime.animeNo)
                 return@defer animeDocumentRepository.update(anime, translators).thenReturn("")
