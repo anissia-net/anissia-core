@@ -28,7 +28,7 @@ class TranslatorApplyServiceImpl(
     private val agendaRepository: AgendaRepository,
     private val agendaPollRepository: AgendaPollRepository,
     private val accountRepository: AccountRepository,
-    private val activePanelLogService: ActivePanelLogService,
+    private val activePanelService: ActivePanelService,
 ): TranslatorApplyService {
     override fun get(cmd: GetApplyCommand): Mono<TranslatorApplyItem> {
         cmd.validate()

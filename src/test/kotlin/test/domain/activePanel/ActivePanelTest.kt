@@ -1,7 +1,7 @@
 package test.domain.activePanel
 
 class ActivePanelTest(
-    private val activePanelLogService: ActivePanelLogService,
+    private val activePanelService: ActivePanelService,
 
     ) {
 //    @GetMapping("/list/{page:[\\d]+}")

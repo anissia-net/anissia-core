@@ -1,6 +1,7 @@
 package anissia.domain.anime.service
 
 import anissia.domain.account.Account
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.anime.AnimeCaption
 import anissia.domain.anime.command.*
 import anissia.domain.anime.model.CaptionItem
@@ -23,7 +24,7 @@ class CaptionServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeRepository: AnimeRepository,
     private val animeDocumentService: AnimeDocumentService,
-    private val activePanelLogService: ActivePanelLogService,
+    private val activePanelService: ActivePanelService,
     private val animeRankService: AnimeRankService,
 ): CaptionService {
 

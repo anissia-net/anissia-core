@@ -3,6 +3,7 @@ package anissia.domain.anime.service
 import anissia.domain.account.repository.AccountRepository
 import anissia.domain.activePanel.ActivePanel
 import anissia.domain.activePanel.repository.ActivePanelRepository
+import anissia.domain.activePanel.service.ActivePanelService
 import anissia.domain.agenda.Agenda
 import anissia.domain.agenda.repository.AgendaRepository
 import anissia.domain.anime.Anime
@@ -36,7 +37,7 @@ class AnimeServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeDocumentService: AnimeDocumentService,
     private val animeRankService: AnimeRankService,
-    private val activePanelLogService: ActivePanelLogService,
+    private val activePanelService: ActivePanelService,
     private val agendaRepository: AgendaRepository,
     private val translatorApplyService: TranslatorApplyService,
     private val animeGenreRepository: AnimeGenreRepository,
