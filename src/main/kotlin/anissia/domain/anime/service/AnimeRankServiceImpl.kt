@@ -12,10 +12,10 @@ import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.DTF_RANK_HOUR
 import anissia.infrastructure.common.MonoCacheStore
 import anissia.infrastructure.common.toClassByJson
+import anissia.infrastructure.common.toJson
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
@@ -41,24 +41,28 @@ class AnimeRankServiceImpl(
             }
         }
 
-    @Async
-    override fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem) {
-        animeHitRepository.save(AnimeHit(animeNo = cmd.animeNo, ip = sessionItem.ip, hour = OffsetDateTime.now().format(DTF_RANK_HOUR).toLong()))
-    }
+    override fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem): Mono<String> =
+        Mono.fromCallable {
+            animeHitRepository.save(AnimeHit(animeNo = cmd.animeNo, ip = sessionItem.ip, hour = OffsetDateTime.now().format(DTF_RANK_HOUR).toLong()))
+            ""
+        }
 
     private fun clearCache() {
         rankCacheStore.clear()
     }
 
     @Transactional
-    override fun renew() {
-        // step 1. remove hit history older then 1000 days
-        animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(1000).format(DTF_RANK_HOUR).toLong())
-        // step 2. merge anime hits
-        mergeAnimeHit()
-        // step 3. extract and bind rank
-        extractAllRank()
-    }
+    override fun renew(): Mono<String> =
+        Mono.fromCallable {
+            // step 1. remove hit history older then 1000 days
+            animeHitHourRepository.deleteByHourLessThan(LocalDateTime.now().minusDays(1000).format(DTF_RANK_HOUR).toLong())
+            // step 2. merge anime hits
+            mergeAnimeHit()
+            // step 3. extract and bind rank
+            extractAllRank()
+            
+            ""
+        }
 
     private fun mergeAnimeHit() {
         // merge by hour
@@ -101,7 +105,8 @@ class AnimeRankServiceImpl(
         clearCache()
     }
 
-    private fun toString(list: List<AnimeRankItem>): String = list.run { As.toJsonString(if (size > 30) list.subList(0, 30) else list) }
+    private fun toString(list: List<AnimeRankItem>): String =
+        (if (list.size > 30) list.subList(0, 30) else list).toJson
 
     private fun extractRank(startHour: String): List<AnimeRankItem> =
         animeHitHourRepository

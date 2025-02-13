@@ -56,10 +56,10 @@ val <T> Mono<T>.toApiResponse: Mono<ApiResponse<T>> get() =
         .map { ApiResponse.ok(it) }
 
 fun <T> Page<T>.filterPage(filter: (T) -> Boolean): Page<T> = PageImpl(this.content.filter { filter(it) }, this.pageable, this.totalElements)
-//fun <T, U> Page<U>.replacePage(list: List<T>): Page<T> = PageImpl(list, this.pageable, this.totalElements)
+fun <T, U> Page<U>.replacePage(list: List<T>): Page<T> = PageImpl(list, this.pageable, this.totalElements)
 
 fun <T> Mono<Page<T>>.filterPage(filter: (T) -> Boolean): Mono<Page<T>> = this.map { page -> PageImpl(page.content.filter { filter(it) }, page.pageable, page.totalElements) }
-//fun <T, U> Mono<Page<U>>.replacePage(list: List<T>): Mono<Page<T>> = this.map { page -> PageImpl(list, page.pageable, page.totalElements) }
+fun <T, U> Mono<Page<U>>.replacePage(list: List<T>): Mono<Page<T>> = this.map { page -> PageImpl(list, page.pageable, page.totalElements) }
 fun <T, R> Mono<Page<T>>.mapPageItem(mapper: (T) -> R): Mono<Page<R>> = this.map { page -> page.map { mapper(it) } }
 
 val ServerWebExchange.sessionItem: SessionItem get() =

@@ -16,19 +16,16 @@ import anissia.domain.anime.repository.AnimeGenreRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.TranslatorApplyService
-import anissia.infrastructure.common.MonoCacheStore
-import anissia.infrastructure.common.logger
-import anissia.infrastructure.common.subscribeBoundedElastic
-import anissia.infrastructure.common.toClassByJson
+import anissia.infrastructure.common.*
 import anissia.infrastructure.service.ElasticsearchService
-import anissia.shared.ResultWrapper
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import me.saro.kit.lang.KoreanKit
-import me.saro.kit.service.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
@@ -53,6 +50,7 @@ class AnimeServiceImpl(
     private val log = logger<AnimeServiceImpl>()
     private val autocorrectStore = MonoCacheStore<String, List<String>>(60 * 60000)
     private val trAnimeItem = object: TypeReference<AnimeItem>(){}
+    private val mapper = ObjectMapper()
 
     override fun get(cmd: GetAnimeCommand, sessionItem: SessionItem): Mono<AnimeItem> =
         Mono.justOrEmpty<Anime>(animeRepository.findWithCaptionsByAnimeNo(cmd.animeNo))
@@ -82,7 +80,7 @@ class AnimeServiceImpl(
                         else keywords.add(word)
                     }
 
-                val req = toJsonString(mapper.createObjectNode().apply {
+                val req = (mapper.createObjectNode().apply {
                     put("_source", false)
                     putObject("query").apply {
                         putObject("bool").apply {
@@ -126,7 +124,7 @@ class AnimeServiceImpl(
                     }
                     put("from", page * 30)
                     put("size", 30)
-                })
+                }).toJson
 
 //            """{
 //                "_source": false,
@@ -150,15 +148,15 @@ class AnimeServiceImpl(
 
                 log.info(req)
 
-                val res = elasticsearch.request("POST", "/anissia_anime/_search", req)
-                val hits = res.entity.content.bufferedReader().use { mapper.readTree(it) }["hits"]
-                val result = PageImpl<Long>(hits["hits"].map { it["_id"].asLong() }, PageRequest.of(page, 30), hits["total"]["value"].asLong())
-
-                log.info("anime search $keywords $genres $translators $end ${result.totalElements}")
-
-                return replacePage(result, animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(result.content).map { AnimeItem(it) })
+                elasticsearch.request(HttpMethod.POST, "/anissia_anime/_search", req)
+                    .map { res ->
+                        val hits = res["hits"]
+                        val result = PageImpl<Long>(hits["hits"].map { it["_id"].asLong() }, PageRequest.of(page, 30), hits["total"]["value"].asLong())
+                        log.info("anime search $keywords $genres $translators $end ${result.totalElements}")
+                        result.replacePage(animeRepository.findAllByAnimeNoInOrderByAnimeNoDesc(result.content).map { AnimeItem(it) })
+                    }
             } else {
-                return animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 30)).map { AnimeItem(it) }
+                Mono.just(animeRepository.findAllByOrderByAnimeNoDesc(PageRequest.of(page, 30)).map { AnimeItem(it) })
             }
         }
 
