@@ -122,7 +122,7 @@ class TranslatorApplyServiceImpl(
             val account = accountRepository.findByIdOrNull(app.an)!!
             account.roles.add(AccountRole.TRANSLATOR)
             accountRepository.save(account)
-            activePanelLogService.addText(AddTextActivePanelCommand("[${account.name}]님이 자막제작자로 참여하였습니다."), null)
+            activePanelService.addText(AddTextActivePanelCommand("[${account.name}]님이 자막제작자로 참여하였습니다."), null)
             agendaPollRepository.save(toApplySystemPoll(app, "조건이 충족되어 권한이 부여되었습니다."))
         } else if (vote <= -3) {
             app.status = "DONE"

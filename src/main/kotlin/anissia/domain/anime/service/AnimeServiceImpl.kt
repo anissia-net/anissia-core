@@ -303,7 +303,7 @@ class AnimeServiceImpl(
             ?.also { agenda.data1 = As.toJsonString(AnimeItem(it, true)) }
             ?: return Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.")
 
-        activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
+        activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
 
         animeCaptionRepository.deleteByAnimeNo(animeNo)
         animeRepository.delete(anime)
@@ -363,7 +363,7 @@ class AnimeServiceImpl(
             }
         }
 
-        activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
+        activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
 
         animeDocumentService.update(anime)
         animeRepository.updateCaptionCount(anime.animeNo)
