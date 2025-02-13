@@ -17,6 +17,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
@@ -31,7 +32,7 @@ class AnimeRankServiceImpl(
     private val objectMapper = ObjectMapper()
     private val tr = object: TypeReference<List<Map<*, *>>>() {}
 
-    override fun get(cmd: GetAnimeRankCommand): List<Map<*,*>> = rankCacheStore.find(cmd.type) { type ->
+    override fun get(cmd: GetAnimeRankCommand): Mono<List<Map<*, *>>> = rankCacheStore.find(cmd.type) { type ->
         when (type) {
             "week", "quarter", "year" ->
                 objectMapper.readValue(animeStoreRepository.findByIdOrNull("rank.$type")?.data ?: "[]", tr)
