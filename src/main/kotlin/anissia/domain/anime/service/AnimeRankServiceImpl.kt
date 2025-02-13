@@ -10,9 +10,10 @@ import anissia.domain.anime.repository.AnimeHitRepository
 import anissia.domain.anime.repository.AnimeStoreRepository
 import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.DTF_RANK_HOUR
+import anissia.infrastructure.common.MonoCacheStore
+import anissia.infrastructure.common.toClassByJson
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import me.saro.kit.service.CacheStore
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
@@ -28,17 +29,17 @@ class AnimeRankServiceImpl(
     private val animeHitHourRepository: AnimeHitHourRepository,
 ): AnimeRankService {
 
-    private val rankCacheStore = CacheStore<String, List<Map<*,*>>>((5 * 60000).toLong())
+    private val rankCacheStore = MonoCacheStore<String, List<Map<*,*>>>((5 * 60000).toLong())
     private val objectMapper = ObjectMapper()
-    private val tr = object: TypeReference<List<Map<*, *>>>() {}
+    private val trListMap = object: TypeReference<List<Map<*, *>>>() {}
 
-    override fun get(cmd: GetAnimeRankCommand): Mono<List<Map<*, *>>> = rankCacheStore.find(cmd.type) { type ->
-        when (type) {
-            "week", "quarter", "year" ->
-                objectMapper.readValue(animeStoreRepository.findByIdOrNull("rank.$type")?.data ?: "[]", tr)
-            else -> listOf()
+    override fun get(cmd: GetAnimeRankCommand): Mono<List<Map<*, *>>> =
+        rankCacheStore.find(cmd.type) { type ->
+            when (type) {
+                "week", "quarter", "year" -> Mono.just((animeStoreRepository.findByIdOrNull("rank.$type")?.data ?: "[]").toClassByJson(trListMap))
+                else -> Mono.just(listOf())
+            }
         }
-    }
 
     @Async
     override fun hit(cmd: HitAnimeCommand, sessionItem: SessionItem) {
