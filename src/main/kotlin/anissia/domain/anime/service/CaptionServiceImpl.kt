@@ -13,8 +13,6 @@ import anissia.domain.session.model.SessionItem
 import anissia.infrastructure.common.MonoCacheStore
 import anissia.infrastructure.common.subscribeBoundedElastic
 import anissia.shared.ApiFailException
-import anissia.shared.ResultWrapper
-import me.saro.kit.service.CacheStore
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -127,15 +125,16 @@ class CaptionServiceImpl(
 
             val animeNo = cmd.animeNo
 
-            return animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, sessionItem.an))
-                ?.run {
-                    animeCaptionRepository.delete(this)
+            Mono.justOrEmpty<AnimeCaption>(animeCaptionRepository.findByIdOrNull(AnimeCaption.Key(animeNo, sessionItem.an)))
+                .map { caption ->
+                    animeCaptionRepository.delete(caption)
                     animeRepository.updateCaptionCount(animeNo)
                     animeDocumentService.update(UpdateAnimeDocumentCommand(animeNo))
-                    activePanelLogService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 [${anime?.subject}] 자막을 종료하였습니다.", true), null)
-                    )
+                        .flatMap { activePanelService.addText(false, "[${sessionItem.name}]님이 [${caption.anime?.subject}] 자막을 종료하였습니다.", null) }
+                        .subscribeBoundedElastic()
+                    ""
                 }
-                ?: Mono.error(ApiFailException("이미 삭제되었습니다.")
+                .switchIfEmpty(Mono.error(ApiFailException("이미 삭제되었습니다.")))
         }
 
 
