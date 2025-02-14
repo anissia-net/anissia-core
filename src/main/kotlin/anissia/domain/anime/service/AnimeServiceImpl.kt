@@ -50,8 +50,11 @@ class AnimeServiceImpl(
 
     private val log = logger<AnimeServiceImpl>()
     private val autocorrectStore = MonoCacheStore<String, List<String>>(60 * 60000)
-    private val trAnimeItem = object: TypeReference<AnimeItem>(){}
     private val mapper = ObjectMapper()
+
+    private val trAnimeItem = object: TypeReference<AnimeItem>(){}
+    private val trMap = object: TypeReference<Map<String, Any>>() {}
+
 
     override fun get(cmd: GetAnimeCommand, sessionItem: SessionItem): Mono<AnimeItem> =
         Mono.justOrEmpty<Anime>(animeRepository.findWithCaptionsByAnimeNo(cmd.animeNo))
@@ -287,7 +290,7 @@ class AnimeServiceImpl(
                                 return@flatMap Mono.error(ApiFailException("변경사항이 없습니다.", -1))
                             }
                         }
-                        ?.also { activePanel.data2 = toJsonString(AnimeItem(it, false), mapOf("note" to "")) }
+                        ?.also { activePanel.data2 = AnimeItem(it, false).toJson }
                         ?.apply {
                             status = cmd.statusEnum
                             week = cmd.week
@@ -301,14 +304,14 @@ class AnimeServiceImpl(
                             website = cmd.website
                             twitter = cmd.twitter
                         }
-                        ?.also { activePanel.data3 = toJsonString(AnimeItem(it, false), mapOf("note" to cmd.note)) }
-                        ?: return Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.", -1)
+                        ?.also { activePanel.data3 = AnimeItem(it, false).toJson }
+                        ?: return@flatMap Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.", -1))
 
-                            animeRepository.save(anime)
-                            activePanelRepository.save(activePanel)
-                            animeDocumentService.update(anime)
+                        animeRepository.save(anime)
+                        activePanelRepository.save(activePanel)
+                        animeDocumentService.update(anime)
 
-                            return ResultWrapper.of("ok", "", anime.animeNo)
+                        return ResultWrapper.of("ok", "", anime.animeNo)
                 }
         }
 
