@@ -343,7 +343,7 @@ class AnimeServiceImpl(
 
     @Transactional
     override fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem) =
-        Mono.fromCallable {
+        Mono.defer {
             cmd.validate()
             sessionItem.validateAdmin()
 
