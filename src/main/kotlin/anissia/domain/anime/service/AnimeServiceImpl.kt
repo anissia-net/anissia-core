@@ -18,6 +18,7 @@ import anissia.domain.session.model.SessionItem
 import anissia.domain.translator.service.TranslatorApplyService
 import anissia.infrastructure.common.*
 import anissia.infrastructure.service.ElasticsearchService
+import anissia.shared.ApiFailException
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.saro.kit.lang.KoreanKit
@@ -182,117 +183,133 @@ class AnimeServiceImpl(
             .switchIfEmpty(Mono.just(listOf()))
 
     @Transactional
-    override fun add(cmd: NewAnimeCommand, sessionItem: SessionItem) =
-        Mono.fromCallable {
+    override fun add(cmd: NewAnimeCommand, sessionItem: SessionItem): Mono<Long> =
+        Mono.defer {
             cmd.validate()
             sessionItem.validateAdmin()
             translatorApplyService.getGrantedTime(sessionItem.an)
-                ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
-                ?: return Mono.error(ApiFailException("애니메이션 등록은 권한 취득일로부터 90일 후에 가능합니다.", -1)
-
-                    if (animeGenreRepository.countByGenreIn(cmd.genresList).toInt() != cmd.genresList.size) {
-                        return Mono.error(ApiFailException("장르 입력이 잘못되었습니다.", -1)
+                .flatMap {
+                    if (it.isBefore(OffsetDateTime.now().minusDays(90))) {
+                        Mono.error(ApiFailException("애니메이션 등록은 권한 취득일로부터 90일 후에 가능합니다.", -1))
+                    } else {
+                        Mono.just(it)
                     }
-
+                }
+                .flatMap {
+                    if (animeGenreRepository.countByGenreIn(cmd.genresList).toInt() != cmd.genresList.size) {
+                        Mono.error(ApiFailException("장르 입력이 잘못되었습니다.", -1))
+                    } else {
+                        Mono.just(it)
+                    }
+                }
+                .flatMap {
                     if (animeRepository.existsBySubject(cmd.subject)) {
-                        return Mono.error(ApiFailException("이미 동일한 이름의 작품이 존재합니다.", -1)
+                        Mono.error(ApiFailException("이미 동일한 이름의 작품이 존재합니다.", -1))
+                    } else {
+                        Mono.just(it)
                     }
-
+                }
+                .map {
                     val anime = Anime(
-                    status = cmd.statusEnum,
-            week = cmd.week,
-            time = cmd.time,
-            subject = cmd.subject,
-            originalSubject = cmd.originalSubject,
-            autocorrect = KoreanKit.toJasoAtom(cmd.subject),
-            genres = cmd.genres,
-            startDate = cmd.startDate,
-            endDate = cmd.endDate,
-            website = cmd.website,
-            twitter = cmd.twitter,
-            )
-
-            val activePanel = ActivePanel(
-                published = true,
-                code = "ANIME",
-                status = "C",
-                an = sessionItem.an,
-                data1 = "[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 추가하였습니다."
-            )
-
-            animeRepository.save(anime)
-            activePanelRepository.save(activePanel)
-            animeDocumentService.update(anime)
-
-            return anime.animeNo)
-        }
-
-    @Transactional
-    override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem) =
-        Mono.fromCallable {
-            cmd.validate()
-            sessionItem.validateAdmin()
-            translatorApplyService.getGrantedTime(sessionItem.an)
-                ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
-                ?: return Mono.error(ApiFailException("애니메이션 편집은 권한 취득일로부터 90일 후에 가능합니다.", -1)
-
-                    val animeNo = cmd.animeNo
-
-                    if (animeGenreRepository.countByGenreIn(cmd.genresList).toInt() != cmd.genresList.size) {
-                        return Mono.error(ApiFailException("장르 입력이 잘못되었습니다.", -1)
-                    }
-
-            if (animeRepository.existsBySubjectAndAnimeNoNot(cmd.subject, animeNo)) {
-                return Mono.error(ApiFailException("이미 동일한 이름의 작품이 존재합니다.", -1)
-            }
-
-            val activePanel = ActivePanel(
-                published = true,
-                code = "ANIME",
-                status = "U",
-                an = sessionItem.an,
-                data1 = "[${sessionItem.name}]님이 애니메이션 [${cmd.subject}]을(를) 수정하였습니다."
-            )
-
-            val anime = animeRepository.findByIdOrNull(animeNo)
-                ?.also {
-                    if (
-                        it.week == cmd.week &&
-                        it.status == cmd.statusEnum &&
-                        it.time == cmd.time &&
-                        it.subject == cmd.subject &&
-                        it.originalSubject == cmd.originalSubject &&
-                        it.genres == cmd.genres &&
-                        it.startDate == cmd.startDate &&
-                        it.endDate == cmd.endDate &&
-                        it.website == cmd.website &&
-                        it.twitter == cmd.twitter
-                    ) {
-                        return Mono.error(ApiFailException("변경사항이 없습니다.", -1)
-                    }
-                }
-                ?.also { activePanel.data2 = toJsonString(AnimeItem(it, false), mapOf("note" to "")) }
-                ?.apply {
-                    status = cmd.statusEnum
-                    week = cmd.week
-                    time = cmd.time
-                    subject = cmd.subject
-                    originalSubject = cmd.originalSubject
-                    autocorrect = KoreanKit.toJasoAtom(cmd.subject)
-                    genres = cmd.genres
-                    startDate = cmd.startDate
-                    endDate = cmd.endDate
-                    website = cmd.website
-                    twitter = cmd.twitter
-                }
-                ?.also { activePanel.data3 = toJsonString(AnimeItem(it, false), mapOf("note" to cmd.note)) }
-                ?: return Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.", -1)
+                        status = cmd.statusEnum,
+                        week = cmd.week,
+                        time = cmd.time,
+                        subject = cmd.subject,
+                        originalSubject = cmd.originalSubject,
+                        autocorrect = KoreanKit.toJasoAtom(cmd.subject),
+                        genres = cmd.genres,
+                        startDate = cmd.startDate,
+                        endDate = cmd.endDate,
+                        website = cmd.website,
+                        twitter = cmd.twitter,
+                    )
+                    val activePanel = ActivePanel(
+                        published = true,
+                        code = "ANIME",
+                        status = "C",
+                        an = sessionItem.an,
+                        data1 = "[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 추가하였습니다."
+                    )
 
                     animeRepository.save(anime)
                     activePanelRepository.save(activePanel)
-                    animeDocumentService.update(anime)
+                    animeDocumentService.update(anime, false).subscribeBoundedElastic()
 
-                    return ResultWrapper.of("ok", "", anime.animeNo)
+                    anime.animeNo
+                }
+        }
+
+    @Transactional
+    override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): Mono<Long> =
+        Mono.fromCallable {
+            cmd.validate()
+            sessionItem.validateAdmin()
+            translatorApplyService.getGrantedTime(sessionItem.an)
+                .flatMap {
+                    if (it.isBefore(OffsetDateTime.now().minusDays(90))) {
+                        Mono.error(ApiFailException("애니메이션 편집은 권한 취득일로부터 90일 후에 가능합니다.", -1))
+                    } else {
+                        Mono.just(it)
+                    }
+                }.flatMap {
+                    val animeNo = cmd.animeNo
+
+                    if (animeGenreRepository.countByGenreIn(cmd.genresList).toInt() != cmd.genresList.size) {
+                        Mono.error(ApiFailException("장르 입력이 잘못되었습니다.", -1))
+                    } else if (animeRepository.existsBySubjectAndAnimeNoNot(cmd.subject, animeNo)) {
+                        Mono.error(ApiFailException("이미 동일한 이름의 작품이 존재합니다.", -1)
+                    } else {
+                        Mono.just(animeNo)
+                    }
+                }.flatMap { animeNo ->
+                    val activePanel = ActivePanel(
+                        published = true,
+                        code = "ANIME",
+                        status = "U",
+                        an = sessionItem.an,
+                        data1 = "[${sessionItem.name}]님이 애니메이션 [${cmd.subject}]을(를) 수정하였습니다."
+                    )
+
+                    val anime = animeRepository.findByIdOrNull(animeNo)
+                        ?.also {
+                            if (
+                                it.week == cmd.week &&
+                                it.status == cmd.statusEnum &&
+                                it.time == cmd.time &&
+                                it.subject == cmd.subject &&
+                                it.originalSubject == cmd.originalSubject &&
+                                it.genres == cmd.genres &&
+                                it.startDate == cmd.startDate &&
+                                it.endDate == cmd.endDate &&
+                                it.website == cmd.website &&
+                                it.twitter == cmd.twitter
+                            ) {
+                                return@flatMap Mono.error(ApiFailException("변경사항이 없습니다.", -1))
+                            }
+                        }
+                        ?.also { activePanel.data2 = toJsonString(AnimeItem(it, false), mapOf("note" to "")) }
+                        ?.apply {
+                            status = cmd.statusEnum
+                            week = cmd.week
+                            time = cmd.time
+                            subject = cmd.subject
+                            originalSubject = cmd.originalSubject
+                            autocorrect = KoreanKit.toJasoAtom(cmd.subject)
+                            genres = cmd.genres
+                            startDate = cmd.startDate
+                            endDate = cmd.endDate
+                            website = cmd.website
+                            twitter = cmd.twitter
+                        }
+                        ?.also { activePanel.data3 = toJsonString(AnimeItem(it, false), mapOf("note" to cmd.note)) }
+                        ?: return Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.", -1)
+
+                            animeRepository.save(anime)
+                            activePanelRepository.save(activePanel)
+                            animeDocumentService.update(anime)
+
+                            return ResultWrapper.of("ok", "", anime.animeNo)
+                }
         }
 
     @Transactional
