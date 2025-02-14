@@ -321,23 +321,33 @@ class AnimeServiceImpl(
         Mono.defer {
             cmd.validate()
             sessionItem.validateAdmin()
+
             translatorApplyService.getGrantedTime(sessionItem.an)
-                ?.takeIf { it.isBefore(OffsetDateTime.now().minusDays(90)) }
-                ?: return Mono.error(ApiFailException("애니메이션 삭제는 권한 취득일로부터 90일 후에 가능합니다.")
-
+                .flatMap {
+                    if (it.isBefore(OffsetDateTime.now().minusDays(90))) {
+                        Mono.error(ApiFailException("애니메이션 편집은 권한 취득일로부터 90일 후에 가능합니다.", -1))
+                    } else {
+                        Mono.just(it)
+                    }
+                }.flatMap {
                     val animeNo = cmd.animeNo
-            val agenda = Agenda(code = "ANIME-DEL", status = "wait", an = sessionItem.an)
+                    val agenda = Agenda(code = "ANIME-DEL", status = "wait", an = sessionItem.an)
 
-            val anime = animeRepository.findWithCaptionsByAnimeNo(animeNo)
-                ?.also { agenda.data1 = toJsonString(AnimeItem(it, true)) }
-                ?: return Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.")
+                    Mono.justOrEmpty<Anime>(animeRepository.findWithCaptionsByAnimeNo(animeNo))
+                        .switchIfEmpty(Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.", -1)))
+                        .flatMap { anime ->
+                            agenda.data1 = AnimeItem(anime, true).toJson
 
-                    activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다."), null)
+                            animeCaptionRepository.deleteByAnimeNo(animeNo)
+                            animeRepository.delete(anime)
+                            agendaRepository.save(agenda)
 
-            animeCaptionRepository.deleteByAnimeNo(animeNo)
-            animeRepository.delete(anime)
-            animeDocumentService.update(anime)
-            agendaRepository.save(agenda)
+                            activePanelService.addText(false, "[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 삭제하였습니다.", null)
+                                .flatMap { animeDocumentService.update(anime, true) }
+                                .subscribeBoundedElastic()
+                            Mono.just("")
+                        }
+                }
         }
 
 
