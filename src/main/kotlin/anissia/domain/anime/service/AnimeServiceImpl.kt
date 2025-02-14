@@ -244,7 +244,7 @@ class AnimeServiceImpl(
 
     @Transactional
     override fun edit(cmd: EditAnimeCommand, sessionItem: SessionItem): Mono<Long> =
-        Mono.fromCallable {
+        Mono.defer {
             cmd.validate()
             sessionItem.validateAdmin()
             translatorApplyService.getGrantedTime(sessionItem.an)
@@ -273,45 +273,46 @@ class AnimeServiceImpl(
                         data1 = "[${sessionItem.name}]님이 애니메이션 [${cmd.subject}]을(를) 수정하였습니다."
                     )
 
-                    val anime = animeRepository.findByIdOrNull(animeNo)
-                        ?.also {
+                    Mono.justOrEmpty<Anime>(animeRepository.findByIdOrNull(animeNo))
+                        .flatMap { anime ->
                             if (
-                                it.week == cmd.week &&
-                                it.status == cmd.statusEnum &&
-                                it.time == cmd.time &&
-                                it.subject == cmd.subject &&
-                                it.originalSubject == cmd.originalSubject &&
-                                it.genres == cmd.genres &&
-                                it.startDate == cmd.startDate &&
-                                it.endDate == cmd.endDate &&
-                                it.website == cmd.website &&
-                                it.twitter == cmd.twitter
+                                anime.week == cmd.week &&
+                                anime.status == cmd.statusEnum &&
+                                anime.time == cmd.time &&
+                                anime.subject == cmd.subject &&
+                                anime.originalSubject == cmd.originalSubject &&
+                                anime.genres == cmd.genres &&
+                                anime.startDate == cmd.startDate &&
+                                anime.endDate == cmd.endDate &&
+                                anime.website == cmd.website &&
+                                anime.twitter == cmd.twitter
+                                // 노트 넣어야함.
                             ) {
-                                return@flatMap Mono.error(ApiFailException("변경사항이 없습니다.", -1))
+                                Mono.error(ApiFailException("변경사항이 없습니다.", -1))
+                            } else {
+                                activePanel.data2 = AnimeItem(anime, false).toJson
+                                anime.status = cmd.statusEnum
+                                anime.week = cmd.week
+                                anime.time = cmd.time
+                                anime.subject = cmd.subject
+                                anime.originalSubject = cmd.originalSubject
+                                anime.autocorrect = KoreanKit.toJasoAtom(cmd.subject)
+                                anime.genres = cmd.genres
+                                anime.startDate = cmd.startDate
+                                anime.endDate = cmd.endDate
+                                anime.website = cmd.website
+                                anime.twitter = cmd.twitter
+                                // 노트 넣어야함.
+                                activePanel.data3 = AnimeItem(anime, false).toJson
+                                Mono.just(anime)
                             }
+                        }.switchIfEmpty(Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.", -1)))
+                        .map { anime ->
+                            animeRepository.save(anime)
+                            activePanelRepository.save(activePanel)
+                            animeDocumentService.update(anime, false).subscribeBoundedElastic()
+                            anime.animeNo
                         }
-                        ?.also { activePanel.data2 = AnimeItem(it, false).toJson }
-                        ?.apply {
-                            status = cmd.statusEnum
-                            week = cmd.week
-                            time = cmd.time
-                            subject = cmd.subject
-                            originalSubject = cmd.originalSubject
-                            autocorrect = KoreanKit.toJasoAtom(cmd.subject)
-                            genres = cmd.genres
-                            startDate = cmd.startDate
-                            endDate = cmd.endDate
-                            website = cmd.website
-                            twitter = cmd.twitter
-                        }
-                        ?.also { activePanel.data3 = AnimeItem(it, false).toJson }
-                        ?: return@flatMap Mono.error(ApiFailException("존재하지 않는 애니메이션입니다.", -1))
-
-                        animeRepository.save(anime)
-                        activePanelRepository.save(activePanel)
-                        animeDocumentService.update(anime)
-
-                        return ResultWrapper.of("ok", "", anime.animeNo)
                 }
         }
 
