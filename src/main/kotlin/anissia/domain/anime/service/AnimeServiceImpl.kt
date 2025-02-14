@@ -318,7 +318,7 @@ class AnimeServiceImpl(
 
     @Transactional
     override fun delete(cmd: DeleteAnimeCommand, sessionItem: SessionItem): Mono<String> =
-        Mono.fromCallable {
+        Mono.defer {
             cmd.validate()
             sessionItem.validateAdmin()
             translatorApplyService.getGrantedTime(sessionItem.an)
