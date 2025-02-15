@@ -51,10 +51,7 @@ class AnimeServiceImpl(
     private val log = logger<AnimeServiceImpl>()
     private val autocorrectStore = MonoCacheStore<String, List<String>>(60 * 60000)
     private val mapper = ObjectMapper()
-
     private val trAnimeItem = object: TypeReference<AnimeItem>(){}
-    private val trMap = object: TypeReference<Map<String, Any>>() {}
-
 
     override fun get(cmd: GetAnimeCommand, sessionItem: SessionItem): Mono<AnimeItem> =
         Mono.justOrEmpty<Anime>(animeRepository.findWithCaptionsByAnimeNo(cmd.animeNo))
@@ -260,7 +257,7 @@ class AnimeServiceImpl(
                     if (animeGenreRepository.countByGenreIn(cmd.genresList).toInt() != cmd.genresList.size) {
                         Mono.error(ApiFailException("장르 입력이 잘못되었습니다.", -1))
                     } else if (animeRepository.existsBySubjectAndAnimeNoNot(cmd.subject, animeNo)) {
-                        Mono.error(ApiFailException("이미 동일한 이름의 작품이 존재합니다.", -1)
+                        Mono.error(ApiFailException("이미 동일한 이름의 작품이 존재합니다.", -1))
                     } else {
                         Mono.just(animeNo)
                     }
@@ -352,62 +349,66 @@ class AnimeServiceImpl(
 
 
     @Transactional
-    override fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem) =
+    override fun recover(cmd: RecoverAnimeCommand, sessionItem: SessionItem): Mono<Long> =
         Mono.defer {
             cmd.validate()
             sessionItem.validateAdmin()
 
-            val agenda = agendaRepository
-                .findByIdOrNull(cmd.agendaNo)?.takeIf { it.code == "ANIME-DEL" && it.status == "wait" }
-                ?: return Mono.error(ApiFailException("이미 복원되었거나 존재하지 않는 애니메이션입니다.", -1)
-
-                    val animeItem = OBJECT_MAPPER.readValue(agenda.data1, object: TypeReference<AnimeItem>() {})
+            Mono.justOrEmpty<Agenda>(agendaRepository.findByIdOrNull(cmd.agendaNo))
+                .flatMap { agenda ->
+                    if (agenda.code == "ANIME-DEL" && agenda.status == "wait") {
+                        Mono.just(agenda)
+                    } else {
+                        Mono.error(ApiFailException("이미 복원되었거나 존재하지 않는 애니메이션입니다.", -1))
+                    }
+                }
+        }.flatMap { agenda ->
+            val animeItem = agenda.data1!!.toClassByJson(trAnimeItem)
 
             if (animeRepository.existsById(animeItem.animeNo)) {
-                return Mono.error(ApiFailException("이미 복원되었거나 존재하지 않는 애니메이션입니다.", -1)
-            }
-            if (animeRepository.existsBySubject(animeItem.subject)) {
-                return Mono.error(ApiFailException("이미 해당 제목의 에니메이션이 있습니다.", -1)
-            }
-
-            val anime = animeRepository.save(
-                Anime(
-                    status = AnimeStatus.valueOf(animeItem.status),
-                    week = animeItem.week,
-                    time = animeItem.time,
-                    subject = animeItem.subject,
-                    originalSubject = animeItem.originalSubject,
-                    autocorrect = KoreanKit.toJasoAtom(animeItem.subject),
-                    genres = animeItem.genres,
-                    startDate = animeItem.startDate,
-                    endDate = animeItem.endDate,
-                    website = animeItem.website,
-                    twitter = animeItem.twitter,
-                    captionCount = animeItem.captionCount
-                )
-            )
-
-            animeItem.captions.forEach { caption ->
-                val account = accountRepository.findWithRolesByName(caption.name)
-                if (account?.isAdmin == true) {
-                    animeCaptionRepository.save(
-                        AnimeCaption(
-                            anime = anime,
-                            an = account.an,
-                            episode = caption.episode,
-                            updDt = OffsetDateTime.parse(caption.updDt, DTF_ISO_YMDHMS),
-                            website = caption.website
-                        )
+                Mono.error(ApiFailException("이미 복원되었거나 존재하지 않는 애니메이션입니다.", -1))
+            } else if (animeRepository.existsBySubject(animeItem.subject)) {
+                Mono.error(ApiFailException("이미 해당 제목의 에니메이션이 있습니다.", -1))
+            } else {
+                val anime = animeRepository.save(
+                    Anime(
+                        status = AnimeStatus.valueOf(animeItem.status),
+                        week = animeItem.week,
+                        time = animeItem.time,
+                        subject = animeItem.subject,
+                        originalSubject = animeItem.originalSubject,
+                        autocorrect = KoreanKit.toJasoAtom(animeItem.subject),
+                        genres = animeItem.genres,
+                        startDate = animeItem.startDate,
+                        endDate = animeItem.endDate,
+                        website = animeItem.website,
+                        twitter = animeItem.twitter,
+                        captionCount = animeItem.captionCount
                     )
+                )
+
+                animeItem.captions.forEach { caption ->
+                    val account = accountRepository.findWithRolesByName(caption.name)
+                    if (account?.isAdmin == true) {
+                        animeCaptionRepository.save(
+                            AnimeCaption(
+                                anime = anime,
+                                an = account.an,
+                                episode = caption.episode,
+                                updDt = OffsetDateTime.parse(caption.updDt, DTF_ISO_YMDHMS),
+                                website = caption.website
+                            )
+                        )
+                    }
                 }
+
+                agendaRepository.save(agenda.apply { status = "recover" })
+                animeRepository.updateCaptionCount(anime.animeNo)
+
+                animeDocumentService.update(anime, false).subscribeBoundedElastic()
+
+                activePanelService.addText(false, "[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다.", null)
+                    .map { anime.animeNo }
             }
-
-            activePanelService.addText(AddTextActivePanelCommand("[${sessionItem.name}]님이 애니메이션 [${anime.subject}]을(를) 복원하였습니다."), null)
-
-            animeDocumentService.update(anime)
-            animeRepository.updateCaptionCount(anime.animeNo)
-            agendaRepository.save(agenda.apply { status = "recover" })
-
-            return ResultWrapper.of("ok", "", anime.animeNo)
         }
 }
