@@ -13,7 +13,6 @@ import anissia.domain.session.repository.JwtKeyPairRepository
 import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginPassRepository
 import anissia.domain.session.repository.LoginTokenRepository
-import anissia.infrastructure.common.boundedElastic
 import me.saro.jwt.alg.es.JwtEs256
 import me.saro.jwt.core.Jwt
 import me.saro.jwt.core.JwtClaims
@@ -85,16 +84,12 @@ class JwtServiceImpl(
             }
 
     @Transactional
-    override fun getAuthInfo(cmd: GetJwtAuthInfoCommand): Mono<JwtAuthInfoItem> =
-        Mono.fromCallable {
-            if (cmd.makeLoginToken) {
-                loginTokenRepository.save(LoginToken.create(an = cmd.sessionItem.an)).absoluteToken
-            } else { "" }
-        }.map { token ->
-            loginFailRepository.deleteByIpAndEmail(cmd.sessionItem.ip, cmd.sessionItem.email)
-            loginPassRepository.save(LoginPass.create(an = cmd.sessionItem.an, connType = "login", ip = cmd.sessionItem.ip))
-            JwtAuthInfoItem(toJwt(cmd.sessionItem), token)
-        }
+    override fun getAuthInfo(cmd: GetJwtAuthInfoCommand): Mono<JwtAuthInfoItem> {
+        val token = if (cmd.makeLoginToken) { loginTokenRepository.save(LoginToken.create(an = cmd.sessionItem.an)).absoluteToken } else { "" }
+        loginFailRepository.deleteByIpAndEmail(cmd.sessionItem.ip, cmd.sessionItem.email)
+        loginPassRepository.save(LoginPass.create(an = cmd.sessionItem.an, connType = "login", ip = cmd.sessionItem.ip))
+        return Mono.just(JwtAuthInfoItem(toJwt(cmd.sessionItem), token))
+    }
 
     private fun getKey(): JwtKeyItem =
         keyStore.elementAt(1)
