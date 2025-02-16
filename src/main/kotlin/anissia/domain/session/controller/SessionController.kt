@@ -20,11 +20,11 @@ class SessionController(
 ) {
     @PostMapping
     fun doLogin(@RequestBody cmd: DoUserLoginCommand, exchange: ServerWebExchange): Mono<ApiResponse<JwtAuthInfoItem>> =
-        loginService.doUserLogin(cmd, exchange.sessionItem)
+        loginService.doUserLogin(cmd, exchange.sessionItem).toApiResponse
 
     @PostMapping("/token")
     fun doTokenLogin(@RequestBody cmd: DoTokenLoginCommand, exchange: ServerWebExchange): Mono<ApiResponse<JwtAuthInfoItem>> =
-        loginService.doTokenLogin(cmd, exchange.sessionItem)
+        loginService.doTokenLogin(cmd, exchange.sessionItem).toApiResponse
 
     @PutMapping()
     fun updateAuthInfo(exchange: ServerWebExchange): Mono<ApiResponse<JwtAuthInfoItem>> =

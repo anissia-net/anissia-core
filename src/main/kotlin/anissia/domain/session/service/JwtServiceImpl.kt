@@ -13,7 +13,6 @@ import anissia.domain.session.repository.JwtKeyPairRepository
 import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginPassRepository
 import anissia.domain.session.repository.LoginTokenRepository
-import anissia.infrastructure.common.doOnNextMono
 import me.saro.jwt.alg.es.JwtEs256
 import me.saro.jwt.core.Jwt
 import me.saro.jwt.core.JwtClaims
@@ -21,6 +20,7 @@ import me.saro.jwt.core.JwtKey
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 import java.util.*
@@ -39,10 +39,10 @@ class JwtServiceImpl(
     private val keyStoreSize = 24
 
     override fun registerNewJwtKey(): Mono<String> =
-        jwtKeyPairRepository.save(JwtKeyPair(System.currentTimeMillis(), es256.newRandomJwtKey().stringify)).map { "" }
+        Mono.fromCallable { jwtKeyPairRepository.save(JwtKeyPair(System.currentTimeMillis(), es256.newRandomJwtKey().stringify)); "" }
 
     override fun renewKeyStore(): Mono<String> =
-        jwtKeyPairRepository.findAllByOrderByKidDesc(PageRequest.of(0, keyStoreSize))
+        Flux.just(*jwtKeyPairRepository.findAllByOrderByKidDesc(PageRequest.of(0, keyStoreSize)).toTypedArray())
             .map { JwtKeyItem(it.kid.toString(), es256.toJwtKeyByStringify(it.data)) }
             .filter { item -> keyStore.none { it.kid == item.kid } }
             .collectList()
@@ -52,45 +52,45 @@ class JwtServiceImpl(
                 ""
             }
 
-    override fun toSessionItem(jwt: String, ip: String): SessionItem {
-        if (jwt.isNotBlank()) {
-            try {
-                val key = findKey(es256.toJwtHeader(jwt).kid!!)
-                val claims = es256.toJwtClaims(jwt, key)
-                val id = (claims.id!!).toLong()
-                val roles = claims.claim<String>("roles")?.takeIf { it.isNotBlank() }?.split(",") ?: listOf()
-                claims.assert()
-                return SessionItem(
-                    an = id,
-                    name = claims.audience!!,
-                    email = claims.subject!!,
-                    roles = roles,
-                    ip = ip
-                )
-            } catch (_: Exception) {}
+    override fun toSessionItem(jwt: String, ip: String): Mono<SessionItem> =
+        Mono.fromCallable {
+            if (jwt.isNotBlank()) {
+                try {
+                    val key = findKey(es256.toJwtHeader(jwt).kid!!)
+                    val claims = es256.toJwtClaims(jwt, key)
+                    val id = (claims.id!!).toLong()
+                    val roles = claims.claim<String>("roles")?.takeIf { it.isNotBlank() }?.split(",") ?: listOf()
+                    claims.assert()
+                    return@fromCallable SessionItem(
+                        an = id,
+                        name = claims.audience!!,
+                        email = claims.subject!!,
+                        roles = roles,
+                        ip = ip
+                    )
+                } catch (_: Exception) {}
+            }
+            return@fromCallable SessionItem.cast(Account(), ip)
         }
-        return SessionItem.cast(Account(), ip)
-    }
 
     @Transactional
     override fun updateAuthInfo(sessionItem: SessionItem): Mono<JwtAuthInfoItem> =
         Mono.just(sessionItem)
             .filter { it.isLogin }
-            .flatMap { accountRepository.findWithRolesByAn(it.an) }
-            .flatMap { getAuthInfo(GetJwtAuthInfoCommand(sessionItem = SessionItem.cast(it, sessionItem.ip), makeLoginToken = false)) }
-            .switchIfEmpty(Mono.error(SecurityException("유효하지 않은 토큰 정보입니다.")))
+            .flatMap {
+                accountRepository.findWithRolesByAn(it.an)
+                    ?.let { getAuthInfo(GetJwtAuthInfoCommand(sessionItem = SessionItem.cast(it, sessionItem.ip), makeLoginToken = false)) }
+                    ?: Mono.error(SecurityException("유효하지 않은 토큰 정보입니다."))
+            }
 
     @Transactional
     override fun getAuthInfo(cmd: GetJwtAuthInfoCommand): Mono<JwtAuthInfoItem> =
-        Mono.defer {
+        Mono.fromCallable {
             if (cmd.makeLoginToken) {
-                loginTokenRepository.save(LoginToken.create(an = cmd.sessionItem.an)).map { it.absoluteToken }
-            } else {
-                Mono.just("")
-            }
-        }
-            .doOnNextMono { loginFailRepository.deleteByIpAndEmail(cmd.sessionItem.ip, cmd.sessionItem.email) }
-            .doOnNextMono { loginPassRepository.save(LoginPass.create(an = cmd.sessionItem.an, connType = "login", ip = cmd.sessionItem.ip)) }
+                loginTokenRepository.save(LoginToken.create(an = cmd.sessionItem.an)).absoluteToken
+            } else { "" }
+        }.doOnNext { loginFailRepository.deleteByIpAndEmail(cmd.sessionItem.ip, cmd.sessionItem.email) }
+            .doOnNext { loginPassRepository.save(LoginPass.create(an = cmd.sessionItem.an, connType = "login", ip = cmd.sessionItem.ip)) }
             .map { token -> JwtAuthInfoItem(toJwt(cmd.sessionItem), token) }
 
     private fun getKey(): JwtKeyItem =

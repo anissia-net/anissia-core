@@ -7,6 +7,6 @@ class DeletePostCommand(
 ) {
     fun validate() {
         if (postNo <= 0)
-            throw FailException()
+            throw ApiFailException()
     }
 }

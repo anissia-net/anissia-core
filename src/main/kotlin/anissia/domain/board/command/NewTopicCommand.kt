@@ -9,13 +9,13 @@ class NewTopicCommand(
 ) {
     fun validate() {
         if (ticker.isBlank())
-            throw FailException()
+            throw ApiFailException()
 
         if (topic.isBlank())
-            throw FailException("제목을 입력해 주세요.")
+            throw ApiFailException("제목을 입력해 주세요.")
 
         if (content.isBlank())
-            throw FailException("내용을 입력해 주세요.")
+            throw ApiFailException("내용을 입력해 주세요.")
     }
 }
 

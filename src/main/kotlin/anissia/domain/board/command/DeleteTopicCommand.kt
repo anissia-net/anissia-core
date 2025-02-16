@@ -7,7 +7,7 @@ class DeleteTopicCommand(
 ) {
     fun validate() {
         if (topicNo <= 0)
-            throw FailException()
+            throw ApiFailException()
     }
 }
 

@@ -9,30 +9,28 @@ import anissia.domain.session.model.JwtAuthInfoItem
 import anissia.domain.session.model.SessionItem
 import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginTokenRepository
-import anissia.infrastructure.common.As
-import anissia.infrastructure.service.BCryptService
-import anissia.shared.ResultWrapper
-import gs.shared.FailException
+import anissia.infrastructure.common.logger
+import anissia.shared.ApiFailException
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import java.time.OffsetDateTime
 
 @Service
 class LoginServiceImpl(
-    private val bCryptService: BCryptService,
     private val accountRepository: AccountRepository,
     private val loginFailRepository: LoginFailRepository,
     private val loginTokenRepository: LoginTokenRepository,
     private val jwtService: JwtService,
 ): LoginService {
-    private val log = As.logger<LoginServiceImpl>()
+    private val log = logger<LoginServiceImpl>()
 
-    override fun doUserLogin(cmd: DoUserLoginCommand, sessionItem: SessionItem): ResultWrapper<JwtAuthInfoItem> {
+    override fun doUserLogin(cmd: DoUserLoginCommand, sessionItem: SessionItem): Mono<JwtAuthInfoItem> {
         cmd.validate()
         val ip = sessionItem.ip
 
         if (loginFailRepository.countByIpAndEmailAndFailDtAfter(ip, cmd.email, OffsetDateTime.now().plusMinutes(-30)) >= 10) {
             log.info("잦은 로그인 시도 : " + cmd.email)
-            throw FailException("잦은 접속시도로 일정시간동안 차단되었습니다.\n시간이 지난 후 다시 시도해주세요.")
+            throw ApiFailException("잦은 접속시도로 일정시간동안 차단되었습니다.\n시간이 지난 후 다시 시도해주세요.")
         }
 
         val account = accountRepository.findWithRolesByEmail(cmd.email)
@@ -40,7 +38,7 @@ class LoginServiceImpl(
 
         if (account == null) {
             loginFailRepository.save(LoginFail.create(ip = ip, email = cmd.email))
-            throw FailException("암호가 일치하지 않거나 존재하지 않는 계정입니다.")
+            throw ApiFailException("암호가 일치하지 않거나 존재하지 않는 계정입니다.")
         }
 
         accountRepository.save(account.apply { lastLoginDt = OffsetDateTime.now() })
@@ -48,11 +46,11 @@ class LoginServiceImpl(
         return jwtService.getAuthInfo(GetJwtAuthInfoCommand(sessionItem = SessionItem.cast(account, ip), makeLoginToken = cmd.makeLoginToken))
     }
 
-    override fun doTokenLogin(cmd: DoTokenLoginCommand, sessionItem: SessionItem): ResultWrapper<JwtAuthInfoItem> {
+    override fun doTokenLogin(cmd: DoTokenLoginCommand, sessionItem: SessionItem): Mono<JwtAuthInfoItem> {
         val ip = sessionItem.ip
 
         if (loginFailRepository.countByIpAndEmailAndFailDtAfter(ip, "#${cmd.tn}", OffsetDateTime.now().plusMinutes(-30)) >= 10) {
-            throw FailException("잦은 접속시도로 일정시간동안 차단되었습니다.\n시간이 지난 후 다시 시도해주세요.")
+            throw ApiFailException("잦은 접속시도로 일정시간동안 차단되었습니다.\n시간이 지난 후 다시 시도해주세요.")
         }
 
         loginTokenRepository.findByTokenNoAndTokenAndExpDtAfter(cmd.tn, cmd.token, OffsetDateTime.now())
@@ -69,6 +67,6 @@ class LoginServiceImpl(
 
         loginFailRepository.save(LoginFail.create(ip = ip, email = "#${cmd.tn}"))
 
-        throw FailException("기타예외")
+        throw ApiFailException("기타예외")
     }
 }

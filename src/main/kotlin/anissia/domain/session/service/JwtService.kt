@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 interface JwtService {
     fun registerNewJwtKey(): Mono<String>
     fun renewKeyStore(): Mono<String>
-    fun toSessionItem(jwt: String, ip: String): SessionItem
+    fun toSessionItem(jwt: String, ip: String): Mono<SessionItem>
     fun updateAuthInfo(sessionItem: SessionItem): Mono<JwtAuthInfoItem>
     fun getAuthInfo(cmd: GetJwtAuthInfoCommand): Mono<JwtAuthInfoItem>
 }
