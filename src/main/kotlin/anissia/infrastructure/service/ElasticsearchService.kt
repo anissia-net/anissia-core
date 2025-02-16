@@ -1,6 +1,8 @@
 package anissia.infrastructure.service
 
 import com.fasterxml.jackson.databind.JsonNode
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpMethod.*
@@ -35,15 +37,19 @@ class ElasticsearchService(
             .uri(uri).apply { if (body != null) bodyValue(body) }
 
     fun requestStateOk(method: HttpMethod, uri: String, body: String? = null): Boolean =
-        requestRaw(method, uri, body)
-            .exchangeToMono { Mono.just(it.statusCode().is2xxSuccessful) }
-            .subscribeOn(Schedulers.boundedElastic())
-            .toFuture().get() ?: false
+        runBlocking {
+            requestRaw(method, uri, body)
+                .exchangeToMono { Mono.just(it.statusCode().is2xxSuccessful) }
+                .awaitSingle()
+        }
+
 
     fun request(method: HttpMethod, uri: String, body: String? = null): JsonNode =
-        requestRaw(method, uri, body).retrieve().bodyToMono(JsonNode::class.java)
-            .subscribeOn(Schedulers.boundedElastic())
-            .toFuture().get()!!
+        runBlocking {
+            requestRaw(method, uri, body).retrieve().bodyToMono(JsonNode::class.java)
+                .subscribeOn(Schedulers.boundedElastic())
+                .awaitSingle()
+        }
 
     fun existsIndex(index: String): Boolean =
         requestStateOk(HEAD, "/$index")

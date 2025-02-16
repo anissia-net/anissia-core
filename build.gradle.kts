@@ -42,6 +42,10 @@ dependencies {
 	implementation("me.saro:kit:0.2.3")
 	implementation("org.mindrot:jbcrypt:0.4")
 	implementation("me.saro:jwt:3.0.0")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+
+
 
 	// logger
 	implementation("org.slf4j:slf4j-api")

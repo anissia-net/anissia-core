@@ -6,11 +6,12 @@ import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeDocumentRepository
 import anissia.domain.anime.repository.AnimeRepository
 import anissia.infrastructure.common.As
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.runBlocking
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
-import reactor.core.scheduler.Schedulers
 
 @Service
 class AnimeDocumentServiceImpl(
@@ -50,11 +51,12 @@ class AnimeDocumentServiceImpl(
         animeRepository.updateCaptionCountAll()
         log.info("Updated caption count")
 
-        Flux.just(*animeRepository.findAll().toTypedArray())
-            .map { update(it) }
-            .subscribeOn(Schedulers.boundedElastic())
-            .collectList()
-            .toFuture().get()
+        runBlocking {
+            Flux.just(*animeRepository.findAll().toTypedArray())
+                .map { update(it) }
+                .collectList()
+                .awaitSingle()
+        }
 
         log.info("Updated anime document")
     }
