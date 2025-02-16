@@ -13,8 +13,7 @@ anissia:
     username: anissia
     password: anissia
   ndb:
-    host: localhost
-    port: 9200
+    url: http://localhost:9200
 
 spring:
   jpa:

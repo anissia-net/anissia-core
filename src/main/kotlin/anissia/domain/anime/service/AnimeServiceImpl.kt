@@ -27,6 +27,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
@@ -145,10 +146,10 @@ class AnimeServiceImpl(
 //                "size": 30
 //            }"""
 
-            log.info(req)
+            //log.info(req)
 
-            val res = elasticsearch.request("POST", "/anissia_anime/_search", req)
-            val hits = res.entity.content.bufferedReader().use { mapper.readTree(it) }["hits"]
+            val res = elasticsearch.request(HttpMethod.POST, "/anissia_anime/_search", req)
+            val hits = res.get("hits")
             val result = PageImpl<Long>(hits["hits"].map { it["_id"].asLong() }, PageRequest.of(page, 30), hits["total"]["value"].asLong())
 
             log.info("anime search $keywords $genres $translators $end ${result.totalElements}")
@@ -260,12 +261,13 @@ class AnimeServiceImpl(
                     it.startDate == cmd.startDate &&
                     it.endDate == cmd.endDate &&
                     it.website == cmd.website &&
-                    it.twitter == cmd.twitter
+                    it.twitter == cmd.twitter &&
+                    it.note == cmd.note
                 ) {
                     return ResultWrapper.fail("변경사항이 없습니다.", -1)
                 }
             }
-            ?.also { activePanel.data2 = As.toJsonString(AnimeItem(it, false), mapOf("note" to "")) }
+            ?.also { activePanel.data2 = As.toJsonString(AnimeItem(it, false)) }
             ?.apply {
                 status = cmd.statusEnum
                 week = cmd.week
@@ -278,8 +280,9 @@ class AnimeServiceImpl(
                 endDate = cmd.endDate
                 website = cmd.website
                 twitter = cmd.twitter
+                note = cmd.note
             }
-            ?.also { activePanel.data3 = As.toJsonString(AnimeItem(it, false), mapOf("note" to cmd.note)) }
+            ?.also { activePanel.data3 = As.toJsonString(AnimeItem(it, false)) }
             ?: return ResultWrapper.fail("존재하지 않는 애니메이션입니다.", -1)
 
         animeRepository.save(anime)

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 interface AnimeRepository : JpaRepository<Anime, Long> { //, QuerydslPredicateExecutor<Anime> {
 
@@ -37,6 +39,7 @@ interface AnimeRepository : JpaRepository<Anime, Long> { //, QuerydslPredicateEx
     fun updateCaptionCountByIds(animeNo: List<Long>): Int
 
     @Modifying
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Query("UPDATE Anime A SET A.captionCount = size(A.captions)")
     fun updateCaptionCountAll(): Int
 

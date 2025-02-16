@@ -68,6 +68,9 @@ class Anime (
     @Column(nullable = false, length = 128)
     var twitter: String = "",
 
+    @Column(nullable = false, length = 512)
+    var note: String = "",
+
     @Column(nullable = false)
     var captionCount: Int = 0,
 
@@ -97,6 +100,7 @@ CREATE TABLE `anime` (
   `end_date` varchar(10) NOT NULL,
   `website` varchar(128) NOT NULL,
   `twitter` varchar(128) NOT NULL,
+  `note` varchar(512) NOT NULL,
   `caption_count` int(11) NOT NULL,
   `upd_dt` datetime NOT NULL,
   PRIMARY KEY (`anime_no`),

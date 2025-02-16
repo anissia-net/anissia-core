@@ -22,7 +22,7 @@ class AnimeHitHour (
 ) {
     val key get() = Key(hour, animeNo)
 
-    class Key(var hour: Long = 0, var animeNo: Long = 0) : Serializable
+    data class Key(var hour: Long = 0, var animeNo: Long = 0) : Serializable
 }
 
 /*

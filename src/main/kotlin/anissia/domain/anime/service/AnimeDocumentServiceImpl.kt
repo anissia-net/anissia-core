@@ -5,9 +5,12 @@ import anissia.domain.anime.command.UpdateAnimeDocumentCommand
 import anissia.domain.anime.repository.AnimeCaptionRepository
 import anissia.domain.anime.repository.AnimeDocumentRepository
 import anissia.domain.anime.repository.AnimeRepository
+import anissia.infrastructure.common.As
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Flux
+import reactor.core.scheduler.Schedulers
 
 @Service
 class AnimeDocumentServiceImpl(
@@ -16,6 +19,7 @@ class AnimeDocumentServiceImpl(
     private val animeDocumentRepository: AnimeDocumentRepository,
 ): AnimeDocumentService {
     private val index = "anissia_anime"
+    private val log = As.logger<AnimeDocumentServiceImpl>()
 
     @Transactional
     override fun update(cmd: UpdateAnimeDocumentCommand) {
@@ -41,8 +45,17 @@ class AnimeDocumentServiceImpl(
     override fun reset(drop: Boolean) {
         if (drop) {
             animeDocumentRepository.dropAndCreateIndex()
+            log.info("Reset anime document index")
         }
         animeRepository.updateCaptionCountAll()
-        animeRepository.findAll().parallelStream().forEach { update(it) }
+        log.info("Updated caption count")
+
+        Flux.just(*animeRepository.findAll().toTypedArray())
+            .map { update(it) }
+            .subscribeOn(Schedulers.boundedElastic())
+            .collectList()
+            .toFuture().get()
+
+        log.info("Updated anime document")
     }
 }

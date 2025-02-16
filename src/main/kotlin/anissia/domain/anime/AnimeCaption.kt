@@ -36,7 +36,7 @@ class AnimeCaption (
     @JoinColumn(name = "animeNo", foreignKey = ForeignKey(name = "anime_caption_fk_anime"))
     var anime: Anime? = null
 ) {
-    class Key(val anime: Long = 0, val an: Long = 0) : Serializable
+    data class Key(val anime: Long = 0, val an: Long = 0) : Serializable
 
     fun edit(episode: String, updDt: OffsetDateTime, website: String) {
         this.episode = episode

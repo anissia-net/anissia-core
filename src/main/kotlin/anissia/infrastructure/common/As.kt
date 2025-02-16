@@ -44,19 +44,13 @@ class As {
             LoggerFactory.getLogger(T::class.java)
 
         fun toSession(exchange: ServerWebExchange): SessionItem {
-            val jud = As.decodeBase64Url(exchange.request.headers.getFirst("jud")!!)
+            val jud = decodeBase64Url(exchange.request.headers.getFirst("jud")!!)
             return OBJECT_MAPPER.readValue(jud, typeRefSessionItem)
         }
 
         fun getResource(path: String): URL = As::class.java.getResource(path)!!
 
         fun toJsonString(value: Any): String = OBJECT_MAPPER.writeValueAsString(value)!!
-
-        fun toJsonString(vararg value: Any): String {
-            val map = mutableMapOf<Any, Any>()
-            value.forEach { map.putAll(OBJECT_MAPPER.convertValue(it, object: TypeReference<Map<String, Any>>() {})) }
-            return OBJECT_MAPPER.writeValueAsString(map)!!
-        }
 
         //fun <T> toClass(json: String): T = OBJECT_MAPPER.readValue(json, object: TypeReference<T>(){})
 

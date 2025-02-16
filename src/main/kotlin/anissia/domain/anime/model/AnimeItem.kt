@@ -16,6 +16,7 @@ class AnimeItem(
     val endDate: String = "",
     val website: String = "",
     val twitter: String = "",
+    val note: String = "",
     var agendaNo: Long = 0,
     val captions: List<AnimeCaptionItem> = emptyList()
 ) {
@@ -32,6 +33,7 @@ class AnimeItem(
         endDate = anime.endDate,
         website = anime.website,
         twitter = anime.twitter,
+        note = anime.note,
         captions = if (includeCaption) anime.captions.map { AnimeCaptionItem(it) } else emptyList()
     )
 }
