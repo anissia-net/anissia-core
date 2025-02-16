@@ -13,10 +13,10 @@ interface LoginFailRepository : JpaRepository<LoginFail, Long> {
 
     @Modifying
     @Query("DELETE FROM LoginFail WHERE ip = :ip AND email = :email")
-    fun deleteByIpAndEmail(ip: String, email: String)
+    fun deleteByIpAndEmail(ip: String, email: String): Int
 
     @Transactional
     @Modifying
     @Query("DELETE FROM LoginFail WHERE failDt < :failDt")
-    fun deleteAllByFailDtBefore(failDt: OffsetDateTime = OffsetDateTime.now().minusDays(90))
+    fun deleteAllByFailDtBefore(failDt: OffsetDateTime = OffsetDateTime.now().minusDays(90)): Int
 }

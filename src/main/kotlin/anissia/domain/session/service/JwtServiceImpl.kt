@@ -13,6 +13,7 @@ import anissia.domain.session.repository.JwtKeyPairRepository
 import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginPassRepository
 import anissia.domain.session.repository.LoginTokenRepository
+import anissia.infrastructure.common.boundedElastic
 import me.saro.jwt.alg.es.JwtEs256
 import me.saro.jwt.core.Jwt
 import me.saro.jwt.core.JwtClaims
@@ -89,9 +90,11 @@ class JwtServiceImpl(
             if (cmd.makeLoginToken) {
                 loginTokenRepository.save(LoginToken.create(an = cmd.sessionItem.an)).absoluteToken
             } else { "" }
-        }.doOnNext { loginFailRepository.deleteByIpAndEmail(cmd.sessionItem.ip, cmd.sessionItem.email) }
-            .doOnNext { loginPassRepository.save(LoginPass.create(an = cmd.sessionItem.an, connType = "login", ip = cmd.sessionItem.ip)) }
-            .map { token -> JwtAuthInfoItem(toJwt(cmd.sessionItem), token) }
+        }.map { token ->
+            loginFailRepository.deleteByIpAndEmail(cmd.sessionItem.ip, cmd.sessionItem.email)
+            loginPassRepository.save(LoginPass.create(an = cmd.sessionItem.an, connType = "login", ip = cmd.sessionItem.ip))
+            JwtAuthInfoItem(toJwt(cmd.sessionItem), token)
+        }
 
     private fun getKey(): JwtKeyItem =
         keyStore.elementAt(1)

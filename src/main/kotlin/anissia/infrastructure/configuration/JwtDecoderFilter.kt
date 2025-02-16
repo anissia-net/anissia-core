@@ -23,12 +23,17 @@ class JwtDecoderFilter(
     // jud = json user detail
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> =
         Mono.fromCallable { exchange.request }
-            .filter { (it.headers["jud"]?.size ?: 0) > 0 }
-            .switchIfEmpty(Mono.error(ApiErrorException("jud header is banned")))
-            .map { request ->
-                val jwt = request.headers["jwt"]?.get(0) ?: ""
-                val ip = request.remoteAddress?.address?.hostAddress?:"0.0.0.0"
-                request.mutate().header("jud", jwtService.toSessionItem(jwt, ip).toJson.encodeBase64Url).build()
+            .flatMap { request ->
+                if ((request.headers["jud"]?.size ?: 0) > 0) {
+                    // 사용자가 직접 jud를 지정한 경우 허용하지 않는다.
+                    Mono.error(ApiErrorException("jud header is banned"))
+                } else {
+                    val jwt = request.headers["jwt"]?.get(0) ?: ""
+                    val ip = request.remoteAddress?.address?.hostAddress?:"0.0.0.0"
+                    jwtService.toSessionItem(jwt, ip)
+                        .map { sessionItem -> sessionItem.toJson.encodeBase64Url }
+                        .map { jud -> request.mutate().header("jud", jud).build() }
+                        .flatMap { header -> chain.filter(exchange.mutate().request(header).build()) }
+                }
             }
-            .flatMap { header -> chain.filter(exchange.mutate().request(header).build()) }
 }
