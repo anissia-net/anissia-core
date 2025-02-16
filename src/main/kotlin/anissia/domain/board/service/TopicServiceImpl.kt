@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 
 @Service
 class TopicServiceImpl(
@@ -24,13 +25,13 @@ class TopicServiceImpl(
     private val boardTickerRepository: BoardTickerRepository,
     private val activePanelRepository: ActivePanelRepository,
 ): TopicService {
-    override fun get(cmd: GetTopicCommand): BoardTopicItem =
+    override fun get(cmd: GetTopicCommand): Mono<BoardTopicItem> =
         boardTopicRepository
             .findWithAccountByTickerAndTopicNo(cmd.ticker, cmd.topicNo)
             ?.let { BoardTopicItem(it, boardPostRepository.findAllWithAccountByTopicNoOrderByPostNo(it.topicNo)) }
             ?: BoardTopicItem()
 
-    override fun getList(cmd: GetTopicListCommand): Page<BoardTopicItem> =
+    override fun getList(cmd: GetTopicListCommand): Mono<Page<BoardTopicItem>> =
         boardTopicRepository
             .findAllWithAccountByTickerOrderByTickerAscFixedDescTopicNoDesc(cmd.ticker, PageRequest.of(cmd.page, 20))
             .map { BoardTopicItem(it) }
@@ -49,7 +50,7 @@ class TopicServiceImpl(
             ) }
 
     @Transactional
-    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): Mono<ApiResponse<Long> {
+    override fun add(cmd: NewTopicCommand, sessionItem: SessionItem): Mono<Long> {
         if (!sessionItem.isLogin) {
             return Mono.error(ApiFailException("로그인이 필요합니다.", 0)
         }
