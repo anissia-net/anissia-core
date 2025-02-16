@@ -2,8 +2,8 @@ package anissia.domain.session.model
 
 import anissia.domain.account.Account
 import anissia.domain.account.AccountRole
+import anissia.shared.ApiFailException
 import com.fasterxml.jackson.annotation.JsonIgnore
-import gs.shared.FailException
 
 class SessionItem (
         val an: Long = 0,

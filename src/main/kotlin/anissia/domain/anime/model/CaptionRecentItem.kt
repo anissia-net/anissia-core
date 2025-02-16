@@ -1,7 +1,7 @@
 package anissia.domain.anime.model
 
 import anissia.domain.anime.AnimeCaption
-import anissia.infrastructure.common.As
+import anissia.infrastructure.common.DTF_ISO_CAPTION
 
 class CaptionRecentItem (
     val animeNo: Long = 0,
@@ -15,7 +15,7 @@ class CaptionRecentItem (
             animeNo = animeCaption.anime?.animeNo?:0,
             subject = animeCaption.anime!!.subject,
             episode = animeCaption.episode,
-            updDt = animeCaption.updDt.format(As.DTF_ISO_CAPTION) + ":00",
+            updDt = animeCaption.updDt.format(DTF_ISO_CAPTION) + ":00",
             website = animeCaption.website,
             name = animeCaption.account!!.name
     )

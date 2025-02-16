@@ -1,6 +1,6 @@
 package anissia.domain.board.command
 
-import gs.shared.FailException
+import anissia.shared.ApiFailException
 
 class EditTopicCommand(
     var topicNo: Long,

@@ -4,9 +4,9 @@ package anissia.infrastructure.configuration
 import anissia.domain.account.Account
 import anissia.domain.session.model.SessionItem
 import anissia.domain.session.service.JwtService
-import anissia.infrastructure.common.As
+import anissia.infrastructure.common.encodeBase64Url
+import anissia.shared.ApiErrorException
 import com.fasterxml.jackson.databind.ObjectMapper
-import gs.shared.ErrorException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -28,7 +28,7 @@ class JwtDecoderFilter(
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
 
         if ((exchange.request.headers["jud"]?.size ?: 0) > 0) {
-            throw ErrorException("jud header is banned")
+            throw ApiErrorException("jud header is banned")
         }
 
         val jwt = exchange.request.headers["jwt"]?.get(0) ?: ""
@@ -38,6 +38,9 @@ class JwtDecoderFilter(
             if (jwt.isBlank()) {
                 SessionItem.cast(Account(), ip)
             } else {
+
+
+
                 val key = jwtService.getKey(jwtService.alg().toJwtHeader(jwt).kid!!)
                 val claims = jwtService.alg().toJwtClaims(jwt, key)
                 val id = (claims.id!!).toLong()
@@ -55,7 +58,7 @@ class JwtDecoderFilter(
             SessionItem.cast(Account(), ip)
         }
 
-        val jud = As.encodeBase64Url(objectMapper.writeValueAsString(sessionItem))
+        val jud = objectMapper.writeValueAsString(sessionItem).encodeBase64Url
 
         return chain.filter(
             exchange.mutate().request(exchange.request.mutate().header("jud", jud).build()).build());

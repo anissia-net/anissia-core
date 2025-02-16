@@ -61,7 +61,7 @@ class ScheduleConfiguration(
     // 삭제 예정 애니메이션 삭제
     // 매일 20시에 실행
     @Scheduled(cron = "0 0 20 * * ?")
-    fun deletePaddingDeleteAnime(): Mono<Int> =
+    fun deletePaddingDeleteAnime(): Mono<String> =
         agendaService.deleteDeletePaddingAnime()
 
     // 오래된 활동이력 삭제
