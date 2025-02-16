@@ -3,6 +3,7 @@ package anissia.domain.activePanel.controller
 import anissia.domain.activePanel.command.DoCommandActivePanelCommand
 import anissia.domain.activePanel.command.GetListActivePanelCommand
 import anissia.domain.activePanel.model.ActivePanelItem
+import anissia.domain.activePanel.service.ActivePanelCommandService
 import anissia.domain.activePanel.service.ActivePanelService
 import anissia.infrastructure.common.sessionItem
 import anissia.infrastructure.common.toApiResponse
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono
 @RequestMapping("/active-panel")
 class ActivePanelController(
     private val activePanelService: ActivePanelService,
+    private val activePanelCommandService: ActivePanelCommandService,
 ) {
     @GetMapping("/list/{page:[\\d]+}")
     fun getList(cmd: GetListActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<Page<ActivePanelItem>>> =
@@ -23,5 +25,5 @@ class ActivePanelController(
 
     @PostMapping("/command")
     fun doCommand(@RequestBody cmd: DoCommandActivePanelCommand, exchange: ServerWebExchange): Mono<ApiResponse<String>> =
-        activePanelService.doCommand(cmd, exchange.sessionItem).toApiResponse
+        activePanelCommandService.doCommand(cmd, exchange.sessionItem).toApiResponse
 }

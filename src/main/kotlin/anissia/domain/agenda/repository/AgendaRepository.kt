@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import java.time.OffsetDateTime
 
-interface AgendaRepository : JpaRepository<Agenda, Long> { //, QuerydslPredicateExecutor<Agenda> {
+interface AgendaRepository : JpaRepository<Agenda, Long> {
 
     fun findAllByCodeAndStatusOrderByAgendaNoDesc(code: String, status: String, pageable: Pageable = PageRequest.of(0, 100)): Page<Agenda>
 
@@ -30,5 +30,5 @@ interface AgendaRepository : JpaRepository<Agenda, Long> { //, QuerydslPredicate
     fun findWithPollsByAgendaNoAndCode(agendaNo: Long, code: String): Agenda?
 
     @Query("SELECT a FROM Agenda a WHERE a.an = :an AND a.code = 'TRANSLATOR-APPLY' and a.status = 'DONE' ORDER BY a.agendaNo DESC")
-    fun findPassedTranslatorApply(an: Long, pageable: Pageable = PageRequest.of(0, 1)): Agenda?
+    fun findPassedTranslatorApply(an: Long, pageable: Pageable = PageRequest.of(0, 1)): List<Agenda>
 }

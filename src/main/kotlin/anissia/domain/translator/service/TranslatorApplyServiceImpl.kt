@@ -49,7 +49,7 @@ class TranslatorApplyServiceImpl(
 
 
     override fun getGrantedTime(an: Long): Mono<OffsetDateTime> =
-        Mono.justOrEmpty(agendaRepository.findPassedTranslatorApply(an)?.updDt)
+        Mono.justOrEmpty(agendaRepository.findPassedTranslatorApply(an).firstOrNull()?.updDt)
 
     override fun isApplying(sessionItem: SessionItem): Mono<Boolean> =
         Mono.just(agendaRepository.existsByCodeAndStatusAndAn(ApplyValue.CODE, "ACT", sessionItem.an))

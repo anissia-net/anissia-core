@@ -2,7 +2,6 @@ package anissia.domain.activePanel.service
 
 import anissia.domain.account.Account
 import anissia.domain.activePanel.ActivePanel
-import anissia.domain.activePanel.command.DoCommandActivePanelCommand
 import anissia.domain.activePanel.command.GetListActivePanelCommand
 import anissia.domain.activePanel.model.ActivePanelItem
 import anissia.domain.board.BoardPost
@@ -13,7 +12,6 @@ import reactor.core.publisher.Mono
 
 interface ActivePanelService {
     fun getList(cmd: GetListActivePanelCommand, sessionItem: SessionItem): Mono<Page<ActivePanelItem>>
-    fun doCommand(cmd: DoCommandActivePanelCommand, sessionItem: SessionItem): Mono<String>
     fun add(activePanel: ActivePanel): Mono<ActivePanel>
 
     fun addText(published: Boolean, text: String, sessionItem: SessionItem?): Mono<ActivePanel> =
