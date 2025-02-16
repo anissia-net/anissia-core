@@ -1,7 +1,10 @@
 package anissia.domain.anime.command
 
 import anissia.domain.anime.AnimeStatus
-import anissia.infrastructure.common.*
+import anissia.infrastructure.common.isAsAnimeDate
+import anissia.infrastructure.common.isWebSite
+import anissia.infrastructure.common.throwHttp400Exception
+import anissia.infrastructure.common.throwHttp400If
 
 class NewAnimeCommand(
     val status: String = "",
