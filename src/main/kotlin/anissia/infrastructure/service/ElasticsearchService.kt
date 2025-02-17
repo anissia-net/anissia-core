@@ -1,15 +1,14 @@
 package anissia.infrastructure.service
 
-import com.fasterxml.jackson.databind.JsonNode
-import kotlinx.coroutines.reactor.awaitSingle
-import kotlinx.coroutines.runBlocking
+import org.apache.http.HttpHost
+import org.apache.http.auth.AuthScope
+import org.apache.http.auth.UsernamePasswordCredentials
+import org.apache.http.impl.client.BasicCredentialsProvider
+import org.elasticsearch.client.Request
+import org.elasticsearch.client.Response
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpMethod.*
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 
 @Service
 class ElasticsearchService(
@@ -20,51 +19,38 @@ class ElasticsearchService(
     @Value("\${anissia.ndb.password}")
     private val password: String,
 ) {
-
-    private val elasticClient = WebClient.builder()
-        .baseUrl(url)
-        .defaultHeaders {
-            it.set("Content-Type", "application/json")
-            it.set("Accept", "application/json")
-            if ((username + password).isNotBlank()) {
-                it.setBasicAuth(username, password)
+    private val credentialsProvider = BasicCredentialsProvider()
+        .apply {
+            if (username.isNotEmpty() && password.isNotEmpty()) {
+                setCredentials(AuthScope.ANY, UsernamePasswordCredentials(username, password))
             }
         }
+
+    fun open(): RestClient = RestClient
+        .builder(HttpHost.create(url))
+        .setHttpClientConfigCallback { it.setDefaultCredentialsProvider(credentialsProvider) }
         .build()
 
-    fun requestRaw(method: HttpMethod, uri: String, body: String? = null): WebClient.RequestBodySpec =
-        elasticClient.method(method)
-            .uri(uri).apply { if (body != null) bodyValue(body) }
-
-    fun requestStateOk(method: HttpMethod, uri: String, body: String? = null): Boolean =
-        runBlocking {
-            requestRaw(method, uri, body)
-                .exchangeToMono { Mono.just(it.statusCode().is2xxSuccessful) }
-                .awaitSingle()
+    fun request(method: String, endpoint: String, body: String? = null): Response = open().use {
+        val req = Request(method, endpoint)
+        if (body != null) {
+            req.setJsonEntity(body)
         }
-
-
-    fun request(method: HttpMethod, uri: String, body: String? = null): JsonNode =
-        runBlocking {
-            requestRaw(method, uri, body).retrieve().bodyToMono(JsonNode::class.java)
-                .subscribeOn(Schedulers.boundedElastic())
-                .awaitSingle()
-        }
+        it.performRequest(req)
+    }
 
     fun existsIndex(index: String): Boolean =
-        requestStateOk(HEAD, "/$index")
+        request("HEAD", "/$index").statusLine.statusCode == 200
 
     fun deleteIndex(index: String): Boolean =
-        requestStateOk(DELETE, "/$index")
+        request("DELETE", "/$index").statusLine.statusCode == 200
 
     fun deleteIndexIfExists(index: String): Boolean =
-        if (existsIndex(index)) {
-            deleteIndex(index)
-        } else false
+        if (existsIndex(index)) deleteIndex(index) else false
 
     fun createIndex(index: String, body: String): Boolean =
-        requestStateOk(PUT, "/$index", body)
+        request("PUT", "/$index", body).statusLine.statusCode == 200
 
     fun updateIndex(forceCreate: Boolean, index: String, body: String): Boolean =
-        requestStateOk(PUT, "/$index/_mapping", body)
+        request("PUT", "/$index/_mapping", body).statusLine.statusCode == 200
 }

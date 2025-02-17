@@ -27,7 +27,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
@@ -148,8 +147,8 @@ class AnimeServiceImpl(
 
             //log.info(req)
 
-            val res = elasticsearch.request(HttpMethod.POST, "/anissia_anime/_search", req)
-            val hits = res.get("hits")
+            val res = elasticsearch.request("POST", "/anissia_anime/_search", req)
+            val hits = res.entity.content.bufferedReader().use { mapper.readTree(it) }["hits"]
             val result = PageImpl<Long>(hits["hits"].map { it["_id"].asLong() }, PageRequest.of(page, 30), hits["total"]["value"].asLong())
 
             log.info("anime search $keywords $genres $translators $end ${result.totalElements}")

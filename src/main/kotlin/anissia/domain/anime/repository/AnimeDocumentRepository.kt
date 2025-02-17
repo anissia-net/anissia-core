@@ -4,7 +4,6 @@ import anissia.domain.anime.Anime
 import anissia.infrastructure.common.As
 import anissia.infrastructure.service.ElasticsearchService
 import com.fasterxml.jackson.core.io.JsonStringEncoder
-import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 
 @Component
@@ -27,12 +26,12 @@ class AnimeDocumentRepository(
             "translators" to translators,
             "endDate" to anime.endDate.replace("-", "").run { if (isEmpty()) 0L else toLong() }
         ))
-        val res = elasticsearch.requestStateOk(HttpMethod.PUT, "/$index/_doc/${anime.animeNo}", body)
+        val res = elasticsearch.request("PUT", "/$index/_doc/${anime.animeNo}", body)
         log.info("Updated anime document: $body / $res")
     }
 
     fun deleteByAnimeNo(animeNo: Long) =
-        elasticsearch.requestStateOk(HttpMethod.DELETE, "/$index/_doc/$animeNo")
+        elasticsearch.request("DELETE", "/$index/_doc/$animeNo")
 
     fun dropAndCreateIndex() {
         elasticsearch.deleteIndexIfExists(index)
