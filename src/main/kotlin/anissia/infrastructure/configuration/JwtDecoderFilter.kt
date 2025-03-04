@@ -7,6 +7,7 @@ import anissia.domain.session.service.JwtService
 import anissia.infrastructure.common.As
 import com.fasterxml.jackson.databind.ObjectMapper
 import gs.shared.ErrorException
+import me.saro.jwt.core.Jwt
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -21,7 +22,7 @@ import reactor.core.publisher.Mono
 class JwtDecoderFilter(
     private val jwtService: JwtService
 ): WebFilter {
-
+    val alg = jwtService.alg()
     var objectMapper = ObjectMapper()
 
     // jud = json user detail
@@ -38,16 +39,12 @@ class JwtDecoderFilter(
             if (jwt.isBlank()) {
                 SessionItem.cast(Account(), ip)
             } else {
-                val key = jwtService.getKey(jwtService.alg().toJwtHeader(jwt).kid!!)
-                val claims = jwtService.alg().toJwtClaims(jwt, key)
-                val id = (claims.id!!).toLong()
-                val roles = claims.claim<String>("roles")?.takeIf { it.isNotBlank() }?.split(",") ?: listOf()
-                claims.assert()
+                val jwtNode = Jwt.parse(jwt) { alg.with(jwtService.getKey(it.kid!!)!!) }
                 SessionItem(
-                    an = id,
-                    name = claims.audience!!,
-                    email = claims.subject!!,
-                    roles = roles,
+                    an = (jwtNode.id!!).toLong(),
+                    name = jwtNode.audience!!,
+                    email = jwtNode.subject!!,
+                    roles = jwtNode.claim<String>("roles")?.takeIf { it.isNotBlank() }?.split(",") ?: listOf(),
                     ip = ip
                 )
             }

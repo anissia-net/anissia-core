@@ -14,7 +14,6 @@ import anissia.domain.session.repository.LoginTokenRepository
 import anissia.shared.ResultWrapper
 import me.saro.jwt.alg.es.JwtEs256
 import me.saro.jwt.core.Jwt
-import me.saro.jwt.core.JwtClaims
 import me.saro.jwt.core.JwtKey
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -31,12 +30,12 @@ class JwtServiceImpl(
     private val loginPassRepository: LoginPassRepository,
     private val loginFailRepository: LoginFailRepository,
 ): JwtService {
-    private val es256: JwtEs256 = Jwt.es256()
+    private val es256: JwtEs256 = Jwt.ES256
 
     override fun renewKeyStore() {
         val list = jwtKeyPairRepository.findAllByOrderByKidDesc()
             .reversed()
-            .map { JwtKeyItem(it.kid.toString(), es256.toJwtKeyByStringify(it.data)) }
+            .map { JwtKeyItem(it.kid.toString(), es256.toJwtKey(it.data)) }
 
         list.forEach {
             if (!keyStore.contains(it)) {
@@ -85,13 +84,14 @@ class JwtServiceImpl(
 
     fun toJwt(sessionItem: SessionItem): String = try {
         val keyItem = getKeyItem()
-        val claims = JwtClaims.create()
+        Jwt.builder()
+            .kid(keyItem.kid)
             .id(sessionItem.an.toString())
             .subject(sessionItem.email)
             .audience(sessionItem.name)
             .claim("roles", sessionItem.roles.joinToString(","))
             .expire(OffsetDateTime.now().plusMinutes(180))
-        es256.toJwt(keyItem.key, claims, keyItem.kid)
+            .toJwt(es256, keyItem.key)
     } catch (e: Exception) {
         throw SecurityException(e.message)
     }

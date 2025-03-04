@@ -15,11 +15,11 @@ class JwtKeyItem(
             val point = data.indexOf(' ')
             return JwtKeyItem(
                 data.substring(0, point),
-                jwtEs256.toJwtKeyByStringify(data.substring(point + 1))
+                jwtEs256.toJwtKey(data.substring(point + 1))
             )
         }
         fun create(jwtKeyPair: JwtKeyPair, jwtAlgorithm: JwtAlgorithm): JwtKeyItem =
-            JwtKeyItem(jwtKeyPair.kid.toString(), jwtAlgorithm.toJwtKeyByStringify(jwtKeyPair.data))
+            JwtKeyItem(jwtKeyPair.kid.toString(), jwtAlgorithm.toJwtKey(jwtKeyPair.data))
     }
 
     override fun toString(): String =
