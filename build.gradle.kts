@@ -41,7 +41,7 @@ dependencies {
 	// lib
 	implementation("me.saro:kit:0.2.3")
 	implementation("org.mindrot:jbcrypt:0.4")
-	implementation("me.saro:jwt:4.0.1")
+	implementation("me.saro:jwt:5.0.0")
 //	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 //	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 

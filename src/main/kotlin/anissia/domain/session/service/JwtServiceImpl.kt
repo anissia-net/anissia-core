@@ -12,9 +12,9 @@ import anissia.domain.session.repository.LoginFailRepository
 import anissia.domain.session.repository.LoginPassRepository
 import anissia.domain.session.repository.LoginTokenRepository
 import anissia.shared.ResultWrapper
-import me.saro.jwt.alg.es.JwtEs256
-import me.saro.jwt.core.Jwt
-import me.saro.jwt.core.JwtKey
+import me.saro.jwt.Jwt
+import me.saro.jwt.JwtKey
+import me.saro.jwt.impl.JwtEsAlgorithm
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
@@ -30,12 +30,12 @@ class JwtServiceImpl(
     private val loginPassRepository: LoginPassRepository,
     private val loginFailRepository: LoginFailRepository,
 ): JwtService {
-    private val es256: JwtEs256 = Jwt.ES256
+    private val es256: JwtEsAlgorithm = Jwt.ES256
 
     override fun renewKeyStore() {
         val list = jwtKeyPairRepository.findAllByOrderByKidDesc()
             .reversed()
-            .map { JwtKeyItem(it.kid.toString(), es256.toJwtKey(it.data)) }
+            .map { JwtKeyItem(it.kid.toString(), Jwt.parseKey(it.data)) }
 
         list.forEach {
             if (!keyStore.contains(it)) {
@@ -62,7 +62,7 @@ class JwtServiceImpl(
         return ResultWrapper.fail("유효하지 않은 토큰 정보입니다.", null)
     }
 
-    override fun alg(): JwtEs256 = es256
+    override fun alg(): JwtEsAlgorithm = es256
 
     @Transactional
     override fun getAuthInfo(cmd: GetJwtAuthInfoCommand): ResultWrapper<JwtAuthInfoItem> {
@@ -84,14 +84,14 @@ class JwtServiceImpl(
 
     fun toJwt(sessionItem: SessionItem): String = try {
         val keyItem = getKeyItem()
-        Jwt.builder()
+        Jwt.create(keyItem.key)
             .kid(keyItem.kid)
             .id(sessionItem.an.toString())
             .subject(sessionItem.email)
             .audience(sessionItem.name)
             .claim("roles", sessionItem.roles.joinToString(","))
             .expire(OffsetDateTime.now().plusMinutes(180))
-            .toJwt(es256, keyItem.key)
+            .toJwt()
     } catch (e: Exception) {
         throw SecurityException(e.message)
     }
