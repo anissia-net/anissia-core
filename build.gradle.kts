@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-	val kotlinVersion = "2.1.0"
+	val kotlinVersion = "2.1.20-RC3"
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
@@ -36,16 +36,12 @@ dependencies {
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 	// elasticsearch
-	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.17.2")
+	implementation("org.elasticsearch.client:elasticsearch-rest-client:8.17.3")
 
 	// lib
 	implementation("me.saro:kit:0.2.3")
 	implementation("org.mindrot:jbcrypt:0.4")
-	implementation("me.saro:jwt:5.0.0")
-//	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-//	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-
-
+	implementation("me.saro:jwt:6.0.0")
 
 	// logger
 	implementation("org.slf4j:slf4j-api")

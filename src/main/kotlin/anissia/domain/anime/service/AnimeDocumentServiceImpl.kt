@@ -16,7 +16,6 @@ class AnimeDocumentServiceImpl(
     private val animeCaptionRepository: AnimeCaptionRepository,
     private val animeDocumentRepository: AnimeDocumentRepository,
 ): AnimeDocumentService {
-    private val index = "anissia_anime"
     private val log = As.logger<AnimeDocumentServiceImpl>()
 
     @Transactional

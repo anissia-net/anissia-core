@@ -7,7 +7,6 @@ import anissia.domain.session.service.JwtService
 import anissia.infrastructure.common.As
 import com.fasterxml.jackson.databind.ObjectMapper
 import gs.shared.ErrorException
-import me.saro.jwt.Jwt
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -38,7 +37,7 @@ class JwtDecoderFilter(
             if (jwt.isBlank()) {
                 SessionItem.cast(Account(), ip)
             } else {
-                val jwtNode = Jwt.parseJwt(jwt) { jwtService.getKey(it.kid!!) }
+                val jwtNode = jwtService.parseJwt(jwt)
                 SessionItem(
                     an = (jwtNode.id!!).toLong(),
                     name = jwtNode.audience!!,

@@ -1,10 +1,10 @@
-package anissia.domain.anime
+package anissia.domain.store
 
 import jakarta.persistence.*
 
 @Entity
 @Table
-class AnimeStore (
+class Store (
     @Id
     @Column(nullable = false, length = 64)
     var code: String = "", // code
@@ -20,7 +20,7 @@ class AnimeStore (
 }
 
 /*
-CREATE TABLE `anime_store` (
+CREATE TABLE `store` (
   `code` varchar(64) NOT NULL,
   `cv` varchar(128) DEFAULT NULL,
   `data` longtext DEFAULT NULL,

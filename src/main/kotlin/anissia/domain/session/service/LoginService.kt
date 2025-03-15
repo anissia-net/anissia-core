@@ -9,4 +9,5 @@ import anissia.shared.ResultWrapper
 interface LoginService {
     fun doUserLogin(cmd: DoUserLoginCommand, sessionItem: SessionItem): ResultWrapper<JwtAuthInfoItem>
     fun doTokenLogin(cmd: DoTokenLoginCommand, sessionItem: SessionItem): ResultWrapper<JwtAuthInfoItem>
+    fun updateAuthInfo(sessionItem: SessionItem): ResultWrapper<JwtAuthInfoItem>
 }

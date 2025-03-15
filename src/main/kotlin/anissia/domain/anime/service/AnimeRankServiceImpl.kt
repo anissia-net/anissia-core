@@ -1,14 +1,14 @@
 package anissia.domain.anime.service
 
 import anissia.domain.anime.AnimeHit
-import anissia.domain.anime.AnimeStore
 import anissia.domain.anime.command.GetAnimeRankCommand
 import anissia.domain.anime.command.HitAnimeCommand
 import anissia.domain.anime.model.AnimeRankItem
 import anissia.domain.anime.repository.AnimeHitHourRepository
 import anissia.domain.anime.repository.AnimeHitRepository
-import anissia.domain.anime.repository.AnimeStoreRepository
 import anissia.domain.session.model.SessionItem
+import anissia.domain.store.Store
+import anissia.domain.store.repository.StoreRepository
 import anissia.infrastructure.common.As
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -22,7 +22,7 @@ import java.time.OffsetDateTime
 
 @Service
 class AnimeRankServiceImpl(
-    private val animeStoreRepository: AnimeStoreRepository,
+    private val storeRepository: StoreRepository,
     private val animeHitRepository: AnimeHitRepository,
     private val animeHitHourRepository: AnimeHitHourRepository,
 ): AnimeRankService {
@@ -34,7 +34,7 @@ class AnimeRankServiceImpl(
     override fun get(cmd: GetAnimeRankCommand): List<Map<*,*>> = rankCacheStore.find(cmd.type) { type ->
         when (type) {
             "week", "quarter", "year" ->
-                objectMapper.readValue(animeStoreRepository.findByIdOrNull("rank.$type")?.data ?: "[]", tr)
+                objectMapper.readValue(storeRepository.findByIdOrNull("rank.$type")?.data ?: "[]", tr)
             else -> listOf()
         }
     }
@@ -93,9 +93,9 @@ class AnimeRankServiceImpl(
         val day7List = extractRank(dt.minusDays(7).format(As.DTF_RANK_HOUR))
             .apply { calculateRankDiff(this, day14List) }
 
-        animeStoreRepository.save(AnimeStore("rank.week", "", toString(day7List)))
-        animeStoreRepository.save(AnimeStore("rank.quarter", "", toString(day84List)))
-        animeStoreRepository.save(AnimeStore("rank.year", "", toString(day364List)))
+        storeRepository.save(Store("rank.week", "", toString(day7List)))
+        storeRepository.save(Store("rank.quarter", "", toString(day84List)))
+        storeRepository.save(Store("rank.year", "", toString(day364List)))
         clearCache()
     }
 
